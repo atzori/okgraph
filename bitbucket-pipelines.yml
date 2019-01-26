@@ -1,0 +1,7 @@
+image: python:3.7
+pipelines:
+  default:
+    - step:
+        name: Testing
+        script:
+          - python -m unittest discover tests/

@@ -1,0 +1,17 @@
+[metadata]
+name = 'okgraph'
+version = '0.0.1'
+description = 'OKgraph is a python library for unsupervised natural language understanding'
+author = 'Maurizio Atzori'
+author_email = 'atzori@unica.it'
+license = 'Apache-2.0'
+url = 'https://github.com/_/okgraph'
+
+[requires]
+python_version = ['2.7', '3.5', '3.6', 'pypy', 'pypy3']
+
+[build-system]
+requires = ['setuptools', 'wheel']
+
+[tool.hatch.commands]
+prerelease = 'hatch build'

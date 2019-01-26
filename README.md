@@ -24,6 +24,7 @@ To send a contribution:
   - git flow feature start *my-cool-feature* (use an appropriate feature name, for bugs use git flow bugfix start ...) 
   - add, commit and push your work (it will be in branch *feature/my-cool-feature*)
   - follow the link suggested after the push to create a new push request to "develop" branch and start a discussion with the maintainer
+  - the maintainer will merge your work into develop (or master in case of new releases)
 
 
 Install

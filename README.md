@@ -13,7 +13,17 @@ It currently focuses on the following tasks:
 
 Being unsupervised, it only takes a free (untagged) text corpus as input, in any space-separated language. [scriptio-continua](https://en.wikipedia.org/wiki/Scriptio_continua) corpora and languages needs third-party tokenization techniques (e.g. [micter](https://github.com/tkng/micter)).
 
+Development
+-----------
+Tools to use:
+  - [hatch](https://github.com/ofek/hatch) ([commands reference](https://github.com/ofek/hatch/blob/master/COMMANDS.rst))
+  - [git flow](https://github.com/nvie/gitflow) ([simple guide](https://jeffkreeftmeijer.com/git-flow/)) and also [git-flow-completion](https://github.com/bobthecow/git-flow-completion)
 
+To send a contribution:
+  - clone the repo locally
+  - git flow feature start *my-cool-feature* (use an appropriate feature name, for bugs use git flow bugfix start ...) 
+  - add, commit and push your work (it will be in branch *feature/my-cool-feature*)
+  - follow the link suggested after the push to create a new push request to "develop" branch and start a discussion with the maintainer
 
 
 Install

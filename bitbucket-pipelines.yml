@@ -1,6 +1,20 @@
 image: python:3.7
+
+
+options:
+  max-time: 20
+
+
 pipelines:
-  default:
+
+  custom: # manully triggered
+    - step:
+        name: Testing
+        script:
+          - python -m unittest discover tests/
+
+  pull-requests: # automatically triggered
+    '**': #this runs as default for any branch not elsewhere defined
     - step:
         name: Testing
         script:

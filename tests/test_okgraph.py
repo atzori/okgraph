@@ -2,8 +2,8 @@ import unittest
 import okgraph
 
 
-corpus_file_path = 'data/corpusToTest.txt'
-embeddings_file_path = 'data/corpusToTest.magnitude'
+corpus_file_path = 'tests/text7.head.gz'
+embeddings_file_path = 'tests/text7.head.magnitude'
 
 
 okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path)

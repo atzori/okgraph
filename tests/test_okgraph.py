@@ -1,6 +1,5 @@
 import unittest
-import okgraph
-
+from okgraph import okgraph
 
 corpus_file_path = 'tests/text7.head.gz'
 embeddings_file_path = 'tests/text7.head.magnitude'
@@ -28,7 +27,7 @@ class OKGraphTest(unittest.TestCase):
         Test if algorithm behaviour is respected.
         Test if the number of output values is lower or éequal to k.
         """
-        result_1 = okg.set_expansion(seed=['Milan', 'Rome', 'Turin'],
+        result_1 = okg.set_expansion(seed=['milan', 'rome', 'turin'],
                                      algo=ALGORITHM.TOP5MEAN,
                                      options={'n': 5, 'width': 10},
                                      k=50)
@@ -40,7 +39,10 @@ class OKGraphTest(unittest.TestCase):
 
         intersection = set(result_1) & set(result_2)
 
-        self.assertTrue("Cagliari" in result_1 and "Florence" in result_1)
+        print(result_1)
+        print(result_2)
+
+        self.assertTrue("cagliari" in result_1 and "florence" in result_1)
         self.assertTrue(len(intersection) == 0)
 
     def test_relation_expansion(self):

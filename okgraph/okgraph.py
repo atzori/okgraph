@@ -51,12 +51,20 @@ class OKgraph:
 
         self.magnitude = Magnitude(embeddings)
 
-    def set_expansion(self, string_set: [str] = None, output_limit: int = 5, algorithm: str = None):
+    def set_expansion(self, seed: [str] = None, algo: str = ALGORITHM.TOP5MEAN, options: dict = None, k: int = 5):
         """Returns a **generator** with results not containing the given seed
         Use itertools to convert to a finite list (see https://stackoverflow.com/a/5234170)
         e.g.: 'Spain','Portugal','Belgium', ...
 
         """
-        return self.magnitude.query(string_set)
+        keys = []
+        for key, vector in self.magnitude:
+            if vector in self.magnitude.query(seed):
+                keys.append(key)
+                print(key)
+        return keys
+        # return list(filter(lambda key, vector: vector in self.magnitude.query(seed), self.magnitude))
+
+
 
 

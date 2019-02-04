@@ -1,10 +1,11 @@
 import time, logging, numpy
+from okgraph.algorithms.set_expansion import centroid
 from enum import Enum
 from pymagnitude import Magnitude
 
-
 class ALGORITHM(Enum):
     TOP5MEAN = 0
+    CENTROID = 1
 
 
 class OKgraph:
@@ -49,7 +50,8 @@ class OKgraph:
         # vecs = Magnitude('http://magnitude.plasticity.ai/word2vec/heavy/GoogleNews-vectors-negative300.magnitude',
         # stream=True)
 
-        self.magnitude = Magnitude(embeddings)
+        self.magnitude = Magnitude(embeddings, _number_of_values=5)
+        self.corpus = corpus
 
     def set_expansion(self, seed: [str] = None, algo: str = ALGORITHM.TOP5MEAN, options: dict = None, k: int = 5):
         """Returns a **generator** with results not containing the given seed
@@ -57,13 +59,7 @@ class OKgraph:
         e.g.: 'Spain','Portugal','Belgium', ...
 
         """
-        keys = []
-        for key, vector in self.magnitude:
-            if vector in self.magnitude.query(seed):
-                keys.append(key)
-                print(key)
-        return keys
-        # return list(filter(lambda key, vector: vector in self.magnitude.query(seed), self.magnitude))
+        return centroid.compute(self, seed=seed, options=options, k=k)
 
 
 

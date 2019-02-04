@@ -3,7 +3,7 @@ from okgraph import okgraph
 
 corpus_file_path = 'tests/text7.head.gz'
 embeddings_file_path = 'tests/text7.head.magnitude'
-
+embeddings_file_path = 'tests/GoogleNews-vectors-negative300.magnitude'
 
 okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path)
 
@@ -27,23 +27,31 @@ class OKGraphTest(unittest.TestCase):
         Test if algorithm behaviour is respected.
         Test if the number of output values is lower or éequal to k.
         """
+        result_1_k = 5
         result_1 = okg.set_expansion(seed=['milan', 'rome', 'turin'],
                                      algo=ALGORITHM.TOP5MEAN,
                                      options={'n': 5, 'width': 10},
-                                     k=50)
+                                     k=result_1_k)
 
+        result_2_k = 4
         result_2 = okg.set_expansion(seed=['home', 'house', 'apartment'],
                                      algo=ALGORITHM.TOP5MEAN,
                                      options={'n': 5, 'width': 10},
-                                     k=50)
+                                     k=result_2_k)
 
         intersection = set(result_1) & set(result_2)
 
         print(result_1)
         print(result_2)
 
-        self.assertTrue("cagliari" in result_1 and "florence" in result_1)
-        self.assertTrue(len(intersection) == 0)
+        self.assertTrue("cagliari" in result_1 and "florence" in result_1,
+                        msg="at least some correct values must be contained")
+
+        self.assertTrue(len(intersection) == 0,
+                        msg="intersection of different seeds must be empty")
+
+        self.assertEqual(len(result_1) <= result_1_k,
+                         msg="k value must be <= of the list length")
 
     def test_relation_expansion(self):
         pass

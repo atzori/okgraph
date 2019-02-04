@@ -5,7 +5,7 @@
 CORPUS_TO_DOWNLOAD='text8'
 
 if [[ ! -f "text7.head.gz" ]]; then
-    python -m gensim.downloader --download text8 && # text8.gz [33MB]
+    python -m gensim.downloader --download ${CORPUS_TO_DOWNLOAD} && # text8.gz [33MB]
     gunzip -k -f ~/gensim-data/text8/text8.gz &&
     head -c 10000000 ~/gensim-data/text8/text8 > text7.head &&
     gzip text7.head

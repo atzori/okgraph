@@ -29,13 +29,13 @@ class OKGraphTest(unittest.TestCase):
         """
         result_1_k = 5
         result_1 = okg.set_expansion(seed=['milan', 'rome', 'turin'],
-                                     algo=ALGORITHM.TOP5MEAN,
+                                     algo=ALGORITHM.CENTROID.value,
                                      options={'n': 5, 'width': 10},
                                      k=result_1_k)
 
         result_2_k = 4
         result_2 = okg.set_expansion(seed=['home', 'house', 'apartment'],
-                                     algo=ALGORITHM.TOP5MEAN,
+                                     algo=ALGORITHM.CENTROID.value,
                                      options={'n': 5, 'width': 10},
                                      k=result_2_k)
 

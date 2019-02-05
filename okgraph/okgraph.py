@@ -1,11 +1,16 @@
-import time, logging, numpy
-from okgraph.algorithms.set_expansion import centroid
+import time
+import logging
+import numpy
+import sys
 from enum import Enum
 from pymagnitude import Magnitude
 
+algorithms_package = "okgraph.algorithms"
+
+
 class ALGORITHM(Enum):
-    TOP5MEAN = 0
-    CENTROID = 1
+    TOP5MEAN = "top5mean"
+    CENTROID = "centroid"
 
 
 class OKgraph:
@@ -53,12 +58,14 @@ class OKgraph:
         self.magnitude = Magnitude(embeddings, _number_of_values=5)
         self.corpus = corpus
 
-    def set_expansion(self, seed: [str] = None, algo: str = ALGORITHM.TOP5MEAN, options: dict = None, k: int = 5):
+    def set_expansion(self, seed: [str] = None, algo: str = ALGORITHM.CENTROID.value, options: dict = None, k: int = 5):
         """Returns a **generator** with results not containing the given seed
         Use itertools to convert to a finite list (see https://stackoverflow.com/a/5234170)
         e.g.: 'Spain','Portugal','Belgium', ...
 
         """
+        package = algorithms_package + ".set_expansion"
+        centroid = getattr(__import__(package, fromlist=[algo]), algo)
         return centroid.compute(self, seed=seed, options=options, k=k)
 
 

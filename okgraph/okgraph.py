@@ -1,7 +1,3 @@
-import time
-import logging
-import numpy
-import sys
 from enum import Enum
 from pymagnitude import Magnitude
 
@@ -23,7 +19,7 @@ class OKgraph:
 
     """
 
-    def __init__(self, corpus: str = None, embeddings: str = None):
+    def __init__(self, corpus: str = None, embeddings: str = None, k: int = 5, stream: bool = False):
         """Create an OKgraph.
 
         It loads a text corpus, and optionally a word-embedding model
@@ -51,11 +47,7 @@ class OKgraph:
         This example usage will set enwik9.txt as corpus file and model_file.magnitude as vector
         model file in magnitude format (extension magnitude is appended automatically if not specified).
         """
-
-        # vecs = Magnitude('http://magnitude.plasticity.ai/word2vec/heavy/GoogleNews-vectors-negative300.magnitude',
-        # stream=True)
-
-        self.magnitude = Magnitude(embeddings, _number_of_values=5)
+        self.magnitude = Magnitude(embeddings, _number_of_values=k, stream=stream)
         self.corpus = corpus
 
     def set_expansion(self, seed: [str] = None, algo: str = ALGORITHM.CENTROID.value, options: dict = None, k: int = 5):
@@ -65,8 +57,8 @@ class OKgraph:
 
         """
         package = algorithms_package + ".set_expansion"
-        centroid = getattr(__import__(package, fromlist=[algo]), algo)
-        return centroid.compute(self, seed=seed, options=options, k=k)
+        algorithm = getattr(__import__(package, fromlist=[algo]), algo)
+        return algorithm.compute(self, seed=seed, options=options, k=k)
 
 
 

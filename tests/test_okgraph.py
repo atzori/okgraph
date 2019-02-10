@@ -1,5 +1,5 @@
 import unittest
-from okgraph import okgraph
+import okgraph
 
 corpus_file_path = 'tests/text7.head.gz'
 embeddings_file_path = 'tests/text7.head.magnitude'
@@ -44,7 +44,7 @@ class OKGraphTest(unittest.TestCase):
         print(result_1)
         print(result_2)
 
-        self.assertTrue("cagliari" in result_1 and "florence" in result_1,
+        self.assertTrue("cagliari" in [r[0] for r in result_1] and "florence" in [r[0] for r in result_2],
                         msg="at least some correct values must be contained")
 
         self.assertTrue(len(intersection) == 0,

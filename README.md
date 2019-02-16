@@ -1,3 +1,5 @@
+[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+
 How to use the _okgraph_ library
 ================================
 
@@ -21,6 +23,8 @@ Tools to use:
 
 To send a contribution:
   - clone the repo locally
+  - git checkout master
+  - git flow init -d (to set the default settings)
   - git flow feature start *my-cool-feature* (use an appropriate feature name, for bugs use git flow bugfix start ...) 
   - add, commit and push your work (it will be in branch *feature/my-cool-feature*)
   - follow the link suggested after the push to create a new push request to "develop" branch and start a discussion with the maintainer
@@ -108,3 +112,11 @@ Classes and methods in `okgraph.evaluation.*` evaluate the performance of algori
 
 TBD
 
+
+Testing
+-------
+From the root directory
+
+    python -m unittest discover tests/
+    
+    

@@ -1,12 +1,7 @@
 from enum import Enum
 from pymagnitude import Magnitude
 
-algorithms_package = "okgraph.algorithms"
-
-
-class ALGORITHM(Enum):
-    TOP5MEAN = "top5mean"
-    CENTROID = "centroid"
+algorithms_package = "okgraph.task"
 
 
 class OKgraph:
@@ -47,18 +42,24 @@ class OKgraph:
         This example usage will set enwik9.txt as corpus file and model_file.magnitude as vector
         model file in magnitude format (extension magnitude is appended automatically if not specified).
         """
-        self.magnitude = Magnitude(embeddings, _number_of_values=k, stream=stream)
+        self.v = Magnitude(embeddings, _number_of_values=k, stream=stream)
         self.corpus = corpus
 
-    def set_expansion(self, seed: [str] = None, algo: str = ALGORITHM.CENTROID.value, options: dict = None, k: int = 5):
+    def set_expansion(self, seed: [str] = None, algo: str = "centroid", options: dict = None, k: int = 5):
         """Returns a **generator** with results not containing the given seed
         Use itertools to convert to a finite list (see https://stackoverflow.com/a/5234170)
         e.g.: 'Spain','Portugal','Belgium', ...
 
         """
-        package = algorithms_package + ".set_expansion"
+
+        # automatically get the file of the algorithm task
+        package = algorithms_package + ".set_expansion." + algo
         algorithm = getattr(__import__(package, fromlist=[algo]), algo)
-        return algorithm.compute(self, seed=seed, options=options, k=k)
+
+        options["seed"] = seed
+        options["k"] = k
+
+        return algorithm.task(self.v, options=options)
 
 
 

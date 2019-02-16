@@ -3,11 +3,9 @@ import okgraph
 
 corpus_file_path = 'tests/text7.head.gz'
 embeddings_file_path = 'tests/text7.head.magnitude'
-embeddings_file_path = 'tests/GoogleNews-vectors-negative300.magnitude'
+embeddings_file_path = 'tests/GoogleNews-vectors-negative300.heavy.magnitude'
 
 okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path)
-
-ALGORITHM = okgraph.ALGORITHM
 
 
 class OKGraphTest(unittest.TestCase):
@@ -27,15 +25,15 @@ class OKGraphTest(unittest.TestCase):
         Test if algorithm behaviour is respected.
         Test if the number of output values is lower or éequal to k.
         """
-        result_1_k = 5
+        result_1_k = 15
         result_1 = okg.set_expansion(seed=['milan', 'rome', 'turin'],
-                                     algo=ALGORITHM.CENTROID.value,
+                                     algo='centroid',
                                      options={'n': 5, 'width': 10},
                                      k=result_1_k)
 
-        result_2_k = 4
+        result_2_k = 14
         result_2 = okg.set_expansion(seed=['home', 'house', 'apartment'],
-                                     algo=ALGORITHM.CENTROID.value,
+                                     algo='centroid',
                                      options={'n': 5, 'width': 10},
                                      k=result_2_k)
 
@@ -44,14 +42,11 @@ class OKGraphTest(unittest.TestCase):
         print(result_1)
         print(result_2)
 
-        self.assertTrue("cagliari" in [r[0] for r in result_1] and "florence" in [r[0] for r in result_2],
-                        msg="at least some correct values must be contained")
-
         self.assertTrue(len(intersection) == 0,
                         msg="intersection of different seeds must be empty")
 
-        self.assertEqual(len(result_1) <= result_1_k,
-                         msg="k value must be <= of the list length")
+        self.assertTrue(len(result_1) <= result_1_k,
+                        msg="k value must be <= of the list length")
 
     def test_relation_expansion(self):
         pass

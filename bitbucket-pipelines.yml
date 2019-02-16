@@ -18,7 +18,7 @@ pipelines:
           - test7-magnitude
         script:
           - wget --quiet http://magnitude.plasticity.ai/word2vec/heavy/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.heavy.magnitude
-          - mv GoogleNews-vectors-negative300.heavy.magnitude tests/
+          - mv GoogleNews-vectors-negative300.heavy.magnitude tests/GoogleNews-vectors-negative300.heavy.magnitude
           - source tests/get_corpus_and_model.sh
     test:
     - step:
@@ -31,7 +31,7 @@ pipelines:
           - test7-magnitude
         script:
           - wget --quiet http://magnitude.plasticity.ai/word2vec/heavy/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.heavy.magnitude
-          - mv GoogleNews-vectors-negative300.heavy.magnitude tests/
+          - mv GoogleNews-vectors-negative300.heavy.magnitude tests/GoogleNews-vectors-negative300.heavy.magnitude
           - source tests/get_corpus_and_model.sh
           - python -m unittest discover tests/
 
@@ -47,7 +47,7 @@ pipelines:
         name: Testing
         script:
           - wget --quiet http://magnitude.plasticity.ai/word2vec/heavy/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.heavy.magnitude
-          - mv GoogleNews-vectors-negative300.heavy.magnitude tests/
+          - mv GoogleNews-vectors-negative300.heavy.magnitude tests/GoogleNews-vectors-negative300.heavy.magnitude
           - source tests/get_corpus_and_model.sh
           - python -m unittest discover tests/
 

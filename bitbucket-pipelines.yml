@@ -10,14 +10,14 @@ pipelines:
     - step:
         caches:
           - pip
-          - googlenews_magnitude
-          - test7_bin
-          - test7_gz
-          - test7_magnitude
+          - googlenews-magnitude
+          - test7-bin
+          - test7-gz
+          - test7-magnitude
         name: Testing
         script:
-          - download_magnitude_file
-          - download_and_make_corpus_magnitude
+          - download-magnitude-file
+          - download-and-make-corpus-magnitude
           - python -m unittest discover tests/
 
   pull-requests: # automatically triggered
@@ -25,23 +25,23 @@ pipelines:
     - step:
         caches:
           - pip
-          - googlenews_magnitude
-          - test7_bin
-          - test7_gz
-          - test7_magnitude
+          - googlenews-magnitude
+          - test7-bin
+          - test7-gz
+          - test7-magnitude
         name: Testing
         script:
-          - download_magnitude_file
-          - download_and_make_corpus_magnitude
+          - download-magnitude-file
+          - download-and-make-corpus-magnitude
           - python -m unittest discover tests/
 
 definitions:
   caches:
-    googlenews_magnitude: tests/GoogleNews-vectors-negative300.heavy.magnitude
-    test7_bin: tests/text7.head.bin
-    test7_gz: tests/text7.head.gz
-    test7_magnitude: tests/text7.head.magnitude.gz
+    googlenews-magnitude: tests/GoogleNews-vectors-negative300.heavy.magnitude
+    test7-bin: tests/text7.head.bin
+    test7-gz: tests/text7.head.gz
+    test7-magnitude: tests/text7.head.magnitude.gz
 
   script:
-    download_magnitude_file wget --quiet http://magnitude.plasticity.ai/word2vec/heavy/GoogleNews-vectors-negative300.magnitude -O tests/GoogleNews-vectors-negative300.heavy.magnitude
-    download_and_make_corpus_magnitude source tests/get_corpus_and_model.sh
+    download-magnitude-file wget --quiet http://magnitude.plasticity.ai/word2vec/heavy/GoogleNews-vectors-negative300.magnitude -O tests/GoogleNews-vectors-negative300.heavy.magnitude
+    download-and-make-corpus-magnitude source tests/get_corpus_and_model.sh

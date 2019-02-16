@@ -7,14 +7,27 @@ options:
 pipelines:
 
   custom: # manully triggered
+    download:
     - step:
+        name: Download
         caches:
           - pip
           - googlenews-magnitude
           - test7-bin
           - test7-gz
           - test7-magnitude
-        name: Testing
+        script:
+          - download-magnitude-file
+          - download-and-make-corpus-magnitude
+    test:
+    - step:
+        name: Test
+        caches:
+          - pip
+          - googlenews-magnitude
+          - test7-bin
+          - test7-gz
+          - test7-magnitude
         script:
           - download-magnitude-file
           - download-and-make-corpus-magnitude

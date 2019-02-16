@@ -4,29 +4,44 @@ image: python:3.7
 options:
   max-time: 20
 
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-  - tests/GoogleNews-vectors-negative300.heavy.magnitude
-  - tests/text7.head.bin
-  - tests/text7.head.gz
-  - tests/text7.head.magnitude.gz
-
-before_script:
-    - wget --quiet http://magnitude.plasticity.ai/word2vec/heavy/GoogleNews-vectors-negative300.magnitude -O tests/GoogleNews-vectors-negative300.heavy.magnitude
-    - source tests/get_corpus_and_model.sh
-
 pipelines:
 
   custom: # manully triggered
     - step:
+        caches:
+          - pip
+          - googlenews_magnitude
+          - test7_bin
+          - test7_gz
+          - test7_magnitude
         name: Testing
         script:
+          - download_magnitude_file
+          - download_and_make_corpus_magnitude
           - python -m unittest discover tests/
 
   pull-requests: # automatically triggered
     '**': #this runs as default for any branch not elsewhere defined
     - step:
+        caches:
+          - pip
+          - googlenews_magnitude
+          - test7_bin
+          - test7_gz
+          - test7_magnitude
         name: Testing
         script:
+          - download_magnitude_file
+          - download_and_make_corpus_magnitude
           - python -m unittest discover tests/
+
+definitions:
+  caches:
+    googlenews_magnitude: tests/GoogleNews-vectors-negative300.heavy.magnitude
+    test7_bin: tests/text7.head.bin
+    test7_gz: tests/text7.head.gz
+    test7_magnitude: tests/text7.head.magnitude.gz
+
+  script:
+    download_magnitude_file wget --quiet http://magnitude.plasticity.ai/word2vec/heavy/GoogleNews-vectors-negative300.magnitude -O tests/GoogleNews-vectors-negative300.heavy.magnitude
+    download_and_make_corpus_magnitude source tests/get_corpus_and_model.sh

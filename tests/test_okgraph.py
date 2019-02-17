@@ -3,7 +3,7 @@ import okgraph
 
 corpus_file_path = 'tests/text7.head.gz'
 embeddings_file_path = 'tests/text7.head.magnitude'
-embeddings_file_path = 'tests/GoogleNews-vectors-negative300.heavy.magnitude'
+embeddings_file_path = 'tests/GoogleNews-vectors-negative300.magnitude'
 
 okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path)
 

@@ -18,8 +18,9 @@ pipelines:
           - test7-magnitude
         script:
           - pip install -r requirements.txt
-          - wget --quiet http://magnitude.plasticity.ai/word2vec/heavy/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.heavy.magnitude
-          - mv GoogleNews-vectors-negative300.heavy.magnitude tests/GoogleNews-vectors-negative300.heavy.magnitude
+          - wget --quiet http://magnitude.plasticity.ai/word2vec/light/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.magnitude
+          - mv GoogleNews-vectors-negative300.magnitude tests/GoogleNews-vectors-negative300.magnitude
+          - ls tests/
           - source tests/get_corpus_and_model.sh
     test:
     - step:
@@ -32,8 +33,9 @@ pipelines:
           - test7-magnitude
         script:
           - pip install -r requirements.txt
-          - wget --quiet http://magnitude.plasticity.ai/word2vec/heavy/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.heavy.magnitude
-          - mv GoogleNews-vectors-negative300.heavy.magnitude tests/GoogleNews-vectors-negative300.heavy.magnitude
+          - wget --quiet http://magnitude.plasticity.ai/word2vec/light/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.magnitude
+          - mv GoogleNews-vectors-negative300.magnitude tests/GoogleNews-vectors-negative300.magnitude
+          - ls tests/
           - source tests/get_corpus_and_model.sh
           - python -m unittest discover tests/
 
@@ -49,14 +51,15 @@ pipelines:
         name: Testing
         script:
           - pip install -r requirements.txt
-          - wget --quiet http://magnitude.plasticity.ai/word2vec/heavy/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.heavy.magnitude
-          - mv GoogleNews-vectors-negative300.heavy.magnitude tests/GoogleNews-vectors-negative300.heavy.magnitude
+          - wget --quiet http://magnitude.plasticity.ai/word2vec/light/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.magnitude
+          - mv GoogleNews-vectors-negative300.magnitude tests/GoogleNews-vectors-negative300.magnitude
+          - ls tests/
           - source tests/get_corpus_and_model.sh
           - python -m unittest discover tests/
 
 definitions:
   caches:
-    googlenews-magnitude: tests/GoogleNews-vectors-negative300.heavy.magnitude
+    googlenews-magnitude: tests/GoogleNews-vectors-negative300.magnitude
     test7-bin: tests/text7.head.bin
     test7-gz: tests/text7.head.gz
     test7-magnitude: tests/text7.head.magnitude.gz

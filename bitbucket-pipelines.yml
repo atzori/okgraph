@@ -10,12 +10,6 @@ pipelines:
     download:
     - step:
         name: Download
-        caches:
-          - pip
-          - googlenews-magnitude
-          - test7-bin
-          - test7-gz
-          - test7-magnitude
         script:
           - pwd
           - ls /opt/atlassian/pipelines/agent/build/
@@ -23,7 +17,14 @@ pipelines:
           - wget --quiet http://magnitude.plasticity.ai/word2vec/light/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.magnitude
           - mv GoogleNews-vectors-negative300.magnitude tests/GoogleNews-vectors-negative300.magnitude
           - ls tests/
+          - docker image inspect $(docker image ls -aq) --format {{.Size}} | awk '{totalSizeInBytes += $0} END {print totalSizeInBytes}'
           - source tests/get_corpus_and_model.sh
+        caches:
+          - pip
+          - googlenews-magnitude
+          - test7-bin
+          - test7-gz
+          - test7-magnitude
     test:
     - step:
         name: Test

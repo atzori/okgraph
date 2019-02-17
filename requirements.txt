@@ -3,3 +3,4 @@ gensim
 pymagnitude
 tqdm
 numpy
+nltk

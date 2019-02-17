@@ -23,7 +23,7 @@ class OKGraphTest(unittest.TestCase):
         """ Test if set expansion result contains some of the expected values.
         Test if set expansion does not contains any unexpected value.
         Test if algorithm behaviour is respected.
-        Test if the number of output values is lower or éequal to k.
+        Test if the number of output values is lower or equal to k.
         """
         result_1_k = 15
         result_1 = okg.set_expansion(seed=['milan', 'rome', 'turin'],

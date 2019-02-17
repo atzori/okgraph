@@ -1,5 +1,6 @@
 from enum import Enum
 from pymagnitude import Magnitude
+from nltk.probability import FreqDist
 
 algorithms_package = "okgraph.task"
 
@@ -14,7 +15,11 @@ class OKgraph:
 
     """
 
-    def __init__(self, corpus: str = None, embeddings: str = None, k: int = 5, stream: bool = False):
+    def __init__(self, corpus: str = None,
+                 embeddings: str = None,
+                 k: int = 5,
+                 stream: bool = False,
+                 lazy_loading: int = 0):
         """Create an OKgraph.
 
         It loads a text corpus, and optionally a word-embedding model
@@ -42,10 +47,11 @@ class OKgraph:
         This example usage will set enwik9.txt as corpus file and model_file.magnitude as vector
         model file in magnitude format (extension magnitude is appended automatically if not specified).
         """
-        self.v = Magnitude(embeddings, _number_of_values=k, stream=stream)
+        self.v = Magnitude(embeddings, _number_of_values=k, stream=stream, lazy_loading=lazy_loading)
+        self.f = FreqDist()
         self.corpus = corpus
 
-    def set_expansion(self, seed: [str] = None, algo: str = "centroid", options: dict = None, k: int = 5):
+    def set_expansion(self, seed: [str] = None, algo: str = "centroid", options: dict = {}, k: int = 5):
         """Returns a **generator** with results not containing the given seed
         Use itertools to convert to a finite list (see https://stackoverflow.com/a/5234170)
         e.g.: 'Spain','Portugal','Belgium', ...

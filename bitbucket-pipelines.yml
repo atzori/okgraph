@@ -18,7 +18,12 @@ pipelines:
           - test7-magnitude
         script:
           - pwd
-
+          - ls /opt/atlassian/pipelines/agent/build/
+          - pip install -r requirements.txt
+          - wget --quiet http://magnitude.plasticity.ai/word2vec/light/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.magnitude
+          - mv GoogleNews-vectors-negative300.magnitude tests/GoogleNews-vectors-negative300.magnitude
+          - ls tests/
+          - source tests/get_corpus_and_model.sh
     test:
     - step:
         name: Test
@@ -30,6 +35,12 @@ pipelines:
           - test7-magnitude
         script:
           - pwd
+          - pip install -r requirements.txt
+          - wget --quiet http://magnitude.plasticity.ai/word2vec/light/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.magnitude
+          - mv GoogleNews-vectors-negative300.magnitude tests/GoogleNews-vectors-negative300.magnitude
+          - ls tests/
+          - source tests/get_corpus_and_model.sh
+          - python -m unittest discover tests/
 
   pull-requests: # automatically triggered
     '**': #this runs as default for any branch not elsewhere defined
@@ -43,10 +54,16 @@ pipelines:
         name: Testing
         script:
           - pwd
+          - pip install -r requirements.txt
+          - wget --quiet http://magnitude.plasticity.ai/word2vec/light/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.magnitude
+          - mv GoogleNews-vectors-negative300.magnitude tests/GoogleNews-vectors-negative300.magnitude
+          - ls tests/
+          - source tests/get_corpus_and_model.sh
+          - python -m unittest discover tests/
 
 definitions:
   caches:
-    googlenews-magnitude: tests/GoogleNews-vectors-negative300.magnitude
-    test7-bin: tests/text7.head.bin
-    test7-gz: tests/text7.head.gz
-    test7-magnitude: tests/text7.head.magnitude.gz
+    googlenews-magnitude: /opt/atlassian/pipelines/agent/build/tests/GoogleNews-vectors-negative300.magnitude
+    test7-bin: /opt/atlassian/pipelines/agent/build/tests/text7.head.bin
+    test7-gz: /opt/atlassian/pipelines/agent/build/tests/text7.head.gz
+    test7-magnitude: /opt/atlassian/pipelines/agent/build/tests/text7.head.magnitude.gz

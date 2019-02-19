@@ -16,10 +16,12 @@ pipelines:
           - test7-bin
           - test7-gz
           - test7-magnitude
+          - test7-magnitude-gz
         script:
           - pwd
           - pip install -r requirements.txt
           - source tests/get_corpus_and_model.sh
+          - ls tests/
     test:
     - step:
         name: Test
@@ -29,10 +31,12 @@ pipelines:
           - test7-bin
           - test7-gz
           - test7-magnitude
+          - test7-magnitude-gz
         script:
           - pwd
           - pip install -r requirements.txt
           - source tests/get_corpus_and_model.sh
+          - ls tests/
           - python -m unittest discover tests/
 
   pull-requests: # automatically triggered
@@ -45,10 +49,12 @@ pipelines:
           - test7-bin
           - test7-gz
           - test7-magnitude
+          - test7-magnitude-gz
         script:
           - pwd
           - pip install -r requirements.txt
           - source tests/get_corpus_and_model.sh
+          - ls tests/
           - python -m unittest discover tests/
 
 definitions:
@@ -56,4 +62,5 @@ definitions:
     googlenews-magnitude: /opt/atlassian/pipelines/agent/build/tests/GoogleNews-vectors-negative300.magnitude
     test7-bin: /opt/atlassian/pipelines/agent/build/tests/text7.head.bin
     test7-gz: /opt/atlassian/pipelines/agent/build/tests/text7.head.gz
-    test7-magnitude: /opt/atlassian/pipelines/agent/build/tests/text7.head.magnitude.gz
+    test7-magnitude: /opt/atlassian/pipelines/agent/build/tests/text7.head.magnitude
+    test7-magnitude-gz: /opt/atlassian/pipelines/agent/build/tests/text7.head.magnitude.gz

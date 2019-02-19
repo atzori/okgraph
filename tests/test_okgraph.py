@@ -3,9 +3,9 @@ import okgraph
 import os
 
 cwd = os.getcwd()
-corpus_file_path = cwd + '/tests/text7.head.gz'
-embeddings_file_path = cwd + '/tests/text7.head.magnitude'
-#embeddings_file_path = cwd + '/tests/GoogleNews-vectors-negative300.magnitude'
+corpus_file_path = cwd + '/tests/data/text7.head.gz'
+embeddings_file_path = cwd + '/tests/data/text7.head.magnitude'
+#embeddings_file_path = cwd + '/tests/data/GoogleNews-vectors-negative300.magnitude'
 
 okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path)
 

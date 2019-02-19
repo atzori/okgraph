@@ -12,11 +12,7 @@ pipelines:
         name: Download
         caches:
           - pip
-          - googlenews-magnitude
-          - test7-bin
-          - test7-gz
-          - test7-magnitude
-          - test7-magnitude-gz
+          - tests-data
         script:
           - pwd
           - pip install -r requirements.txt
@@ -27,11 +23,7 @@ pipelines:
         name: Test
         caches:
           - pip
-          - googlenews-magnitude
-          - test7-bin
-          - test7-gz
-          - test7-magnitude
-          - test7-magnitude-gz
+          - tests-data
         script:
           - pwd
           - pip install -r requirements.txt
@@ -43,6 +35,9 @@ pipelines:
     '**': #this runs as default for any branch not elsewhere defined
     - step:
         name: Testing
+        caches:
+          - pip
+          - tests-data
         script:
           - pwd
           - pip install -r requirements.txt
@@ -52,8 +47,4 @@ pipelines:
 
 definitions:
   caches:
-    googlenews-magnitude: /opt/atlassian/pipelines/agent/build/tests/GoogleNews-vectors-negative300.magnitude
-    test7-bin: /opt/atlassian/pipelines/agent/build/tests/text7.head.bin
-    test7-gz: /opt/atlassian/pipelines/agent/build/tests/text7.head.gz
-    test7-magnitude: /opt/atlassian/pipelines/agent/build/tests/text7.head.magnitude
-    test7-magnitude-gz: /opt/atlassian/pipelines/agent/build/tests/text7.head.magnitude.gz
+    tests-data: /opt/atlassian/pipelines/agent/build/tests/data/

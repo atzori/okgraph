@@ -14,3 +14,4 @@ tests/GoogleNews-vectors-negative300.magnitude
 tests/text7.head.bin
 tests/text7.head.gz
 tests/text7.head.magnitude.gz
+tests/text7.head.magnitude

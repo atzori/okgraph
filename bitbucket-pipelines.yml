@@ -10,55 +10,46 @@ pipelines:
     download:
     - step:
         name: Download
-        script:
-          - pwd
-          - docker image inspect $(docker image ls -aq) --format {{.Size}} | awk '{totalSizeInBytes += $0} END {print totalSizeInBytes}'
-          - pip install -r requirements.txt
-          - wget --quiet http://magnitude.plasticity.ai/word2vec/light/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.magnitude
-          - mv GoogleNews-vectors-negative300.magnitude tests/GoogleNews-vectors-negative300.magnitude
-          - source tests/get_corpus_and_model.sh
         caches:
           - pip
           - googlenews-magnitude
           - test7-bin
           - test7-gz
           - test7-magnitude
+        script:
+          - pwd
+          - pip install -r requirements.txt
+          - source tests/get_corpus_and_model.sh
     test:
     - step:
         name: Test
-        script:
-          - pwd
-          - docker image inspect $(docker image ls -aq) --format {{.Size}} | awk '{totalSizeInBytes += $0} END {print totalSizeInBytes}'
-          - pip install -r requirements.txt
-          - wget --quiet http://magnitude.plasticity.ai/word2vec/light/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.magnitude
-          - mv GoogleNews-vectors-negative300.magnitude tests/GoogleNews-vectors-negative300.magnitude
-          - source tests/get_corpus_and_model.sh
-          - python -m unittest discover tests/
         caches:
           - pip
           - googlenews-magnitude
           - test7-bin
           - test7-gz
           - test7-magnitude
+        script:
+          - pwd
+          - pip install -r requirements.txt
+          - source tests/get_corpus_and_model.sh
+          - python -m unittest discover tests/
 
   pull-requests: # automatically triggered
     '**': #this runs as default for any branch not elsewhere defined
     - step:
         name: Testing
-        script:
-          - pwd
-          - docker image inspect $(docker image ls -aq) --format {{.Size}} | awk '{totalSizeInBytes += $0} END {print totalSizeInBytes}'
-          - pip install -r requirements.txt
-          - wget --quiet http://magnitude.plasticity.ai/word2vec/light/GoogleNews-vectors-negative300.magnitude -O GoogleNews-vectors-negative300.magnitude
-          - mv GoogleNews-vectors-negative300.magnitude tests/GoogleNews-vectors-negative300.magnitude
-          - source tests/get_corpus_and_model.sh
-          - python -m unittest discover tests/
         caches:
           - pip
           - googlenews-magnitude
           - test7-bin
           - test7-gz
           - test7-magnitude
+        script:
+          - pwd
+          - pip install -r requirements.txt
+          - source tests/get_corpus_and_model.sh
+          - python -m unittest discover tests/
 
 definitions:
   caches:

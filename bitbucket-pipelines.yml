@@ -21,7 +21,7 @@ pipelines:
           - pwd
           - pip install -r requirements.txt
           - source tests/get_corpus_and_model.sh
-          - ls tests/
+          - ls -halt tests/
     test:
     - step:
         name: Test
@@ -36,7 +36,7 @@ pipelines:
           - pwd
           - pip install -r requirements.txt
           - source tests/get_corpus_and_model.sh
-          - ls tests/
+          - ls -halt tests/
           - python -m unittest discover tests/
 
   pull-requests: # automatically triggered
@@ -54,7 +54,7 @@ pipelines:
           - pwd
           - pip install -r requirements.txt
           - source tests/get_corpus_and_model.sh
-          - ls tests/
+          - ls -halt tests/
           - python -m unittest discover tests/
 
 definitions:

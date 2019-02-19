@@ -26,11 +26,9 @@ fi
 
 
 # from [word embeddings] to [magnitude]
-if [[ ! -e tests/text7.head.magnitude.gz ]]; then
+if [[ ! -e tests/text7.head.magnitude ]]; then
     echo "[text7.head.magnitude] not present"
     python -m pymagnitude.converter -i tests/text7.head.bin -o tests/text7.head.magnitude
-    gzip tests/text7.head.magnitude
-    gunzip tests/text7.head.magnitude.gz
 else
     echo "[Magnitude] file already present."
 fi

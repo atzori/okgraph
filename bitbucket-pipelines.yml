@@ -43,13 +43,6 @@ pipelines:
     '**': #this runs as default for any branch not elsewhere defined
     - step:
         name: Testing
-        caches:
-          - pip
-          - googlenews-magnitude
-          - test7-bin
-          - test7-gz
-          - test7-magnitude
-          - test7-magnitude-gz
         script:
           - pwd
           - pip install -r requirements.txt

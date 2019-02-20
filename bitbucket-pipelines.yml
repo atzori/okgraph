@@ -31,19 +31,6 @@ pipelines:
           - ls -halt tests/
           - python -m unittest discover tests/
 
-  pull-requests: # automatically triggered
-    '**': #this runs as default for any branch not elsewhere defined
-    - step:
-        name: Testing
-        caches:
-          - pip
-          - tests-data
-        script:
-          - pwd
-          - pip install -r requirements.txt
-          - source tests/get_corpus_and_model.sh
-          - ls -halt tests/
-          - python -m unittest discover tests/
 
 definitions:
   caches:

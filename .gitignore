@@ -10,8 +10,4 @@ dist/
 docs/build/
 venv/
 wheelhouse/
-tests/data/GoogleNews-vectors-negative300.magnitude
-tests/data/text7.head.bin
-tests/data/text7.head.gz
-tests/data/text7.head.magnitude.gz
-tests/data/text7.head.magnitude
+tests/data/

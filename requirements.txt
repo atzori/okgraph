@@ -1,1 +1,6 @@
 -e .
+gensim
+pymagnitude
+tqdm
+numpy
+nltk

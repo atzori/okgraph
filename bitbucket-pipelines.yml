@@ -4,18 +4,34 @@ image: python:3.7
 options:
   max-time: 20
 
-
 pipelines:
 
   custom: # manully triggered
+    download:
     - step:
-        name: Testing
+        name: Download
+        caches:
+          - pip
+          - tests-data
         script:
+          - pwd
+          - pip install -r requirements.txt
+          - source tests/get_corpus_and_model.sh
+          - ls -halt tests/
+    test:
+    - step:
+        name: Test
+        caches:
+          - pip
+          - tests-data
+        script:
+          - pwd
+          - pip install -r requirements.txt
+          - source tests/get_corpus_and_model.sh
+          - ls -halt tests/
           - python -m unittest discover tests/
 
-  pull-requests: # automatically triggered
-    '**': #this runs as default for any branch not elsewhere defined
-    - step:
-        name: Testing
-        script:
-          - python -m unittest discover tests/
+
+definitions:
+  caches:
+    tests-data: /opt/atlassian/pipelines/agent/build/tests/data/

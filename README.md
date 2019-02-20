@@ -15,13 +15,15 @@ It currently focuses on the following tasks:
 
 Being unsupervised, it only takes a free (untagged) text corpus as input, in any space-separated language. [scriptio-continua](https://en.wikipedia.org/wiki/Scriptio_continua) corpora and languages needs third-party tokenization techniques (e.g. [micter](https://github.com/tkng/micter)).
 
-Development
+How to contribute
 -----------
 Tools to use:
+
   - [hatch](https://github.com/ofek/hatch) ([commands reference](https://github.com/ofek/hatch/blob/master/COMMANDS.rst))
   - [git flow](https://github.com/nvie/gitflow) ([simple guide](https://jeffkreeftmeijer.com/git-flow/)) and also [git-flow-completion](https://github.com/bobthecow/git-flow-completion)
 
 To send a contribution:
+
   - clone the repo locally
   - git checkout master
   - git flow init -d (to set the default settings)
@@ -34,28 +36,35 @@ To send a contribution:
 Install
 -------
 
-    pip3 install okgraph
+    pip3 install okgraph # not working yet
 
 
 Loading a corpus
 ----------------
 The first step is to create an _okgraph_ instance by loading a text corpus, and optionally a word-embedding model. 
 
+    # DOWNLOAD CORPUS     
+    # wget http://mattmahoney.net/dc/text8.zip && unzip text8.zip && mv text8 text8.txt
+
+    # DOWNLOAD MODEL
+    # wget http://magnitude.plasticity.ai/word2vec/medium/GoogleNews-vectors-negative300.magnitude
+    
+
     import okgraph
     
-    okg = okgraph.OKgraph('enwik9.txt', 'model_file')
+    okg = okgraph.OKgraph('text8.txt', 'model_file')
     
     #or equivalently: 
-    okg = okgraph.OKgraph(corpus='enwik9.txt', embeddings='model_file')
+    okg = okgraph.OKgraph(corpus='text8.txt', embeddings='model_file')
 
-This example usage will set `enwik9.txt` as corpus file and `model_file.magnitude` as vector model file in [magnitude format](https://github.com/plasticityai/magnitude) (extension `magnitude` is appended automatically if not specified).
+This example usage will set `text8.txt` as corpus file and `model_file.magnitude` as vector model file in [magnitude format](https://github.com/plasticityai/magnitude) (extension `magnitude` is appended automatically if not specified).
 
-If the embeddings are not specified, okgraph will search a file with the same name of the corpus file with appended `.magnitude` (e.g. `enwik9.txt.magnitude`). If this file is not available, will be created using default options (word2vec, d=100, ...) and then loaded.
+If the embeddings are not specified, okgraph will search a file with the same name of the corpus file with appended `.magnitude` (e.g. `text8.txt.magnitude`). If this file is not available, will be created using default options (word2vec, d=100, ...) and then loaded.
 
 
-    okg = okgraph.OKgraph('enwik9.txt')
-    > file enwik9.txt.magnitude not found, generating model with default options
-    > model enwik9.txt.magnitude generated
+    okg = okgraph.OKgraph('text8.txt')
+    > file text8.txt.magnitude not found, generating model with default options
+    > model text8.txt.magnitude generated
 
 
 If the second (embeddings) parameter is a url (starts with 'http://' or 'https://'), a [remote streamed version of the file](https://github.com/plasticityai/magnitude#remote-streaming-over-http) will be used.

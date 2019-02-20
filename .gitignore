@@ -11,3 +11,5 @@ docs/build/
 venv/
 wheelhouse/
 tests/data/
+.mypy_cache/
+pip-wheel-metadata/

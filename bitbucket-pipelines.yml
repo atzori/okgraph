@@ -15,23 +15,34 @@ pipelines:
           - tests-data
         script:
           - pwd
+          - pip list
           - pip install -r requirements.txt
           - source tests/get_corpus_and_model.sh
           - ls -halt tests/
+
     test:
     - step:
         name: Test
+        script:
+          - pip list
+          - pip install -r requirements.txt
+          - source tests/get_corpus_and_model.sh
+          - python -m unittest discover tests/
+
+    test-with-cache:
+    - step:
+        name: Test with cache
         caches:
           - pip
           - tests-data
         script:
-          - pwd
+          - pip list
           - pip install -r requirements.txt
+          - python setup.py install
           - source tests/get_corpus_and_model.sh
-          - ls -halt tests/
           - python -m unittest discover tests/
-
 
 definitions:
   caches:
     tests-data: /opt/atlassian/pipelines/agent/build/tests/data/
+

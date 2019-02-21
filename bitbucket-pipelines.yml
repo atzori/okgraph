@@ -1,37 +1,21 @@
 image: python:3.7
 
-
 options:
   max-time: 20
 
 pipelines:
-
   custom: # manully triggered
-    download:
+    tests:
     - step:
-        name: Download
+        name: Download and test
         caches:
-          - pip
-          - tests-data
+          - venv
+          - corpus-and-model
         script:
-          - pwd
-          - pip install -r requirements.txt
-          - source tests/get_corpus_and_model.sh
-          - ls -halt tests/
-    test:
-    - step:
-        name: Test
-        caches:
-          - pip
-          - tests-data
-        script:
-          - pwd
-          - pip install -r requirements.txt
-          - source tests/get_corpus_and_model.sh
-          - ls -halt tests/
-          - python -m unittest discover tests/
-
+          - source tests/get_env.sh
+          - source venv/bin/activate && python -m unittest discover tests/
 
 definitions:
   caches:
-    tests-data: /opt/atlassian/pipelines/agent/build/tests/data/
+    venv: venv
+    corpus-and-model: tests/data

@@ -1,8 +1,8 @@
 from gensim.models.word2vec import Word2Vec
 from gensim.models.word2vec import LineSentence
 from gensim.models.phrases import Phraser, Phrases
-
 from pymagnitude import converter
+
 
 # from pymagnitude converter
 DEFAULT_PRECISION = 7
@@ -21,13 +21,9 @@ class FileConverter:
 
         model = Word2Vec()
 
-        log('Computing lines')
-        corpus_lines = LineSentence(corpus_fname)
-
         log('Computing phrases')
-        phrases = Phrases(corpus_lines)
+        phrases = Phrases(LineSentence(corpus_fname))
 
-        return ""
         log('Generating phraser')
         bigram = Phraser(phrases)
 

@@ -1,6 +1,7 @@
 from enum import Enum
 from pymagnitude import Magnitude
 from nltk.probability import FreqDist
+from okgraph.file_converter import FileConverter
 
 algorithms_package = "okgraph.task"
 
@@ -47,6 +48,11 @@ class OKgraph:
         This example usage will set enwik9.txt as corpus file and model_file.magnitude as vector
         model file in magnitude format (extension magnitude is appended automatically if not specified).
         """
+        if embeddings is None:
+            print(f'File model for {corpus} not found. Generating model with default options')
+            embeddings = FileConverter.corpus_to_magnitude_model(corpus_fname=corpus)
+            print(f'Model {embeddings} generated.')
+
         self.v = Magnitude(embeddings, _number_of_values=k, stream=stream, lazy_loading=lazy_loading)
         self.f = FreqDist()
         self.corpus = corpus

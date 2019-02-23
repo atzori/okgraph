@@ -1,20 +1,27 @@
 import unittest
 import okgraph
 import os
+from pymagnitude import Magnitude
 
 cwd = os.getcwd()
 corpus_file_path = cwd + '/tests/data/text7.head.gz'
 embeddings_file_path = cwd + '/tests/data/text7.head.magnitude'
 #embeddings_file_path = cwd + '/tests/data/GoogleNews-vectors-negative300.magnitude'
 
-okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path)
-
 
 class OKGraphTest(unittest.TestCase):
 
     def test_init_with_text(self):
-        okgraph.OKgraph(corpus_file_path, embeddings_file_path)
-        okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path)
+        okg = okgraph.OKgraph(corpus_file_path)
+        self.assertIsInstance(okg.v, Magnitude)
+        self.assertIsInstance(okg.corpus, str)
+        self.assertGreater(len(okg.v), 0)
+
+    def test_init_with_text_and_model(self):
+        okg = okgraph.OKgraph(corpus_file_path, embeddings_file_path)
+
+        self.assertIsInstance(okg.v, Magnitude)
+        self.assertIsInstance(okg.corpus, str)
 
         with self.assertRaises(RuntimeError):
             # test not existing file/url
@@ -27,6 +34,8 @@ class OKGraphTest(unittest.TestCase):
         Test if algorithm behaviour is respected.
         Test if the number of output values is lower or equal to k.
         """
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path)
+
         result_1_k = 15
         result_1 = okg.set_expansion(seed=['milan', 'rome', 'turin'],
                                      algo='centroid',

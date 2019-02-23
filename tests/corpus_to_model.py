@@ -1,36 +1,11 @@
 import os
 import argparse
 
-from gensim.models.word2vec import Word2Vec
-from gensim.models.word2vec import LineSentence
-from gensim.models.phrases import Phraser, Phrases
-
-
-def log(msg):
-    print('OKGRAPH: ' + msg)
+from okgraph.file_converter import FileConverter
 
 
 def convert(read_fname: str, save_fname: str):
-    """Read text file and create a model file."""
-
-    model = Word2Vec()
-
-    log('Computing phrases')
-    phrases = Phrases(LineSentence(read_fname))
-    log('Generating phraser')
-    bigram = Phraser(phrases)
-
-    log('Building vocabulary')
-    model.build_vocab(bigram[LineSentence(read_fname)])
-    log('Training model with total_examples=%d and epochs=%d' % (model.corpus_count, model.iter))
-    model.train(bigram[LineSentence(read_fname)], total_examples=model.corpus_count, epochs=model.iter)
-
-    if not save_fname:
-        save_fname = read_fname + '.bin'
-
-    log('Saving... [' + save_fname + ']')
-    model.wv.save_word2vec_format(save_fname, binary=True)
-    log('Saved [' + save_fname + '].')
+    FileConverter.generate_gensim_model_from(read_fname=read_fname, save_fname=save_fname)
 
 
 if __name__ == "__main__":

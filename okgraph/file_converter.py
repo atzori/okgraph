@@ -3,15 +3,16 @@ from gensim.models.word2vec import LineSentence
 from gensim.models.phrases import Phraser, Phrases
 from pymagnitude import converter
 
+import logging
+from logging.config import fileConfig
+
+fileConfig('logging.ini')
+logger = logging.getLogger()
 
 # from pymagnitude converter
 DEFAULT_PRECISION = 7
 DEFAULT_NGRAM_BEG = 3
 DEFAULT_NGRAM_END = 6
-
-
-def log(msg):
-    print('OKgraph: ' + msg)
 
 
 class FileConverter:
@@ -21,31 +22,31 @@ class FileConverter:
 
         model = Word2Vec()
 
-        log('Computing phrases')
+        logger.info('Computing phrases')
         phrases = Phrases(LineSentence(corpus_fname))
 
-        log('Generating bigram')
+        logger.info('Generating bigram')
         bigram = Phraser(phrases)
 
-        log('Building vocabulary')
+        logger.info('Building vocabulary')
         model.build_vocab(bigram[LineSentence(corpus_fname)])
 
-        log('Training model with total_examples=%d and epochs=%d' % (model.corpus_count, model.epochs))
+        logger.info('Training model with total_examples=%d and epochs=%d' % (model.corpus_count, model.epochs))
         model.train(bigram[LineSentence(corpus_fname)], total_examples=model.corpus_count, epochs=model.epochs)
 
         if save_fname is None:
             save_fname = corpus_fname + '.bin'
 
-        log('Saving... [' + save_fname + ']')
+        logger.info('Saving... [' + save_fname + ']')
         model.wv.save_word2vec_format(save_fname, binary=True)
-        log('Saved [' + save_fname + '].')
+        logger.info('Saved [' + save_fname + '].')
 
         return save_fname
 
     def corpus_to_magnitude_model(corpus_fname: str, save_fname: str = None) -> str:
         """Read a text file and create a Magnitude model file."""
 
-        log(f'Computing file {corpus_fname}')
+        logger.info(f'Computing file {corpus_fname}')
 
         if save_fname is None:
             save_fname = corpus_fname + '.magnitude'
@@ -64,6 +65,6 @@ class FileConverter:
                           approx_trees=None,
                           vocab_path=None)
 
-        log('Saved [' + save_fname + '].')
+        logger.info('Saved [' + save_fname + '].')
 
         return save_fname

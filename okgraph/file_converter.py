@@ -24,7 +24,7 @@ class FileConverter:
         log('Computing phrases')
         phrases = Phrases(LineSentence(corpus_fname))
 
-        log('Generating phraser')
+        log('Generating bigram')
         bigram = Phraser(phrases)
 
         log('Building vocabulary')

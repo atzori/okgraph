@@ -32,6 +32,15 @@ To send a contribution:
   - follow the link suggested after the push to create a new push request to "develop" branch and start a discussion with the maintainer
   - the maintainer will merge your work into develop (or master in case of new releases)
 
+To use OKgraph we suggest to follow this steps:
+  - python -m venv venv
+  - source venv/bin/activate
+  - pip install -r requirements.txt
+  - python setup.py install
+
+If you want to test it asap, use this script to download a little corpus and model:
+  - source tests/get_corpus_and_model.sh
+  
 
 Install
 -------

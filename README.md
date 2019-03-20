@@ -26,14 +26,15 @@ pip install -r requirements.txt # this may take several minutes
 python setup.py install
 ```
 
-To download a little corpus and model for tests, run:
+The following download [text8](http://mattmahoney.net/dc/textdata) (small text corpus), generate an even smaller *text7* corpus for tests 
+and generate their models and indexes:
 ```
-    source tests/get_corpus_and_model.sh
+source tests/get_corpus_and_model.sh
 ```
 
 To run the tests, from the root directory, run:
 ```
-    python -m unittest discover tests/
+python -m unittest discover tests/ -v
 ```
 
 How to contribute
@@ -135,6 +136,29 @@ Classes and methods in `okgraph.evaluation.*` evaluate the performance of algori
 
 TBD
 
+Core functionalities
+--------------------
+The followings are examples of use of core functionalities in okgraph:
+```
+import okgraph
 
-    
+okg = okgraph.OKgraph('enwik9.txt', 'model_file')
+
+#or equivalently: 
+okg = okgraph.OKgraph(corpus='enwik9.txt', embeddings='model_file')
+
+okg.model.v # this is a magnitude instance (vectors)
+okg.model.v.query('cats') # returns what magnitude returns
+okg.model.f # instance of FreqDist (nltk)
+
+# windows
+w = okg.model.w(l=12,d=6,words=['Italy','Rome']) 
+```
+
+## Implementing a task
+
+A file must be created (`/tasks/set_expansion/my_new_method/my_new_method.py`).
+File `my_new_method.py` must contain method `task()`.
+
+Look at existing methods as an example, e.g.: `/tasks/set_expansion/centroid/centroid.py`
     

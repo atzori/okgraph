@@ -10,10 +10,9 @@ LOG_CONFIG_FILE = path.dirname(path.realpath(__file__)) + '/logging.ini'
 if not path.isfile(LOG_CONFIG_FILE):
     LOG_CONFIG_FILE = path.dirname(path.dirname(LOG_CONFIG_FILE)) + '/logging.ini'
 
-print('LOG_CONFIG_FILE: ', LOG_CONFIG_FILE)
 fileConfig(LOG_CONFIG_FILE)
 logger = logging.getLogger()
-
+logger.info(f'Log config file is: {LOG_CONFIG_FILE}')
 
 # from pymagnitude converter
 DEFAULT_PRECISION = 7

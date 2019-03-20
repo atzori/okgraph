@@ -5,3 +5,5 @@ pymagnitude
 tqdm
 numpy
 nltk
+scipy
+whoosh

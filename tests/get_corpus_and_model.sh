@@ -4,6 +4,11 @@
 
 CORPUS_TO_DOWNLOAD='text8'
 
+if [[ ! -e tests/corpus_to_model.py ]]; then
+    echo "You need to be on the root folder of the project to execute this (this script require to execute tests/corpus_to_model.py)."
+    return
+fi
+
 mkdir -p tests/data/
 
 if [[ ! -e tests/data/text7.head.gz ]]; then

@@ -1,14 +1,20 @@
-from enum import Enum
 from pymagnitude import Magnitude
 from nltk.probability import FreqDist
 from okgraph.file_converter import FileConverter
+from os import path
 import logging
 from logging.config import fileConfig
 
-fileConfig('logging.ini')
-logger = logging.getLogger()
-
 algorithms_package = "okgraph.task"
+
+
+LOG_CONFIG_FILE = path.dirname(path.realpath(__file__)) + '/logging.ini'
+if not path.isfile(LOG_CONFIG_FILE):
+    LOG_CONFIG_FILE = path.dirname(path.dirname(LOG_CONFIG_FILE)) + '/logging.ini'
+
+print('LOG_CONFIG_FILE: ', LOG_CONFIG_FILE)
+fileConfig(LOG_CONFIG_FILE)
+logger = logging.getLogger()
 
 
 class OKgraph:

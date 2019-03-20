@@ -1,5 +1,6 @@
 -e .
 gensim
+annoy
 pymagnitude
 tqdm
 numpy

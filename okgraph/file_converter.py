@@ -2,12 +2,18 @@ from gensim.models.word2vec import Word2Vec
 from gensim.models.word2vec import LineSentence
 from gensim.models.phrases import Phraser, Phrases
 from pymagnitude import converter
-
 import logging
 from logging.config import fileConfig
+from os import path
 
-fileConfig('logging.ini')
+LOG_CONFIG_FILE = path.dirname(path.realpath(__file__)) + '/logging.ini'
+if not path.isfile(LOG_CONFIG_FILE):
+    LOG_CONFIG_FILE = path.dirname(path.dirname(LOG_CONFIG_FILE)) + '/logging.ini'
+
+print('LOG_CONFIG_FILE: ', LOG_CONFIG_FILE)
+fileConfig(LOG_CONFIG_FILE)
 logger = logging.getLogger()
+
 
 # from pymagnitude converter
 DEFAULT_PRECISION = 7

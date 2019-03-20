@@ -36,16 +36,18 @@ class OKGraphTest(unittest.TestCase):
         """
         okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path)
 
+        """
+        Test set expansion algorithm "centroid"
+        """
+
         result_1_k = 15
         result_1 = okg.set_expansion(seed=['milan', 'rome', 'turin'],
                                      algo='centroid',
-                                     options={'n': 5, 'width': 10},
                                      k=result_1_k)
 
         result_2_k = 14
         result_2 = okg.set_expansion(seed=['home', 'house', 'apartment'],
                                      algo='centroid',
-                                     options={'n': 5, 'width': 10},
                                      k=result_2_k)
 
         intersection = set(result_1) & set(result_2)

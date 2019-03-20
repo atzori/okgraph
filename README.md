@@ -12,31 +12,45 @@ It currently focuses on the following tasks:
   - **set labeling** given one or a short set of words, returns a list of short strings (labels) describing the given set (its type or [hyperonym](https://en.wikipedia.org/wiki/Hyponymy_and_hypernymy))
   - **relation labeling** given one or a short set of word pairs, returns a list of short strings (labels) describing the relation in the given set
 
-
 Being unsupervised, it only takes a free (untagged) text corpus as input, in any space-separated language. [scriptio-continua](https://en.wikipedia.org/wiki/Scriptio_continua) corpora and languages needs third-party tokenization techniques (e.g. [micter](https://github.com/tkng/micter)).
+
+How to install
+--------------
+Please ensure you are using **python 3.7** (previous versions are not supported).
+After cloning the repository (`git clone https://bitbucket.org/semanticweb/okgraph.git && cd okgraph`), run the followings **from the root directory of the project**:
+```
+python3.7 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip setuptools devtools
+pip install -r requirements.txt # this may take several minutes
+python setup.py install
+```
+
+To download a little corpus and model for tests, run:
+```
+    source tests/get_corpus_and_model.sh
+```
+
+To run the tests, from the root directory, run:
+```
+    python -m unittest discover tests/
+```
 
 How to contribute
 -----------
-Tools to use:
+Tools that may be useful (not mandatory):
 
   - [hatch](https://github.com/ofek/hatch) ([commands reference](https://github.com/ofek/hatch/blob/master/COMMANDS.rst))
   - [git flow](https://github.com/nvie/gitflow) ([simple guide](https://jeffkreeftmeijer.com/git-flow/)) and also [git-flow-completion](https://github.com/bobthecow/git-flow-completion)
 
 To send a contribution:
 
-  - clone the repo locally
   - git checkout master
   - git flow init -d (to set the default settings)
   - git flow feature start *my-cool-feature* (use an appropriate feature name, for bugs use git flow bugfix start ...) 
   - add, commit and push your work (it will be in branch *feature/my-cool-feature*)
   - follow the link suggested after the push to create a new push request to "develop" branch and start a discussion with the maintainer
   - the maintainer will merge your work into develop (or master in case of new releases)
-
-
-Install
--------
-
-    pip3 install okgraph # not working yet
 
 
 Loading a corpus
@@ -122,10 +136,5 @@ Classes and methods in `okgraph.evaluation.*` evaluate the performance of algori
 TBD
 
 
-Testing
--------
-From the root directory
-
-    python -m unittest discover tests/
     
     

@@ -12,19 +12,40 @@ It currently focuses on the following tasks:
   - **set labeling** given one or a short set of words, returns a list of short strings (labels) describing the given set (its type or [hyperonym](https://en.wikipedia.org/wiki/Hyponymy_and_hypernymy))
   - **relation labeling** given one or a short set of word pairs, returns a list of short strings (labels) describing the relation in the given set
 
-
 Being unsupervised, it only takes a free (untagged) text corpus as input, in any space-separated language. [scriptio-continua](https://en.wikipedia.org/wiki/Scriptio_continua) corpora and languages needs third-party tokenization techniques (e.g. [micter](https://github.com/tkng/micter)).
+
+How to install
+--------------
+Please ensure you are using **python 3.7** (previous versions are not supported).
+After cloning the repository (`git clone https://bitbucket.org/semanticweb/okgraph.git && cd okgraph`), run the followings **from the root directory of the project**:
+```
+python3.7 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip setuptools devtools
+pip install -r requirements.txt # this may take several minutes
+python setup.py install
+```
+
+The following download [text8](http://mattmahoney.net/dc/textdata) (small text corpus), generate an even smaller *text7* corpus for tests 
+and generate their models and indexes:
+```
+source tests/get_corpus_and_model.sh
+```
+
+To run the tests, from the root directory, run:
+```
+python -m unittest discover tests/ -v
+```
 
 How to contribute
 -----------
-Tools to use:
+Tools that may be useful (not mandatory):
 
   - [hatch](https://github.com/ofek/hatch) ([commands reference](https://github.com/ofek/hatch/blob/master/COMMANDS.rst))
   - [git flow](https://github.com/nvie/gitflow) ([simple guide](https://jeffkreeftmeijer.com/git-flow/)) and also [git-flow-completion](https://github.com/bobthecow/git-flow-completion)
 
 To send a contribution:
 
-  - clone the repo locally
   - git checkout master
   - git flow init -d (to set the default settings)
   - git flow feature start *my-cool-feature* (use an appropriate feature name, for bugs use git flow bugfix start ...) 
@@ -41,12 +62,6 @@ To use OKgraph we suggest to follow this steps:
 If you want to test it asap, use this script to download a little corpus and model:
   - source tests/get_corpus_and_model.sh
   
-
-Install
--------
-
-    pip3 install okgraph # not working yet
-
 
 Loading a corpus
 ----------------
@@ -130,11 +145,29 @@ Classes and methods in `okgraph.evaluation.*` evaluate the performance of algori
 
 TBD
 
+Core functionalities
+--------------------
+The followings are examples of use of core functionalities in okgraph:
+```
+import okgraph
 
-Testing
--------
-From the root directory
+okg = okgraph.OKgraph('enwik9.txt', 'model_file')
 
-    python -m unittest discover tests/
-    
+#or equivalently: 
+okg = okgraph.OKgraph(corpus='enwik9.txt', embeddings='model_file')
+
+okg.model.v # this is a magnitude instance (vectors)
+okg.model.v.query('cats') # returns what magnitude returns
+okg.model.f # instance of FreqDist (nltk)
+
+# windows
+w = okg.model.w(l=12,d=6,words=['Italy','Rome']) 
+```
+
+## Implementing a task
+
+A file must be created (`/tasks/set_expansion/my_new_method/my_new_method.py`).
+File `my_new_method.py` must contain method `task()`.
+
+Look at existing methods as an example, e.g.: `/tasks/set_expansion/centroid/centroid.py`
     

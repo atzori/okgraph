@@ -1,6 +1,9 @@
 -e .
 gensim
+annoy
 pymagnitude
 tqdm
 numpy
 nltk
+scipy
+whoosh

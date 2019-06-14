@@ -268,6 +268,6 @@ print(seed_sizes)
 run_experiments(models=[embeddings_magnitude_modelGN],
                 ground_truths=[load('usa_states')],
                 optim_algos=['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg'],
-                objective_metrics=['AP@k', 'MAP', 'AP@k', 'sklearn_metric_ap_score_weighted', 'sklearn_metric_ap_score_macro'],
+                objective_metrics=['AP@k', 'MAP', 'sklearn_metric_ap_score_weighted', 'sklearn_metric_ap_score_macro'],
                 seed_sizes=seed_sizes,
                 k_topn_list=[50])

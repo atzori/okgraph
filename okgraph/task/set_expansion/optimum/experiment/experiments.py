@@ -262,12 +262,39 @@ def run_experiments(models: list,
         print(f'filename = {filename}')
 
 
-seed_sizes = [(k, 10) for k in [1, 2, 3, 5, 10, 20, 30, 40]]
-seed_sizes += [(48, 1)]
-print(seed_sizes)
-run_experiments(models=[embeddings_magnitude_modelGN],
-                ground_truths=[load('usa_states')],
-                optim_algos=['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg'],
-                objective_metrics=['AP@k', 'MAP', 'sklearn_metric_ap_score_weighted', 'sklearn_metric_ap_score_macro'],
-                seed_sizes=seed_sizes,
-                k_topn_list=[50])
+# seed_sizes = [(k, 10) for k in [1, 2, 3, 5, 10, 20, 30, 40]]
+# seed_sizes += [(48, 1)]
+# print(seed_sizes)
+
+# run_experiments(models=[embeddings_magnitude_modelGN],
+#                 ground_truths=[load('usa_states')],
+#                 optim_algos=['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg'],
+#                 objective_metrics=['AP@k', 'MAP', 'sklearn_metric_ap_score_weighted', 'sklearn_metric_ap_score_macro'],
+#                 seed_sizes=seed_sizes,
+#                 k_topn_list=[50])
+
+
+def experiment_t1(sizes_list):
+
+    seed_sizes = [(k, 10) for k in sizes_list]
+    seed_sizes += [(48, 1)]
+    print(seed_sizes)
+
+    run_experiments(models=[embeddings_magnitude_modelGN],
+                    ground_truths=[load('usa_states')],
+                    optim_algos=['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg'],
+                    objective_metrics=['AP@k', 'MAP', 'sklearn_metric_ap_score_weighted', 'sklearn_metric_ap_score_macro'],
+                    seed_sizes=seed_sizes,
+                    k_topn_list=[50])
+
+
+import os                                                                       
+from multiprocessing import Pool                                                
+
+processes = ('process1.py', 'process2.py')                                    
+
+def run_process(process):                                                             
+    os.system('python {}'.format(process))                                       
+
+pool = Pool(processes=3)                                                        
+pool.map(run_process, processes)                                                     

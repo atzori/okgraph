@@ -45,18 +45,6 @@ else
 fi
 
 
-mkdir -p $REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/models
-MAGNITUDE_MODEL_POSITION=$MAGNITUDE_MODELS_PATH/GoogleNews-vectors-negative300.magnitude
-if [[ ! -e $MAGNITUDE_MODEL_POSITION ]]; then
-    echo -e $SEPARATOR 'Downloading magnitude file(s)...'
-    wget http://magnitude.plasticity.ai/word2vec/medium/GoogleNews-vectors-negative300.magnitude -O $MAGNITUDE_MODELS_PATH
-fi
-if [[ ! -e $NEW_MAGNITUDE_FILE ]]; then
-    echo -e $SEPARATOR 'Creating magnitude file link...'
-    NEW_MAGNITUDE_FILE=$REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/models/GoogleNews-vectors-negative300.magnitude
-    ln -s $MAGNITUDE_MODEL_POSITION $NEW_MAGNITUDE_FILE
-fi
-
 echo -e $SEPARATOR 'Creating venv...'
 python3.7 -m venv venv
 source venv/bin/activate
@@ -64,18 +52,24 @@ pip install --upgrade pip setuptools devtools
 
 echo -e $SEPARATOR 'Installing required libraries...'
 echo $REPO_ROOT_PATH
-
-
 cd $REPO_ROOT_PATH
 pip install -r requirements.txt # this may take several minutes
 
 echo -e $SEPARATOR 'Installing okgraph...'
 python setup.py install
 
-echo -e $SEPARATOR 'Starting experiments...'
-cd $REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/
-
-pip install pymagnitude
 
 
-python experiments.py
+mkdir -p $REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/models
+MAGNITUDE_MODEL_POSITION=$MAGNITUDE_MODELS_PATH/GoogleNews-vectors-negative300.magnitude
+if [[ ! -e $MAGNITUDE_MODEL_POSITION ]]; then
+    echo -e $SEPARATOR 'Downloading magnitude file(s)...'
+    wget http://magnitude.plasticity.ai/word2vec/medium/GoogleNews-vectors-negative300.magnitude -O $MAGNITUDE_MODEL_POSITION
+fi
+if [[ ! -e $NEW_MAGNITUDE_FILE ]]; then
+    echo -e $SEPARATOR 'Creating magnitude file link...'
+    NEW_MAGNITUDE_FILE=$REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/models/GoogleNews-vectors-negative300.magnitude
+    ln -s $MAGNITUDE_MODEL_POSITION $NEW_MAGNITUDE_FILE
+fi
+
+echo -e $SEPARATOR 'End.'

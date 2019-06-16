@@ -23,9 +23,7 @@ source venv/bin/activate
 
 echo -e $SEPARATOR 'Starting experiments...'
 cd $REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/
-# python $REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/experiments.py
-
-cd /Users/lelleem/okgraph/okgraph/task/set_expansion/optimum/experiment/
+# cd /Users/lelleem/okgraph/okgraph/task/set_expansion/optimum/experiment/
 python experiments.py
 
 

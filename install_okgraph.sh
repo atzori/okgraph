@@ -1,5 +1,6 @@
 #!/bin/bash env
 # set -e
+# set -o errexit
 # set +x
 # set +v
 
@@ -10,11 +11,14 @@ if [[ $PY_VERSION = *$PY_REQUIRED_VERSION* ]]  ; then
     echo "Python $PY_REQUIRED_VERSION is installed ;)"
 else
     echo "Error. Python $PY_REQUIRED_VERSION is not installed (version found: $PY_VERSION)."
-    return 0
+    echo "On Ubuntu 18 you can run the following command to install or upgrade:"
+    echo "sudo apt install python3.7 python3.7-venv python3-pip python3-setuptools"
+    return 1
 fi
 
 
-REPO='git@bitbucket.org:semanticweb/okgraph.git'
+REPO_SSH='git@bitbucket.org:semanticweb/okgraph.git'
+REPO_HTTPS='https://bitbucket.org/semanticweb/okgraph.git'
 SEPARATOR='\n\n\n##################################\n'
 BASE_PATH=$(eval echo ~$USER)/okgraph_clone_and_experiments
 REPO_ROOT_PATH=$BASE_PATH/repo
@@ -26,37 +30,94 @@ echo '########      STARTED     ########'
 echo '##################################'
 echo '##################################'
 
+echo '1) [SSH] ' $REPO_SSH
+echo '2) [HTTPS] ' $REPO_HTTPS
+read -p "Wich protocol do you prefer?" -n 1 -r
+echo
+if [[ $REPLY =~ ^[1]$ ]]; then
+    REPO=$REPO_SSH
+elif [[ $REPLY =~ ^[2]$ ]]; then
+    REPO=$REPO_HTTPS
+else
+    return 1
+fi
+
+
 mkdir -p $BASE_PATH
 mkdir -p $MAGNITUDE_MODELS_PATH
 mkdir -p $REPO_ROOT_PATH
 cd $BASE_PATH
 
 echo -e $SEPARATOR 'Repo path: ' $REPO_ROOT_PATH
-echo -e $SEPARATOR 'Cloning...'
+
+if [[ ! -z "$(ls -A $REPO_ROOT_PATH)" ]]; then
+    read -p "Do you want a fresh installation (remove repo and venv)? (y/[n]) " -n 1 -r
+    echo    # (optional) move to a new line
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        rm -rf $REPO_ROOT_PATH
+        rm -rf $BASE_PATH/venv
+    fi
+fi
+
+
 if [[ ! -z "$(ls -A $REPO_ROOT_PATH)" ]]; then
     echo -e $SEPARATOR 'A repository already exists on ' $REPO_ROOT_PATH
     read -p "Do you want to stop the scritp? (y/[n]) " -n 1 -r
     echo    # (optional) move to a new line
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        exit 1
+        return 1
     fi
 else
+    echo -e $SEPARATOR 'Cloning...'
     git clone $REPO --branch feature/se_optimization_based_algo $REPO_ROOT_PATH
+    if [ ! $? -eq 0 ]; then
+        echo FAILED
+        return 1
+    fi
 fi
+
 
 
 echo -e $SEPARATOR 'Creating venv...'
 python3.7 -m venv venv
+if [ ! $? -eq 0 ]; then
+    echo FAILED
+    echo "On Ubuntu 18 you can run the following command to install or upgrade:"
+    echo "sudo apt install python3-pip python3-setuptools python3.7-venv"
+    return 1
+fi
+
 source venv/bin/activate
+if [ ! $? -eq 0 ]; then
+    echo FAILED
+    return 1
+fi
+
+
+echo -e $SEPARATOR 'Upgrading tools...'
 pip install --upgrade pip setuptools devtools
+if [ ! $? -eq 0 ]; then
+    echo FAILED
+    return 1
+fi
+
 
 echo -e $SEPARATOR 'Installing required libraries...'
 echo $REPO_ROOT_PATH
 cd $REPO_ROOT_PATH
 pip install -r requirements.txt # this may take several minutes
+if [ ! $? -eq 0 ]; then
+    echo FAILED
+    return 1
+fi
+
 
 echo -e $SEPARATOR 'Installing okgraph...'
 python setup.py install
+if [ ! $? -eq 0 ]; then
+    echo FAILED
+    return 1
+fi
 
 
 

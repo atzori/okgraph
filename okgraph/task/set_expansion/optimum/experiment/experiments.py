@@ -274,45 +274,40 @@ def run_experiments(models: list,
 #                 k_topn_list=[50])
 
 
-def experiment_t1(sizes_list):
-
-    seed_sizes = [(k, 10) for k in sizes_list]
+def experiment_t1(args_dict):
+    one_optim_algo=args_dict['one_optim_algo']
+    one_seed_size=args_dict['one_seed_size']
+    print("Starting experiment... [one_optim_algo: " + str(one_optim_algo) + " ] \t- [one_seed_size: " + str(one_seed_size) + "]" )
+    ## (k, n) make an expertiment with a list of "k" elements for "n" times
+    seed_sizes = [(k, 10) for k in [one_seed_size]]
     seed_sizes += [(48, 1)]
-    print(seed_sizes)
-
     run_experiments(models=[embeddings_magnitude_modelGN],
                     ground_truths=[load('usa_states')],
-                    optim_algos=['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg'],
-                    objective_metrics=['AP@k', 'MAP', 'sklearn_metric_ap_score_weighted', 'sklearn_metric_ap_score_macro'],
+                    optim_algos=[one_optim_algo],
+                    objective_metrics=['AP@k'],
                     seed_sizes=seed_sizes,
                     k_topn_list=[50])
 
-from time import sleep                                                          
-
-def prc1(n=1):
-    print('Started of process ', n)                                                                             
-    sleep(n)                                                                       
-    print('End of process ', n)
 
 import threading
 
-t1 = threading.Thread(name="Hello1", target=prc1, args=(2,))
-t2 = threading.Thread(name="Hello2", target=prc1, args=(3,))
-t3 = threading.Thread(name="Hello2", target=prc1, args=(5,))
-t1.start()
-t2.start()
-t3.start()
+print("STARTING")
+print("STARTING")
+print("STARTING")
+print("STARTING")
+optim_algos_list = ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg']
+seed_sizes_list = [1, 2, 3, 5, 10, 20, 30, 40]
+thread_list = []
+n=0
+for one_optim_algo in optim_algos_list:
+    for one_seed_size in seed_sizes_list:
+        n=n+1
+        args = {
+            "one_optim_algo": one_optim_algo,
+            "one_seed_size": one_seed_size
+        }
+        thread_list.append(threading.Thread(name="T" + str(n), target=experiment_t1, args=(args,)))
 
-
-# import os
-# from multiprocessing import Pool
-
-# processes = (prc1(2), prc1(5), prc1(1), prc1(6))
-
-# def run_process(process):
-#     os.system('python {}'.format(process))
-
-# pool = Pool(processes=3)
-# pool.map_async(run_process, processes)
-
+for t in thread_list:
+    t.start()
 

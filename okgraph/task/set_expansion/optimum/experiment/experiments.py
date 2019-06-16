@@ -97,18 +97,20 @@ def is_similar(okg: okgraph.OKgraph, doesnt_match_word: list, words: list):
     return simil_avg >= .45
 
 
-def remove_words_doesnt_match(okg: okgraph.OKgraph, words: list, initial_guesses: list, max: int=1):
+def remove_words_doesnt_match(okg: okgraph.OKgraph, words: list, initial_guesses: list, max: int=1, verbose=False):
     to_remove = True
     w2 = words
     tmp_max = max
-    print(f'words: [{words}]')
-    print(f'initial_guesses: [{initial_guesses}]')
+    if verbose:
+        print(f'words: [{words}]')
+        print(f'initial_guesses: [{initial_guesses}]')
     while to_remove and tmp_max > 0:
         tmp_max -= 1
         doesnt_match_word = okg.v.doesnt_match(w2)
         if doesnt_match_word not in initial_guesses and not is_similar(okg, doesnt_match_word, initial_guesses):
             w2.remove(doesnt_match_word)
-            print(f'removed word: [{doesnt_match_word}]')
+            if verbose:
+                print(f'removed word: [{doesnt_match_word}]')
             to_remove = True
         else:
             to_remove = False
@@ -122,11 +124,13 @@ def get_optim(embeddings_magnitude_model: str, initial_guesses: [int],
               ground_truth: [int],
               optim_algo: str = 'powell',
               objective_metric: str = 'AP@k',
-              enable_most_similar_approx: bool = False):
+              enable_most_similar_approx: bool = False,
+              verbose=False):
 
-    print(f'Computing x0 from [{len(initial_guesses)}] vectors '
-          f'optim_algo: [{optim_algo}] '
-          f'by using : [{objective_metric}]')
+    if verbose:
+        print(f'Computing x0 from [{len(initial_guesses)}] vectors '
+            f'optim_algo: [{optim_algo}] '
+            f'by using : [{objective_metric}]')
 
     while len(initial_guesses) < 50:
         i = len(initial_guesses)  # 7
@@ -143,11 +147,13 @@ def get_optim(embeddings_magnitude_model: str, initial_guesses: [int],
             "objective_metric": objective_metric,
             "enable_most_similar_approx": enable_most_similar_approx
         }
-        print(f'\n{i})) started')  # 7
+        if verbose:
+            print(f'\n{i})) started')  # 7
         old_initial_guesses = initial_guesses
-        print(f'old_initial_guesses: [{old_initial_guesses}]')
+        if verbose:
+            print(f'old_initial_guesses: [{old_initial_guesses}]')
 
-        initial_guesses = get_optimum(okg, dataset_info, choose_x0, filename)
+        initial_guesses = get_optimum(okg, dataset_info, choose_x0, filename, verbose=verbose)
 
         solution = initial_guesses['solution']
         the_most_similar_words = initial_guesses['the_most_similar_words']
@@ -157,14 +163,16 @@ def get_optim(embeddings_magnitude_model: str, initial_guesses: [int],
                                      ground_truth,
                                      dataset_info,
                                      enable_most_similar_approx=enable_most_similar_approx)
-        print(f'the_most_similar_words: [{the_most_similar_words}]')
+        if verbose:
+            print(f'the_most_similar_words: [{the_most_similar_words}]')
 
-        the_most_similar_words = remove_words_doesnt_match(okg, the_most_similar_words, old_initial_guesses, max=1)  # 8
+        the_most_similar_words = remove_words_doesnt_match(okg, the_most_similar_words, old_initial_guesses, max=1, verbose=verbose)  # 8
 
         initial_guesses = the_most_similar_words
         if initial_guesses == old_initial_guesses:
             return initial_guesses
-        print(f'\n{i})) {initial_guesses}')
+        if verbose:
+            print(f'\n{i})) {initial_guesses}')
 
     return initial_guesses
 
@@ -202,11 +210,13 @@ def run_experiments(models: list,
                     optim_algos: list,
                     objective_metrics: list,
                     seed_sizes: list,
-                    k_topn_list: list):
+                    k_topn_list: list,
+                    verbose: bool = False):
 
     for embeddings_magnitude_model in models:
 
-        print(f'Loading model: {embeddings_magnitude_model}')
+        if verbose:  
+            print(f'Loading model: {embeddings_magnitude_model}')
         okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_magnitude_model)
 
         for ground_truth in ground_truths:
@@ -221,13 +231,14 @@ def run_experiments(models: list,
             now = datetime.datetime.now()
             filename = f'results/results_{now.strftime("%Y-%m-%d_%H:%M:%S")}.csv'
 
-            print(f'initial_guesses_list length = {len(initial_guesses_list)}')
-            print(f'ground_truth_without_not_exists length = {len(ground_truth_without_not_exists)}')
-            print(f'seed_sizes = {seed_sizes}')
-            print(f'k_topn_list = {k_topn_list}')
-            print(f'initial_guesses_list = {initial_guesses_list}')
-            print(f'optim_algos = {optim_algos}')
-            print(f'filename = {filename}')
+            if verbose:  
+                print(f'initial_guesses_list length = {len(initial_guesses_list)}')
+                print(f'ground_truth_without_not_exists length = {len(ground_truth_without_not_exists)}')
+                print(f'seed_sizes = {seed_sizes}')
+                print(f'k_topn_list = {k_topn_list}')
+                print(f'initial_guesses_list = {initial_guesses_list}')
+                print(f'optim_algos = {optim_algos}')
+                print(f'filename = {filename}')
 
             total = len(optim_algos) * len(initial_guesses_list) * len(objective_metrics) * len(k_topn_list)
             tmp = total
@@ -238,8 +249,8 @@ def run_experiments(models: list,
                         for objective_metric in objective_metrics:
 
                             print(f'{tmp}) Computing x0 from [{len(initial_guesses)}] vectors '
-                                  f'optim_algo: [{optim_algo}] '
-                                  f'by using : [{objective_metric}]')
+                                f'optim_algo: [{optim_algo}] '
+                                f'by using : [{objective_metric}]')
 
                             dataset_info = {
                                 "we_model": embeddings_magnitude_model,
@@ -254,11 +265,14 @@ def run_experiments(models: list,
                                 "objective_metric": objective_metric,
                                 "enable_most_similar_approx": enable_most_similar_approx
                             }
-                            _ = get_optimum(okg, dataset_info, choose_x0, filename)
-                            print(f'\n\n')
+                            _ = get_optimum(okg, dataset_info, choose_x0, filename, verbose=verbose)
+                            if verbose:  
+                                print(f'\n\n')
                             tmp -= 1
 
-        print(f'Optimization ended')
+        if verbose:  
+            print(f'Optimization ended')
+            
         print(f'filename = {filename}')
 
 
@@ -286,7 +300,9 @@ def experiment_t1(args_dict):
                     optim_algos=[one_optim_algo],
                     objective_metrics=['AP@k'],
                     seed_sizes=seed_sizes,
-                    k_topn_list=[50])
+                    k_topn_list=[50],
+                    verbose=False)
+    print("Ended experiment... [one_optim_algo: " + str(one_optim_algo) + " ] \t- [one_seed_size: " + str(one_seed_size) + "]" )
 
 
 import threading
@@ -295,8 +311,8 @@ print("STARTING")
 print("STARTING")
 print("STARTING")
 print("STARTING")
-optim_algos_list = ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg']
-seed_sizes_list = [1, 2, 3, 5, 10, 20, 30, 40]
+optim_algos_list = ['powell']#, 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg']
+seed_sizes_list = [20, 30, 40]
 thread_list = []
 n=0
 for one_optim_algo in optim_algos_list:

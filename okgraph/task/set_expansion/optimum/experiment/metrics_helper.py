@@ -244,8 +244,8 @@ class Metric:
                                      'PRECISION', 'RECALL', 'Interp_Prec', 'the_most_similar_words']
 
         if verbose:
-            print(f'{out_calc}', end='')
-        else:
+        #     print(f'{out_calc}', end='')
+        # else:
             print(f'{out_calc["DATE"]} [{out_calc["TrueP"]}/{out_calc["ground_truth_length"]}] : '
                   f'\t{objective_metric} {out_calc[objective_metric]} '
                   f'\t{out_calc["INFO"]} '

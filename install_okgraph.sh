@@ -6,13 +6,14 @@
 
 PY_VERSION=$(python3.7 --version)
 PY_REQUIRED_VERSION=3.7
+NEEDED_PACKAGES='build-essential python3.7 python3.7-dev python3-pip python3-setuptools python3.7-venv'
 
 if [[ $PY_VERSION = *$PY_REQUIRED_VERSION* ]]  ; then
     echo "Python $PY_REQUIRED_VERSION is installed ;)"
 else
     echo "Error. Python $PY_REQUIRED_VERSION is not installed (version found: $PY_VERSION)."
     echo "On Ubuntu 18 you can run the following command to install or upgrade:"
-    echo "sudo apt install python3.7 python3.7-venv python3-pip python3-setuptools"
+    echo "sudo apt install $NEEDED_PACKAGES"
     return 1
 fi
 
@@ -83,7 +84,7 @@ python3.7 -m venv venv
 if [ ! $? -eq 0 ]; then
     echo FAILED
     echo "On Ubuntu 18 you can run the following command to install or upgrade:"
-    echo "sudo apt install python3-pip python3-setuptools python3.7-venv"
+    echo "sudo apt install $NEEDED_PACKAGES"
     return 1
 fi
 

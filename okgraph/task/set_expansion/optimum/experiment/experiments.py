@@ -268,6 +268,10 @@ def run_experiments(models: list,
                             _ = get_optimum(okg, dataset_info, choose_x0, filename, verbose=verbose)
                             if verbose:  
                                 print(f'\n\n')
+                            else:
+                                print(f'ENDED ONE OF [{len(initial_guesses)}] vectors '
+                                    f'optim_algo: [{optim_algo}] '
+                                    f'by using : [{objective_metric}]')
                             tmp -= 1
 
         if verbose:  

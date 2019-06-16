@@ -126,7 +126,7 @@ mkdir -p $REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/models
 MAGNITUDE_MODEL_POSITION=$MAGNITUDE_MODELS_PATH/GoogleNews-vectors-negative300.magnitude
 if [[ ! -e $MAGNITUDE_MODEL_POSITION ]]; then
     echo -e $SEPARATOR 'Downloading magnitude file(s)...'
-    wget http://magnitude.plasticity.ai/word2vec/medium/GoogleNews-vectors-negative300.magnitude -O $MAGNITUDE_MODEL_POSITION
+    wget http://magnitude.plasticity.ai/word2vec/heavy/GoogleNews-vectors-negative300.magnitude -O $MAGNITUDE_MODEL_POSITION
 fi
 if [[ ! -e $NEW_MAGNITUDE_FILE ]]; then
     echo -e $SEPARATOR 'Creating magnitude file link...'

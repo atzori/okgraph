@@ -7,3 +7,5 @@ numpy
 nltk
 scipy
 whoosh
+sklearn
+pytest

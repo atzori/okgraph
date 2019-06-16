@@ -287,14 +287,32 @@ def experiment_t1(sizes_list):
                     seed_sizes=seed_sizes,
                     k_topn_list=[50])
 
+from time import sleep                                                          
 
-import os                                                                       
-from multiprocessing import Pool                                                
+def prc1(n=1):
+    print('Started of process ', n)                                                                             
+    sleep(n)                                                                       
+    print('End of process ', n)
 
-processes = ('process1.py', 'process2.py')                                    
+import threading
 
-def run_process(process):                                                             
-    os.system('python {}'.format(process))                                       
+t1 = threading.Thread(name="Hello1", target=prc1, args=(2,))
+t2 = threading.Thread(name="Hello2", target=prc1, args=(3,))
+t3 = threading.Thread(name="Hello2", target=prc1, args=(5,))
+t1.start()
+t2.start()
+t3.start()
 
-pool = Pool(processes=3)                                                        
-pool.map(run_process, processes)                                                     
+
+# import os
+# from multiprocessing import Pool
+
+# processes = (prc1(2), prc1(5), prc1(1), prc1(6))
+
+# def run_process(process):
+#     os.system('python {}'.format(process))
+
+# pool = Pool(processes=3)
+# pool.map_async(run_process, processes)
+
+

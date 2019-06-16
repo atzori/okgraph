@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash env
 # set -e
 # set +x
 # set +v
 
-PY_VERSION=$(python --version)
+PY_VERSION=$(python3.7 --version)
 PY_REQUIRED_VERSION=3.7
 
 if [[ $PY_VERSION = *$PY_REQUIRED_VERSION* ]]  ; then

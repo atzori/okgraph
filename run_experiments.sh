@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash env
 # set -e
 # set +x
 # set +v
@@ -15,9 +15,10 @@ source venv/bin/activate
 
 echo -e $SEPARATOR 'Starting experiments...'
 cd $REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/
-python $REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/experiments.py
+# python $REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/experiments.py
 
-
+cd /Users/lelleem/okgraph/okgraph/task/set_expansion/optimum/experiment/
+python experiments.py
 
 
 echo -e $SEPARATOR 'End.'

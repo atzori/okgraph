@@ -229,7 +229,7 @@ def run_experiments(models: list,
             initial_guesses_list = get_random_lists(ground_truth_without_not_exists, seed_sizes)
 
             now = datetime.datetime.now()
-            filename = f'results/results_{now.strftime("%Y-%m-%d_%H:%M:%S")}.csv'
+            filename = f'results/results_{now.strftime("%Y-%m-%d_%H:%M:%S.%f")[:-3]}.csv'
 
             if verbose:  
                 print(f'initial_guesses_list length = {len(initial_guesses_list)}')
@@ -271,7 +271,7 @@ def run_experiments(models: list,
                             else:
                                 print(f'ENDED ONE OF [{len(initial_guesses)}] vectors '
                                     f'optim_algo: [{optim_algo}] '
-                                    f'by using : [{objective_metric}]')
+                                    f'by using : [{objective_metric}] >>> [{filename}]')
                             tmp -= 1
 
         if verbose:  

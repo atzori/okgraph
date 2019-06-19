@@ -56,7 +56,7 @@ def get_random_lists(ground_truth: list, seed_sizes: [int]) -> [list]:
     for seed_size in seed_sizes:
         seed_len = seed_size[0]
         seed_repetitions += seed_size[1]
-        print(f'\r seed_repetitions {seed_repetitions} ...', end='')
+        # print(f'\r seed_repetitions {seed_repetitions} ...', end='')
         while len(out_list) < seed_repetitions:
             to_add = get_random_from(ground_truth, seed_len)
 
@@ -64,7 +64,7 @@ def get_random_lists(ground_truth: list, seed_sizes: [int]) -> [list]:
                 out_list += [to_add]
                 out_list_strings.add("".join(to_add))
 
-    print('seed_repetitions done.')
+    # print('seed_repetitions done.')
     return [l for l in out_list]
 
 
@@ -74,6 +74,8 @@ def get_random_lists(ground_truth: list, seed_sizes: [int]) -> [list]:
 okgraph_path = 'models/'
 corpus_file_path = okgraph_path + 'text7.head.gz'
 embeddings_magnitude_modelGN = okgraph_path + 'GoogleNews-vectors-negative300.magnitude'
+embeddings_magnitude_modelGlove6B = okgraph_path + 'glove.6B.300d.magnitude.magnitude'
+embeddings_magnitude_modelGlove840B = okgraph_path + 'glove.840B.300d.magnitude'
 embeddings_magnitude_modelT7 = okgraph_path + 'text7.head.magnitude'
 try_times = 10
 # seed_sizes = [(k, try_times) for k in [1, 2, 3, 5, 10, 20, 30, 40, 50]]
@@ -223,13 +225,12 @@ def run_experiments(models: list,
             ground_truth = [w.replace(" ", "_") for w in ground_truth]
             ground_truth_without_not_exists = [e for e in ground_truth if e in okg.v]
 
-            enable_most_similar_approx = "GoogleNews-vectors-negative300" in embeddings_magnitude_model
+            enable_most_similar_approx = embeddings_magnitude_model in ["GoogleNews-vectors-negative300", "glove.6B.300d.magnitude.magnitude", "glove.840B.300d.magnitude"]
             sklearn_metric_ap_score_enabled = True  # False can reduce computation time if sklearn not used in the objective_metrics
 
             initial_guesses_list = get_random_lists(ground_truth_without_not_exists, seed_sizes)
 
             now = datetime.datetime.now()
-            filename = f'results/results_{now.strftime("%Y-%m-%d_%H:%M:%S.%f")[:-3]}.csv'
 
             if verbose:  
                 print(f'initial_guesses_list length = {len(initial_guesses_list)}')
@@ -238,13 +239,13 @@ def run_experiments(models: list,
                 print(f'k_topn_list = {k_topn_list}')
                 print(f'initial_guesses_list = {initial_guesses_list}')
                 print(f'optim_algos = {optim_algos}')
-                print(f'filename = {filename}')
 
             total = len(optim_algos) * len(initial_guesses_list) * len(objective_metrics) * len(k_topn_list)
             tmp = total
 
             for k_topn in k_topn_list:
                 for optim_algo in optim_algos:
+                    filename = f'results/res_{optim_algo}_{now.strftime("%Y-%m-%d_%H:%M:%S.%f")[:-3]}.csv'
                     for initial_guesses in initial_guesses_list:
                         for objective_metric in objective_metrics:
 
@@ -294,19 +295,20 @@ def run_experiments(models: list,
 
 def experiment_t1(args_dict):
     one_optim_algo=args_dict['one_optim_algo']
-    one_seed_size=args_dict['one_seed_size']
-    print("Starting experiment... [one_optim_algo: " + str(one_optim_algo) + " ] \t- [one_seed_size: " + str(one_seed_size) + "]" )
+    seed_sizes=args_dict['seed_sizes']
+    ground_truths=args_dict['ground_truths']
+    models=args_dict['models']
+    k_topn_list=args_dict['k_topn_list']
+    print("Starting experiment... [one_optim_algo: " + str(one_optim_algo) + " ] \t- [seed_sizes: " + str(seed_sizes) + "]" )
     ## (k, n) make an expertiment with a list of "k" elements for "n" times
-    seed_sizes = [(k, 10) for k in [one_seed_size]]
-    seed_sizes += [(48, 1)]
-    run_experiments(models=[embeddings_magnitude_modelGN],
-                    ground_truths=[load('usa_states')],
+    run_experiments(models=models,
+                    ground_truths=ground_truths,
                     optim_algos=[one_optim_algo],
                     objective_metrics=['AP@k'],
                     seed_sizes=seed_sizes,
-                    k_topn_list=[50],
+                    k_topn_list=k_topn_list,
                     verbose=False)
-    print("Ended experiment... [one_optim_algo: " + str(one_optim_algo) + " ] \t- [one_seed_size: " + str(one_seed_size) + "]" )
+    print("Ended experiment... [one_optim_algo: " + str(one_optim_algo) + " ] \t- [seed_sizes: " + str(seed_sizes) + "]" )
 
 
 import threading
@@ -316,17 +318,24 @@ print("STARTING")
 print("STARTING")
 print("STARTING")
 optim_algos_list = ['powell']#, 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg']
-seed_sizes_list = [20, 30, 40]
+all_seed_sizes = [(k, 20) for k in [1, 2, 3, 5, 10, 20, 30, 40]]
+all_seed_sizes += [(48, 1)]
+
 thread_list = []
 n=0
 for one_optim_algo in optim_algos_list:
-    for one_seed_size in seed_sizes_list:
+    for seed_sizes_list in all_seed_sizes:
         n=n+1
         args = {
             "one_optim_algo": one_optim_algo,
-            "one_seed_size": one_seed_size
+            "seed_sizes": [seed_sizes_list],
+            "ground_truths": [load('usa_states')],
+            "models": [embeddings_magnitude_modelGN, embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
+            "k_topn_list": [50]
         }
         thread_list.append(threading.Thread(name="T" + str(n), target=experiment_t1, args=(args,)))
+
+print(F'Running {len(thread_list)} threads')
 
 for t in thread_list:
     t.start()

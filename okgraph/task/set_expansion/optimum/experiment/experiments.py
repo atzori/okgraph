@@ -215,6 +215,7 @@ def run_experiments(models: list,
                     objective_metrics: list,
                     seed_sizes: list,
                     k_topn_list: list,
+                    lazy_loading: int = 0,
                     verbose: bool = False):
 
     for embeddings_magnitude_model in models:

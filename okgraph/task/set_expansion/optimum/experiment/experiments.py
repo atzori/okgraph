@@ -221,7 +221,7 @@ def run_experiments(models: list,
     
         if verbose:  
             print(f'Loading model: {embeddings_magnitude_model}')
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_magnitude_model)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_magnitude_model, lazy_loading=lazy_loading)
         if verbose:  
             print(f'Model: {embeddings_magnitude_model} LOADED')
 
@@ -313,6 +313,7 @@ def experiment_t1(args_dict):
     ground_truths=args_dict['ground_truths']
     models=args_dict['models']
     k_topn_list=args_dict['k_topn_list']
+    lazy_loading=args_dict['lazy_loading']
     print("Starting experiment... [one_optim_algo: " + str(one_optim_algo) + " ] \t- [seed_sizes: " + str(seed_sizes) + "]" )
     ## (k, n) make an expertiment with a list of "k" elements for "n" times
     run_experiments(models=models,
@@ -321,6 +322,7 @@ def experiment_t1(args_dict):
                     objective_metrics=['AP@k'],
                     seed_sizes=seed_sizes,
                     k_topn_list=k_topn_list,
+                    lazy_loading=lazy_loading,
                     verbose=True)
     print("Ended experiment... [one_optim_algo: " + str(one_optim_algo) + " ] \t- [seed_sizes: " + str(seed_sizes) + "]" )
 
@@ -345,7 +347,11 @@ for one_optim_algo in optim_algos_list:
             "seed_sizes": [seed_sizes_list],
             "ground_truths": [load('usa_states')],
             "models": [embeddings_magnitude_modelGlove840B],#[embeddings_magnitude_modelGN, embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
-            "k_topn_list": [50]
+            "k_topn_list": [50],
+            "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value
+                                #   -1 to disable lazy-loading and pre-load all vectors into memory (a la Gensim), 
+                                #   0 (default) to enable lazy-loading with an unbounded in-memory LRU cache, or 
+                                #   an integer greater than zero X to enable lazy-loading with an LRU cache that holds the X most recently used vectors in memory.
         }
         thread_list.append(threading.Thread(name="T" + str(n), target=experiment_t1, args=(args,)))
 

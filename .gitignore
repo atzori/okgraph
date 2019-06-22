@@ -13,3 +13,5 @@ wheelhouse/
 tests/data/
 .mypy_cache/
 pip-wheel-metadata/
+okgraph/task/set_expansion/optimum/experiment/results
+okgraph/task/set_expansion/optimum/experiment/models

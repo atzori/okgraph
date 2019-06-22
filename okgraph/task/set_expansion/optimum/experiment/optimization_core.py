@@ -1,6 +1,7 @@
 from metrics_helper import *
 import scipy.optimize as so
 import okgraph
+import numpy as np
 
 
 def get_similar_and_save_results(okg: okgraph.OKgraph,
@@ -102,7 +103,7 @@ def get_optimum(okg: okgraph.OKgraph, dataset_info: dict, choose_x0_closure: cal
     topn = dataset_info['topn']
 
     if verbose:
-        print(f'\t\t\t\t\t\t\t\tStarting optimization of ({len(ground_truth)}) : {ground_truth[:3]}...')
+        print(f'\t\t\t\t\t\t\t\tStarting optimization enable_most_similar_approx:{enable_most_similar_approx} of ({len(ground_truth)}) : {ground_truth[:3]}...')
     ground_truth_vectors = okg.v.query(ground_truth)
     objective = create_objective(okg, ground_truth, ground_truth_vectors,
                                  objective_metric=objective_metric,

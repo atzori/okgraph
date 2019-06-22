@@ -1,12 +1,14 @@
 import okgraph
 import random
 import numpy
+import numpy as np
+import datetime
 
 from dataset_helper import *
 from optimization_core import *
 
 print(f'Started')
-np.seterr(divide='ignore', invalid='ignore')
+numpy.seterr(divide='ignore', invalid='ignore')
 
 
 # centroid
@@ -216,19 +218,30 @@ def run_experiments(models: list,
                     verbose: bool = False):
 
     for embeddings_magnitude_model in models:
-
+    
         if verbose:  
             print(f'Loading model: {embeddings_magnitude_model}')
         okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_magnitude_model)
+        if verbose:  
+            print(f'Model: {embeddings_magnitude_model} LOADED')
 
         for ground_truth in ground_truths:
+            if verbose:  
+                print(f'Getting the ground_truth and without_not_exists')
             ground_truth = [w.replace(" ", "_") for w in ground_truth]
             ground_truth_without_not_exists = [e for e in ground_truth if e in okg.v]
-
-            enable_most_similar_approx = embeddings_magnitude_model in ["GoogleNews-vectors-negative300", "glove.6B.300d.magnitude.magnitude", "glove.840B.300d.magnitude"]
+            if verbose:  
+                print(f'DONE. ground_truth=[{ground_truth}] and without_not_exists=[{ground_truth_without_not_exists}]')
+            enable_most_similar_approx = False
+            for one_model_name in ["GoogleNews-vectors-negative300", "glove.6B.300d", "glove.840B.300d"]:
+                enable_most_similar_approx = enable_most_similar_approx or (one_model_name in embeddings_magnitude_model)
             sklearn_metric_ap_score_enabled = True  # False can reduce computation time if sklearn not used in the objective_metrics
 
+            if verbose:  
+                print(f'Getting the initial_guesses_list')
             initial_guesses_list = get_random_lists(ground_truth_without_not_exists, seed_sizes)
+            if verbose:  
+                print(f'Done. initial_guesses_list={initial_guesses_list} ')
 
             now = datetime.datetime.now()
 
@@ -264,7 +277,8 @@ def run_experiments(models: list,
                                 "ground_truth_length": len(ground_truth),
                                 "sklearn_metric_ap_score_enabled": sklearn_metric_ap_score_enabled,
                                 "objective_metric": objective_metric,
-                                "enable_most_similar_approx": enable_most_similar_approx
+                                "enable_most_similar_approx": enable_most_similar_approx,
+                                "verbose": verbose
                             }
                             _ = get_optimum(okg, dataset_info, choose_x0, filename, verbose=verbose)
                             if verbose:  
@@ -307,7 +321,7 @@ def experiment_t1(args_dict):
                     objective_metrics=['AP@k'],
                     seed_sizes=seed_sizes,
                     k_topn_list=k_topn_list,
-                    verbose=False)
+                    verbose=True)
     print("Ended experiment... [one_optim_algo: " + str(one_optim_algo) + " ] \t- [seed_sizes: " + str(seed_sizes) + "]" )
 
 
@@ -318,7 +332,7 @@ print("STARTING")
 print("STARTING")
 print("STARTING")
 optim_algos_list = ['powell']#, 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg']
-all_seed_sizes = [(k, 20) for k in [1, 2, 3, 5, 10, 20, 30, 40]]
+all_seed_sizes = [(k, 20) for k in [1]]#1, 2, 3, 5, 10, 20, 30, 40]]
 all_seed_sizes += [(48, 1)]
 
 thread_list = []
@@ -330,7 +344,7 @@ for one_optim_algo in optim_algos_list:
             "one_optim_algo": one_optim_algo,
             "seed_sizes": [seed_sizes_list],
             "ground_truths": [load('usa_states')],
-            "models": [embeddings_magnitude_modelGN, embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
+            "models": [embeddings_magnitude_modelGlove840B],#[embeddings_magnitude_modelGN, embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
             "k_topn_list": [50]
         }
         thread_list.append(threading.Thread(name="T" + str(n), target=experiment_t1, args=(args,)))
@@ -339,4 +353,3 @@ print(F'Running {len(thread_list)} threads')
 
 for t in thread_list:
     t.start()
-

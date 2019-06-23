@@ -334,8 +334,8 @@ print("STARTING")
 print("STARTING")
 print("STARTING")
 print("STARTING")
-optim_algos_list = ['powell']#, 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg']
-all_seed_sizes = [(k, 20) for k in [1]]#1, 2, 3, 5, 10, 20, 30, 40]]
+optim_algos_list = ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg']
+all_seed_sizes = [(k, 10) for k in [1, 2, 3, 5, 10, 20, 30, 40]]
 all_seed_sizes += [(48, 1)]
 
 thread_list = []
@@ -347,7 +347,7 @@ for one_optim_algo in optim_algos_list:
             "one_optim_algo": one_optim_algo,
             "seed_sizes": [seed_sizes_list],
             "ground_truths": [load('usa_states')],
-            "models": [embeddings_magnitude_modelGlove840B],#[embeddings_magnitude_modelGN, embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
+            "models": [embeddings_magnitude_modelGN, embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
             "k_topn_list": [50],
             "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value
                                 #   -1 to disable lazy-loading and pre-load all vectors into memory (a la Gensim), 

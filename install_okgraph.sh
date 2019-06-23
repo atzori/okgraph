@@ -134,4 +134,28 @@ if [[ ! -e $NEW_MAGNITUDE_FILE ]]; then
     ln -s $MAGNITUDE_MODEL_POSITION $NEW_MAGNITUDE_FILE
 fi
 
+MAGNITUDE_MODEL_POSITION=$MAGNITUDE_MODELS_PATH/glove.840B.300d.magnitude
+if [[ ! -e $MAGNITUDE_MODEL_POSITION ]]; then
+    echo -e $SEPARATOR 'Downloading magnitude file(s)...'
+    wget http://magnitude.plasticity.ai/word2vec/heavy/glove.840B.300d.magnitude -O $MAGNITUDE_MODEL_POSITION
+fi
+if [[ ! -e $NEW_MAGNITUDE_FILE ]]; then
+    echo -e $SEPARATOR 'Creating magnitude file link...'
+    NEW_MAGNITUDE_FILE=$REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/models/glove.840B.300d.magnitude
+    ln -s $MAGNITUDE_MODEL_POSITION $NEW_MAGNITUDE_FILE
+fi
+
+
+MAGNITUDE_MODEL_POSITION=$MAGNITUDE_MODELS_PATH/glove.6B.300d.magnitude
+if [[ ! -e $MAGNITUDE_MODEL_POSITION ]]; then
+    echo -e $SEPARATOR 'Downloading magnitude file(s)...'
+    wget http://magnitude.plasticity.ai/word2vec/heavy/glove.6B.300d.magnitude -O $MAGNITUDE_MODEL_POSITION
+fi
+if [[ ! -e $NEW_MAGNITUDE_FILE ]]; then
+    echo -e $SEPARATOR 'Creating magnitude file link...'
+    NEW_MAGNITUDE_FILE=$REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/models/glove.6B.300d.magnitude
+    ln -s $MAGNITUDE_MODEL_POSITION $NEW_MAGNITUDE_FILE
+fi
+
+
 echo -e $SEPARATOR 'End.'

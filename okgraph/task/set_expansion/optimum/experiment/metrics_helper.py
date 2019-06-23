@@ -241,7 +241,7 @@ class Metric:
                                      'CG', 'DCG', 'IDCG', 'NDCG',
                                      'AP@5', 'AP@10', 'AP@20', 'AP@50', 'AP@100',
                                      'missing_words', 'wrong_words', 'we_model',
-                                     'PRECISION', 'RECALL', 'Interp_Prec', 'the_most_similar_words']
+                                     'PRECISION', 'RECALL', 'Interp_Prec', 'the_most_similar_words', 'tot_time']
 
         if verbose:
         #     print(f'{out_calc}', end='')
@@ -249,6 +249,7 @@ class Metric:
             print(f'{out_calc["DATE"]} [{out_calc["TrueP"]}/{out_calc["ground_truth_length"]}] : '
                   f'\t{objective_metric} {out_calc[objective_metric]} '
                   f'\t{out_calc["INFO"]} '
+                  f'\t{out_calc["tot_time"]} '
                   f'\tMAP {out_calc["MAP"]} '
                   f'\tPa50 {out_calc["Pa50"]} '
                   f'\tAP@50 {out_calc["AP@50"]} '

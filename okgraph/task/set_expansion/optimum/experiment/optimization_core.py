@@ -2,6 +2,7 @@ from metrics_helper import *
 import scipy.optimize as so
 import okgraph
 import numpy as np
+import timeit
 
 
 def get_similar_and_save_results(okg: okgraph.OKgraph,
@@ -101,6 +102,7 @@ def get_optimum(okg: okgraph.OKgraph, dataset_info: dict, choose_x0_closure: cal
     optim_algo = dataset_info['optim_algo']
     objective_metric = dataset_info['objective_metric']
     topn = dataset_info['topn']
+    start = timeit.default_timer()
 
     if verbose:
         print(f'\t\t\t\t\t\t\t\tStarting optimization enable_most_similar_approx:{enable_most_similar_approx} of ({len(ground_truth)}) : {ground_truth[:3]}...')
@@ -141,6 +143,10 @@ def get_optimum(okg: okgraph.OKgraph, dataset_info: dict, choose_x0_closure: cal
 
     dataset_info["optim_message"] = solution.message
     dataset_info["nfev"] = solution.nfev
+
+    stop = timeit.default_timer()
+    dataset_info["tot_time"] = stop - start
+
     optimized_res = get_similar_and_save_results(okg, filename, solution.x, topn, "OPTIMIZED", ground_truth, dataset_info,
                                                  enable_most_similar_approx=enable_most_similar_approx)
 

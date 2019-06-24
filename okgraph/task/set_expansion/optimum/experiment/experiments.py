@@ -76,7 +76,7 @@ def get_random_lists(ground_truth: list, seed_sizes: [int]) -> [list]:
 okgraph_path = 'models/'
 corpus_file_path = okgraph_path + 'text7.head.gz'
 embeddings_magnitude_modelGN = okgraph_path + 'GoogleNews-vectors-negative300.magnitude'
-embeddings_magnitude_modelGlove6B = okgraph_path + 'glove.6B.300d.magnitude.magnitude'
+embeddings_magnitude_modelGlove6B = okgraph_path + 'glove.6B.300d.magnitude'
 embeddings_magnitude_modelGlove840B = okgraph_path + 'glove.840B.300d.magnitude'
 embeddings_magnitude_modelT7 = okgraph_path + 'text7.head.magnitude'
 try_times = 10

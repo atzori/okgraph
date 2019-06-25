@@ -3,6 +3,7 @@ import random
 import numpy
 import numpy as np
 import datetime
+import scipy
 
 from dataset_helper import *
 from optimization_core import *
@@ -208,12 +209,24 @@ def get_optim(embeddings_magnitude_model: str, initial_guesses: [int],
 #               enable_most_similar_approx=enable_most_similar_approx)
 #     print(f'Ended {seed_size}.')
 
+def generate_seed_sizes(max: int):
+    out_ss = [(max, 1)]
+    for i in range(max-(max%10), 9, -10):
+        max_comb = scipy.special.comb(max, i, exact=True)
+        out_ss.append((i, 10 if 10<max_comb else max ))
+    for i in [5,3,2,1]:
+        if i<=max:
+            max_comb = scipy.special.comb(max, i, exact=True)
+            num_comb = 10 if 10<max_comb else max
+            print(f'{i} > {max_comb}')
+            out_ss.append((i, num_comb))
+    return out_ss
+
 
 def run_experiments(models: list,
                     ground_truths: list,
                     optim_algos: list,
                     objective_metrics: list,
-                    seed_sizes: list,
                     lazy_loading: int = 0,
                     verbose: bool = False):
 
@@ -240,6 +253,7 @@ def run_experiments(models: list,
 
             if verbose:  
                 print(f'Getting the initial_guesses_list')
+            seed_sizes = generate_seed_sizes(len(ground_truth_without_not_exists))
             initial_guesses_list = get_random_lists(ground_truth_without_not_exists, seed_sizes)
             if verbose:  
                 print(f'Done. initial_guesses_list={initial_guesses_list} ')
@@ -295,32 +309,26 @@ def run_experiments(models: list,
         print(f'filename = {filename}')
 
 
-# seed_sizes = [(k, 10) for k in [1, 2, 3, 5, 10, 20, 30, 40]]
-# seed_sizes += [(48, 1)]
-# print(seed_sizes)
 # run_experiments(models=[embeddings_magnitude_modelGN],
 #                 ground_truths=[load('usa_states')],
 #                 optim_algos=['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg'],
 #                 objective_metrics=['AP@k', 'MAP', 'sklearn_metric_ap_score_weighted', 'sklearn_metric_ap_score_macro'],
-#                 seed_sizes=seed_sizes,
 
 
 def experiment_t1(args_dict):
     one_optim_algo=args_dict['one_optim_algo']
-    seed_sizes=args_dict['seed_sizes']
     ground_truths=args_dict['ground_truths']
     models=args_dict['models']
     lazy_loading=args_dict['lazy_loading']
-    print("Starting experiment... [one_optim_algo: " + str(one_optim_algo) + " ] \t- [seed_sizes: " + str(seed_sizes) + "]" )
+    print("Starting experiment... [one_optim_algo: " + str(one_optim_algo) + " ]" )
     ## (k, n) make an expertiment with a list of "k" elements for "n" times
     run_experiments(models=models,
                     ground_truths=ground_truths,
                     optim_algos=[one_optim_algo],
                     objective_metrics=['AP@k'],
-                    seed_sizes=seed_sizes,
                     lazy_loading=lazy_loading,
                     verbose=True)
-    print("Ended experiment... [one_optim_algo: " + str(one_optim_algo) + " ] \t- [seed_sizes: " + str(seed_sizes) + "]" )
+    print("Ended experiment... [one_optim_algo: " + str(one_optim_algo) + " ]" )
 
 
 import threading
@@ -330,25 +338,21 @@ print("STARTING")
 print("STARTING")
 print("STARTING")
 optim_algos_list = ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg']
-all_seed_sizes = [(k, 10) for k in [1, 2, 3, 5, 10, 20, 30, 40]]
-all_seed_sizes += [(48, 1)]
 
 thread_list = []
 n=0
 for one_optim_algo in optim_algos_list:
-    for seed_sizes_list in all_seed_sizes:
-        n=n+1
-        args = {
-            "one_optim_algo": one_optim_algo,
-            "seed_sizes": [seed_sizes_list],
-            "ground_truths": [load('usa_states'), load('universe_solar_planets'), load('king_of_rome')],
-            "models": [embeddings_magnitude_modelGN, embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
-            "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value
-                                #   -1 to disable lazy-loading and pre-load all vectors into memory (a la Gensim), 
-                                #   0 (default) to enable lazy-loading with an unbounded in-memory LRU cache, or 
-                                #   an integer greater than zero X to enable lazy-loading with an LRU cache that holds the X most recently used vectors in memory.
-        }
-        thread_list.append(threading.Thread(name="T" + str(n), target=experiment_t1, args=(args,)))
+    n=n+1
+    args = {
+        "one_optim_algo": one_optim_algo,
+        "ground_truths": [load('usa_states'), load('universe_solar_planets'), load('king_of_rome'), load('period_7_element')],
+        "models": [embeddings_magnitude_modelGN, embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
+        "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value
+                            #   -1 to disable lazy-loading and pre-load all vectors into memory (a la Gensim), 
+                            #   0 (default) to enable lazy-loading with an unbounded in-memory LRU cache, or 
+                            #   an integer greater than zero X to enable lazy-loading with an LRU cache that holds the X most recently used vectors in memory.
+    }
+    thread_list.append(threading.Thread(name="T" + str(n), target=experiment_t1, args=(args,)))
 
 print(F'Running {len(thread_list)} threads')
 

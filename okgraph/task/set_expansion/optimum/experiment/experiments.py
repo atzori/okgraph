@@ -337,7 +337,8 @@ print("STARTING")
 print("STARTING")
 print("STARTING")
 print("STARTING")
-optim_algos_list = ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg']
+# optim_algos_list = ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg']
+optim_algos_list = ['powell', 'BFGS', 'COBYLA']
 
 thread_list = []
 n=0

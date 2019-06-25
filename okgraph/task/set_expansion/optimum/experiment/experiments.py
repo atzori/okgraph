@@ -214,7 +214,6 @@ def run_experiments(models: list,
                     optim_algos: list,
                     objective_metrics: list,
                     seed_sizes: list,
-                    k_topn_list: list,
                     lazy_loading: int = 0,
                     verbose: bool = False):
 
@@ -227,6 +226,7 @@ def run_experiments(models: list,
             print(f'Model: {embeddings_magnitude_model} LOADED')
 
         for ground_truth in ground_truths:
+            k_topn = len(ground_truth)
             if verbose:  
                 print(f'Getting the ground_truth and without_not_exists')
             ground_truth = [w.replace(" ", "_") for w in ground_truth]
@@ -250,45 +250,44 @@ def run_experiments(models: list,
                 print(f'initial_guesses_list length = {len(initial_guesses_list)}')
                 print(f'ground_truth_without_not_exists length = {len(ground_truth_without_not_exists)}')
                 print(f'seed_sizes = {seed_sizes}')
-                print(f'k_topn_list = {k_topn_list}')
+                print(f'k_topn = {k_topn}')
                 print(f'initial_guesses_list = {initial_guesses_list}')
                 print(f'optim_algos = {optim_algos}')
 
-            total = len(optim_algos) * len(initial_guesses_list) * len(objective_metrics) * len(k_topn_list)
+            total = len(optim_algos) * len(initial_guesses_list) * len(objective_metrics) * k_topn
             tmp = total
 
-            for k_topn in k_topn_list:
-                for optim_algo in optim_algos:
-                    filename = f'results/res_{optim_algo}_{now.strftime("%Y-%m-%d_%H:%M:%S.%f")[:-3]}.csv'
-                    for initial_guesses in initial_guesses_list:
-                        for objective_metric in objective_metrics:
+            for optim_algo in optim_algos:
+                filename = f'results/res_{optim_algo}_{now.strftime("%Y-%m-%d_%H:%M:%S.%f")[:-3]}.csv'
+                for initial_guesses in initial_guesses_list:
+                    for objective_metric in objective_metrics:
 
-                            print(f'{tmp}) Computing x0 from [{len(initial_guesses)}] vectors '
+                        print(f'{tmp}) Computing x0 from [{len(initial_guesses)}] vectors '
+                            f'optim_algo: [{optim_algo}] '
+                            f'by using : [{objective_metric}]')
+
+                        dataset_info = {
+                            "we_model": embeddings_magnitude_model,
+                            "topn": k_topn,
+                            "k": k_topn,
+                            "optim_algo": optim_algo,
+                            "initial_guesses": initial_guesses,
+                            "initial_guesses_length": len(initial_guesses),
+                            "ground_truth": ground_truth,
+                            "ground_truth_length": len(ground_truth),
+                            "sklearn_metric_ap_score_enabled": sklearn_metric_ap_score_enabled,
+                            "objective_metric": objective_metric,
+                            "enable_most_similar_approx": enable_most_similar_approx,
+                            "verbose": verbose
+                        }
+                        _ = get_optimum(okg, dataset_info, choose_x0, filename, verbose=verbose)
+                        if verbose:  
+                            print(f'\n\n')
+                        else:
+                            print(f'ENDED ONE OF [{len(initial_guesses)}] vectors '
                                 f'optim_algo: [{optim_algo}] '
-                                f'by using : [{objective_metric}]')
-
-                            dataset_info = {
-                                "we_model": embeddings_magnitude_model,
-                                "topn": k_topn,
-                                "k": k_topn,
-                                "optim_algo": optim_algo,
-                                "initial_guesses": initial_guesses,
-                                "initial_guesses_length": len(initial_guesses),
-                                "ground_truth": ground_truth,
-                                "ground_truth_length": len(ground_truth),
-                                "sklearn_metric_ap_score_enabled": sklearn_metric_ap_score_enabled,
-                                "objective_metric": objective_metric,
-                                "enable_most_similar_approx": enable_most_similar_approx,
-                                "verbose": verbose
-                            }
-                            _ = get_optimum(okg, dataset_info, choose_x0, filename, verbose=verbose)
-                            if verbose:  
-                                print(f'\n\n')
-                            else:
-                                print(f'ENDED ONE OF [{len(initial_guesses)}] vectors '
-                                    f'optim_algo: [{optim_algo}] '
-                                    f'by using : [{objective_metric}] >>> [{filename}]')
-                            tmp -= 1
+                                f'by using : [{objective_metric}] >>> [{filename}]')
+                        tmp -= 1
 
         if verbose:  
             print(f'Optimization ended')
@@ -299,13 +298,11 @@ def run_experiments(models: list,
 # seed_sizes = [(k, 10) for k in [1, 2, 3, 5, 10, 20, 30, 40]]
 # seed_sizes += [(48, 1)]
 # print(seed_sizes)
-
 # run_experiments(models=[embeddings_magnitude_modelGN],
 #                 ground_truths=[load('usa_states')],
 #                 optim_algos=['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg'],
 #                 objective_metrics=['AP@k', 'MAP', 'sklearn_metric_ap_score_weighted', 'sklearn_metric_ap_score_macro'],
 #                 seed_sizes=seed_sizes,
-#                 k_topn_list=[50])
 
 
 def experiment_t1(args_dict):
@@ -313,7 +310,6 @@ def experiment_t1(args_dict):
     seed_sizes=args_dict['seed_sizes']
     ground_truths=args_dict['ground_truths']
     models=args_dict['models']
-    k_topn_list=args_dict['k_topn_list']
     lazy_loading=args_dict['lazy_loading']
     print("Starting experiment... [one_optim_algo: " + str(one_optim_algo) + " ] \t- [seed_sizes: " + str(seed_sizes) + "]" )
     ## (k, n) make an expertiment with a list of "k" elements for "n" times
@@ -322,7 +318,6 @@ def experiment_t1(args_dict):
                     optim_algos=[one_optim_algo],
                     objective_metrics=['AP@k'],
                     seed_sizes=seed_sizes,
-                    k_topn_list=k_topn_list,
                     lazy_loading=lazy_loading,
                     verbose=True)
     print("Ended experiment... [one_optim_algo: " + str(one_optim_algo) + " ] \t- [seed_sizes: " + str(seed_sizes) + "]" )
@@ -346,9 +341,8 @@ for one_optim_algo in optim_algos_list:
         args = {
             "one_optim_algo": one_optim_algo,
             "seed_sizes": [seed_sizes_list],
-            "ground_truths": [load('usa_states')],
+            "ground_truths": [load('usa_states'), load('universe_solar_planets'), load('king_of_rome')],
             "models": [embeddings_magnitude_modelGN, embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
-            "k_topn_list": [50],
             "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value
                                 #   -1 to disable lazy-loading and pre-load all vectors into memory (a la Gensim), 
                                 #   0 (default) to enable lazy-loading with an unbounded in-memory LRU cache, or 

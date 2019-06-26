@@ -327,9 +327,10 @@ def experiment_t1(args_dict):
                     optim_algos=[one_optim_algo],
                     objective_metrics=['AP@k'],
                     lazy_loading=lazy_loading,
-                    verbose=True)
+                    verbose=False)
     print("Ended experiment... [one_optim_algo: " + str(one_optim_algo) + " ]" )
-
+    tot_threads_running = tot_threads_running-1
+    print(F'Running yet {tot_threads_running}/{len(thread_list)} threads')
 
 import threading
 
@@ -339,7 +340,7 @@ print("STARTING")
 print("STARTING")
 # optim_algos_list = ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg']
 optim_algos_list = ['powell', 'BFGS', 'COBYLA']
-
+tot_threads_running = 0
 thread_list = []
 n=0
 for one_optim_algo in optim_algos_list:
@@ -359,3 +360,5 @@ print(F'Running {len(thread_list)} threads')
 
 for t in thread_list:
     t.start()
+
+tot_threads_running = len(thread_list)

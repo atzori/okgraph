@@ -98,6 +98,7 @@ def rosen_hess(x):
 def get_optimum(okg: okgraph.OKgraph, dataset_info: dict, choose_x0_closure: callable, filename: str, verbose=False):
     initial_guesses = dataset_info['initial_guesses']
     ground_truth = dataset_info['ground_truth']
+    ground_truth_name = dataset_info['ground_truth_name']
     enable_most_similar_approx = dataset_info['enable_most_similar_approx']
     optim_algo = dataset_info['optim_algo']
     objective_metric = dataset_info['objective_metric']

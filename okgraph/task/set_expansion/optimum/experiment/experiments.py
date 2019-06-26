@@ -238,7 +238,8 @@ def run_experiments(models: list,
         if verbose:  
             print(f'Model: {embeddings_magnitude_model} LOADED')
 
-        for ground_truth in ground_truths:
+        for ground_truth_name in ground_truths:
+            ground_truth = load(ground_truth_name) # this will read the text file
             k_topn = len(ground_truth)
             if verbose:  
                 print(f'Getting the ground_truth and without_not_exists')
@@ -287,6 +288,7 @@ def run_experiments(models: list,
                             "optim_algo": optim_algo,
                             "initial_guesses": initial_guesses,
                             "initial_guesses_length": len(initial_guesses),
+                            "ground_truth_name": ground_truth_name,
                             "ground_truth": ground_truth,
                             "ground_truth_length": len(ground_truth),
                             "sklearn_metric_ap_score_enabled": sklearn_metric_ap_score_enabled,
@@ -347,7 +349,7 @@ for one_optim_algo in optim_algos_list:
     n=n+1
     args = {
         "one_optim_algo": one_optim_algo,
-        "ground_truths": [load('usa_states'), load('universe_solar_planets'), load('king_of_rome'), load('period_7_element')],
+        "ground_truths": ['universe_solar_planets', 'king_of_rome', 'period_7_element'],
         "models": [embeddings_magnitude_modelGN, embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
         "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value
                             #   -1 to disable lazy-loading and pre-load all vectors into memory (a la Gensim), 

@@ -94,7 +94,7 @@ def rosen_hess(x):
     H = H + np.diag(diagonal)
     return H
 
-
+num_started_exp = 0
 def get_optimum(okg: okgraph.OKgraph, dataset_info: dict, choose_x0_closure: callable, filename: str, verbose=False):
     initial_guesses = dataset_info['initial_guesses']
     ground_truth = dataset_info['ground_truth']
@@ -106,8 +106,8 @@ def get_optimum(okg: okgraph.OKgraph, dataset_info: dict, choose_x0_closure: cal
     we_model = dataset_info['we_model']
     start = timeit.default_timer()
 
-
-    print(f'\n\tStarting optimization enable_most_similar_approx:{enable_most_similar_approx} of ({len(ground_truth)}) : {ground_truth[:3]}...'
+    num_started_exp = num_started_exp + 1
+    print(f'\t### Starting #{num_started_exp} optimization enable_most_similar_approx:{enable_most_similar_approx} of ({len(ground_truth)}) : {ground_truth[:3]}...'
         f'\n\t initial_guesses len : [{len(initial_guesses)}] vectors '
         f'\n\t optim_algo          : [{optim_algo}] '
         f'\n\t ground_truth_name   : [{ground_truth_name}] '

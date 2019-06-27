@@ -218,7 +218,6 @@ def generate_seed_sizes(max: int):
         if i<=max:
             max_comb = scipy.special.comb(max, i, exact=True)
             num_comb = 10 if 10<max_comb else max
-            print(f'{i} > {max_comb}')
             out_ss.append((i, num_comb))
     return out_ss
 
@@ -277,7 +276,7 @@ def run_experiments(models: list,
                 for initial_guesses in initial_guesses_list:
                     for objective_metric in objective_metrics:
 
-                        print(f'{tmp}) Computing x0 from [{len(initial_guesses)}] vectors '
+                        print(f'Computing x0 from [{len(initial_guesses)}] vectors '
                             f'optim_algo: [{optim_algo}] '
                             f'by using : [{objective_metric}]')
 

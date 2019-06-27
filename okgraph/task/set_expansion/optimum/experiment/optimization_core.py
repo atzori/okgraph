@@ -103,6 +103,7 @@ def get_optimum(okg: okgraph.OKgraph, dataset_info: dict, choose_x0_closure: cal
     optim_algo = dataset_info['optim_algo']
     objective_metric = dataset_info['objective_metric']
     topn = dataset_info['topn']
+    we_model = dataset_info['we_model']
     start = timeit.default_timer()
 
 

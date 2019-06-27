@@ -105,8 +105,14 @@ def get_optimum(okg: okgraph.OKgraph, dataset_info: dict, choose_x0_closure: cal
     topn = dataset_info['topn']
     start = timeit.default_timer()
 
-    if verbose:
-        print(f'\t\t\t\t\t\t\t\tStarting optimization enable_most_similar_approx:{enable_most_similar_approx} of ({len(ground_truth)}) : {ground_truth[:3]}...')
+
+    print(f'\n\tStarting optimization enable_most_similar_approx:{enable_most_similar_approx} of ({len(ground_truth)}) : {ground_truth[:3]}...'
+        f'\n\t initial_guesses len : [{len(initial_guesses)}] vectors '
+        f'\n\t optim_algo          : [{optim_algo}] '
+        f'\n\t ground_truth_name   : [{ground_truth_name}] '
+        f'\n\t we_model            : [{we_model}] '
+        f'\n\t by using            : [{objective_metric}] ')
+
     ground_truth_vectors = okg.v.query(ground_truth)
     objective = create_objective(okg, ground_truth, ground_truth_vectors,
                                  objective_metric=objective_metric,

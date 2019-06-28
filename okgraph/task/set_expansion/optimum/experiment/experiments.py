@@ -348,7 +348,7 @@ for one_optim_algo in optim_algos_list:
     n=n+1
     args = {
         "one_optim_algo": one_optim_algo,
-        "ground_truths": ['universe_solar_planets', 'king_of_rome', 'period_7_element'],
+        "ground_truths": ['usa_states', 'universe_solar_planets', 'king_of_rome', 'period_7_element'],
         "models": [embeddings_magnitude_modelGN, embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
         "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value
                             #   -1 to disable lazy-loading and pre-load all vectors into memory (a la Gensim), 

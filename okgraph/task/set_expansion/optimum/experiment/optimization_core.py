@@ -154,7 +154,7 @@ def get_optimum(okg: okgraph.OKgraph, dataset_info: dict, choose_x0_closure: cal
     dataset_info["nfev"] = solution.nfev
 
     stop = timeit.default_timer()
-    dataset_info["tot_time"] = (stop - start).replace('.','P').replace(',','.').replace('P',',')
+    dataset_info["tot_time"] = str(stop - start).replace('.','P').replace(',','.').replace('P',',')
 
     optimized_res = get_similar_and_save_results(okg, filename, solution.x, topn, "OPTIMIZED", ground_truth, dataset_info,
                                                  enable_most_similar_approx=enable_most_similar_approx)

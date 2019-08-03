@@ -121,6 +121,9 @@ def get_optimum(okg: okgraph.OKgraph, dataset_info: dict, choose_x0_closure: cal
                                  dataset_info=dataset_info,
                                  enable_most_similar_approx=enable_most_similar_approx,
                                  verbose=verbose)
+    if len(initial_guesses) <= 0:
+        print('ERROR: Cannot calculate with an initial guesses length equal to zero.')
+        return
     x0 = choose_x0_closure(okg.v.query(initial_guesses))
     if verbose:
         print(f'\t\t\t\t\t\t\t\tx0 = ({len(x0)}) : {x0[:3]}... ')

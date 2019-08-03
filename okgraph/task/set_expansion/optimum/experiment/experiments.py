@@ -45,7 +45,7 @@ def get_random_from(ground_truth: list, seed_size: int) -> list:
 
 
 # seed_sizes = [(1, 10), (2, 10), (3, 10), (5, 10), (10, 10), (20, 10), (30, 10), (40, 10), (50, 10)]
-def get_random_lists(ground_truth: list, seed_sizes: [int]) -> [list]:
+def get_random_lists(ground_truth: list, seed_sizes: [int], verbose = False) -> [list]:
     """
     Get a list of random lists from the ground truth.
     :param ground_truth:
@@ -56,18 +56,37 @@ def get_random_lists(ground_truth: list, seed_sizes: [int]) -> [list]:
     out_list_strings = set([])
     seed_repetitions = 0
 
+    if verbose:
+        print(f'seed_sizes {seed_sizes} ...')
+
     for seed_size in seed_sizes:
         seed_len = seed_size[0]
         seed_repetitions += seed_size[1]
-        # print(f'\r seed_repetitions {seed_repetitions} ...', end='')
-        while len(out_list) < seed_repetitions:
+        if verbose:
+            print(f'\r get random list of seed_size {seed_size} ...', end='')
+        
+        tmp_try = 100
+        tmp_prev = []
+        while tmp_try>0 and len(out_list) < seed_repetitions:
             to_add = get_random_from(ground_truth, seed_len)
+            if verbose:
+                print(f'len out_list {len(out_list)} ...')
 
             if "".join(to_add) not in out_list_strings:
                 out_list += [to_add]
                 out_list_strings.add("".join(to_add))
 
-    # print('seed_repetitions done.')
+            if tmp_prev == "".join(to_add):
+                tmp_try = tmp_try - 1
+                if tmp_try == 0:
+                    print('Too many tries on get_random_lists')
+            else:
+                tmp_try = 100
+
+            tmp_prev = "".join(to_add)
+
+    if verbose:
+        print('seed_repetitions done.')
     return [l for l in out_list]
 
 
@@ -169,7 +188,7 @@ def run_experiments(models: list,
             if verbose:
                 print(f'Getting the initial_guesses_list')
             seed_sizes = generate_seed_sizes(len(ground_truth_without_not_exists))
-            initial_guesses_list = get_random_lists(ground_truth_without_not_exists, seed_sizes)#[0:1]
+            initial_guesses_list = get_random_lists(ground_truth_without_not_exists, seed_sizes, verbose=verbose)#[0:1]
             if verbose:
                 print(f'Done. initial_guesses_list={initial_guesses_list} ')
 
@@ -271,8 +290,8 @@ thread_list = []
 n=0
 args = {
     # "optim_algos_list": ['BFGS', 'COBYLA', 'powell'],#, 'BFGS', 'COBYLA', 'nelder-mead', 'Newton-CG', 'CG'],
-    "optim_algos_list": ['TNC', 'SLSQP', 'dogleg', 'trust-ncg', 'BFGS', 'COBYLA', 'nelder-mead', 'Newton-CG', 'CG', 'powell'],
-    "ground_truths": ['universe_solar_planets', 'king_of_rome', 'period_7_element', 'usa_states'],# 'usa_states', 'universe_solar_planets', 'king_of_rome', 'period_7_element'],
+    "optim_algos_list": ['TNC'],#, 'SLSQP', 'dogleg'],#, 'trust-ncg', 'BFGS', 'COBYLA', 'nelder-mead', 'Newton-CG', 'CG', 'powell'],
+    "ground_truths": ['usa_states'],# 'usa_states', 'universe_solar_planets', 'king_of_rome', 'period_7_element'],
     "models": [embeddings_magnitude_modelGlove840B],#embeddings_magnitude_modelGN , embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
     "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value
                         #   -1 to disable lazy-loading and pre-load all vectors into memory (a la Gensim), 

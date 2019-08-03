@@ -39,9 +39,6 @@ def get_similar_and_save_results(okg: okgraph.OKgraph,
     return Metric.get_print_and_save_calculus(filename, dataset_info, p_list, save_info_title=save_info_title)
 
 
-class TookTooLong(Warning):
-    pass
-
 def create_objective(okg, ground_truth_set, ground_truth_set_vectors, dataset_info=dict(),
                      enable_most_similar_approx=False,
                      objective_metric=None,
@@ -153,8 +150,9 @@ def get_optimum(args_dict):
                                  enable_most_similar_approx=enable_most_similar_approx,
                                  verbose=verbose)
     if len(initial_guesses) <= 0:
-        print('ERROR: Cannot calculate with an initial guesses length equal to zero.')
+        print(f'ERROR: Cannot calculate with an initial guesses length equal to zero [{objective_metric}] [{we_model}] [{ground_truth_name}] [{optim_algo}].')
         return
+        
     x0 = choose_x0_closure(okg.v.query(initial_guesses))
     if verbose:
         print(f'\t\t\t\t\t\t\t\tx0 = ({len(x0)}) : {x0[:3]}... ')

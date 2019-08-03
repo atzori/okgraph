@@ -3,7 +3,8 @@ import scipy.optimize as so
 import okgraph
 import numpy as np
 import timeit
-
+import warnings
+import time
 
 def get_similar_and_save_results(okg: okgraph.OKgraph,
                                  filename: str,
@@ -38,6 +39,9 @@ def get_similar_and_save_results(okg: okgraph.OKgraph,
     return Metric.get_print_and_save_calculus(filename, dataset_info, p_list, save_info_title=save_info_title)
 
 
+class TookTooLong(Warning):
+    pass
+
 def create_objective(okg, ground_truth_set, ground_truth_set_vectors, dataset_info=dict(),
                      enable_most_similar_approx=False,
                      objective_metric=None,
@@ -49,6 +53,10 @@ def create_objective(okg, ground_truth_set, ground_truth_set_vectors, dataset_in
     def objective(x: [np.float64]): #-> numpy.float64
         globals()['iterations'] += 1
         iterations = globals()['iterations']
+
+        # if iterations >= 10: 
+        #     warnings.warn("Terminating optimization: time limit reached",
+        #                   TookTooLong)
 
         if enable_most_similar_approx is True:
             neighbours = okg.v.most_similar_approx(x, topn=k)
@@ -94,8 +102,31 @@ def rosen_hess(x):
     H = H + np.diag(diagonal)
     return H
 
+
+class TookTooLong(Warning):
+        pass
+
+class MinimizeStopper(object):
+    def __init__(self, max_sec=2):
+        self.max_sec = max_sec
+        self.start = time.time()
+    def __call__(self, xk, state: so.OptimizeResult):
+        elapsed = time.time() - self.start
+        print("Elapsed: %.3f sec" % elapsed)
+        if elapsed > self.max_sec:
+            warnings.warn("Terminating optimization: time limit reached",
+                          TookTooLong)
+            return True
+
+
 globals()['num_started_exp'] = 0
-def get_optimum(okg: okgraph.OKgraph, dataset_info: dict, choose_x0_closure: callable, filename: str, verbose=False):
+def get_optimum(args_dict):
+    okg = args_dict['okg'] # okgraph.OKgraph
+    dataset_info = args_dict['dataset_info'] # dict
+    choose_x0_closure = args_dict['choose_x0_closure'] # callable
+    filename = args_dict['filename'] # str
+    verbose = False if args_dict['verbose'] is None else args_dict['verbose']
+
     initial_guesses = dataset_info['initial_guesses']
     ground_truth = dataset_info['ground_truth']
     ground_truth_name = dataset_info['ground_truth_name']
@@ -131,6 +162,8 @@ def get_optimum(okg: okgraph.OKgraph, dataset_info: dict, choose_x0_closure: cal
                                                enable_most_similar_approx=enable_most_similar_approx)
     if verbose:
         print(f' most similar: {initial_res["the_most_similar_words"][:3]}...\n', end='')
+
+    opt = {'disp': True,'maxiter': 1}
 
     if optim_algo is None:
         solution = so.minimize(objective, x0)

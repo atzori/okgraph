@@ -131,11 +131,11 @@ def get_optimum(okg: okgraph.OKgraph, dataset_info: dict, choose_x0_closure: cal
 
     if optim_algo is None:
         solution = so.minimize(objective, x0)
-    elif optim_algo in ['powell', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'trust-ncg']:
+    elif optim_algo in ['powell', 'CG', 'TNC', 'COBYLA', 'SLSQP']:
         solution = so.minimize(objective, x0, method=optim_algo)
     elif optim_algo == 'nelder-mead':
         solution = so.minimize(objective, x0, method='nelder-mead', options={'xtol': 1e-8, 'disp': True})
-    elif optim_algo in ['BFGS', 'dogleg']:
+    elif optim_algo in ['BFGS', 'dogleg', 'trust-ncg']:
         solution = so.minimize(objective, x0, method='BFGS', jac=rosen_der, options={'disp': True})
     elif optim_algo == 'Newton-CG':
         solution = so.minimize(objective, x0, method='Newton-CG', jac=rosen_der, hess=rosen_hess, options={'xtol': 1e-8, 'disp': True})

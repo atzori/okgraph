@@ -6,7 +6,7 @@ import timeit
 import warnings
 import time
 import uuid
-
+import datetime
 
 def get_similar_and_save_results(okg: okgraph.OKgraph,
                                  filename: str,
@@ -34,6 +34,8 @@ def get_similar_and_save_results(okg: okgraph.OKgraph,
     else:
         the_most_similar = okg.v.most_similar(vector, topn=topn)
     the_most_similar_words = [w for w, v in the_most_similar]
+    now = datetime.datetime.now()
+    dataset_info['exp_date'] = now.strftime("%Y-%m-%d %H:%M:%S")
     dataset_info['solution'] = vector
     dataset_info['the_most_similar_words'] = the_most_similar_words
     dataset_info['missing_words'] = [item for item in ground_truth if item not in the_most_similar_words]

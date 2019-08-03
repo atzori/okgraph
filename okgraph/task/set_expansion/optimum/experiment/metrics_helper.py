@@ -5,7 +5,6 @@
 
 from math import log
 from sklearn import metrics
-import datetime
 import numpy as np
 import csv
 
@@ -202,10 +201,10 @@ class Metric:
         :param verbose:
         :return:
         """
-        now = datetime.datetime.now()
+        exp_date = dataset_info["exp_date"]
         objective_metric = dataset_info["objective_metric"]
 
-        out_calc = dict(DATE=now.strftime("%Y-%m-%d %H:%M:%S"))
+        out_calc = dict(DATE=exp_date)
 
         for key in dataset_info.keys():
             out_calc[key] = dataset_info[key]

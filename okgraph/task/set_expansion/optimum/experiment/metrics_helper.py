@@ -147,7 +147,8 @@ class Metric:
                                     dataset_info: dict,
                                     results: [int],
                                     save_info_title: str = "",
-                                    verbose: bool = False):
+                                    verbose: bool = False,
+                                    save_results: bool = True):
         """
 
         :param filename:
@@ -158,10 +159,15 @@ class Metric:
         :return:
         """
         with open(filename, mode='a') as my_csv_data:
-            writer = csv.writer(my_csv_data, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            if save_results:
+                writer = csv.writer(my_csv_data, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             num_lines = sum(1 for _ in open(filename))
             dataset_info['INFO'] = save_info_title
             out_calc = Metric.calculate_all(dataset_info, results, verbose)
+
+            if not save_results:
+                return out_calc
+
             titles = []
             results = []
             title_before = ''
@@ -177,10 +183,11 @@ class Metric:
                 else:
                     results.append('')
 
-            if num_lines == 0:
+            if num_lines == 0 and save_results:
                 writer.writerow(titles)
 
-            writer.writerow(results)
+            if save_results:
+                writer.writerow(results)
 
         return out_calc
 
@@ -241,7 +248,7 @@ class Metric:
                                      'CG', 'DCG', 'IDCG', 'NDCG',
                                      'AP@5', 'AP@10', 'AP@20', 'AP@50', 'AP@100',
                                      'missing_words', 'wrong_words', 'we_model',
-                                     'PRECISION', 'RECALL', 'Interp_Prec', 'the_most_similar_words', 'tot_time', 'ground_truth_name']
+                                     'PRECISION', 'RECALL', 'Interp_Prec', 'the_most_similar_words', 'tot_time', 'ground_truth_name', 'exp_id']
 
         if verbose:
         #     print(f'{out_calc}', end='')

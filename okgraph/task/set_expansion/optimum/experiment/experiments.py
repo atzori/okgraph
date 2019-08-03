@@ -122,64 +122,72 @@ def remove_words_doesnt_match(okg: okgraph.OKgraph, words: list, initial_guesses
     return w2
 
 
-def get_optim(embeddings_magnitude_model: str, initial_guesses: [int],
-              okg: okgraph.OKgraph,
-              choose_x0: callable,
-              filename: str,
-              ground_truth: [int],
-              optim_algo: str = 'powell',
-              objective_metric: str = 'AP@k',
-              enable_most_similar_approx: bool = False,
-              verbose=False):
+# def get_optim(embeddings_magnitude_model: str, initial_guesses: [int],
+#               okg: okgraph.OKgraph,
+#               choose_x0: callable,
+#               filename: str,
+#               ground_truth: [int],
+#               optim_algo: str = 'powell',
+#               objective_metric: str = 'AP@k',
+#               enable_most_similar_approx: bool = False,
+#               verbose=False):
 
-    if verbose:
-        print(f'Computing x0 from [{len(initial_guesses)}] vectors '
-            f'optim_algo: [{optim_algo}] '
-            f'by using : [{objective_metric}]')
+#     if verbose:
+#         print(f'Computing x0 from [{len(initial_guesses)}] vectors '
+#             f'optim_algo: [{optim_algo}] '
+#             f'by using : [{objective_metric}]')
 
-    while len(initial_guesses) < 50:
-        i = len(initial_guesses)  # 7
-        dataset_info = {
-            "we_model": embeddings_magnitude_model,
-            "topn": i+2,  # 9
-            "k": i+2,
-            "optim_algo": optim_algo,
-            "initial_guesses": initial_guesses,
-            "initial_guesses_length": len(initial_guesses),
-            "ground_truth": initial_guesses,
-            "ground_truth_length": len(initial_guesses),
-            "sklearn_metric_ap_score_enabled": True,
-            "objective_metric": objective_metric,
-            "enable_most_similar_approx": enable_most_similar_approx
-        }
-        if verbose:
-            print(f'\n{i})) started')  # 7
-        old_initial_guesses = initial_guesses
-        if verbose:
-            print(f'old_initial_guesses: [{old_initial_guesses}]')
+#     while len(initial_guesses) < 50:
+#         i = len(initial_guesses)  # 7
+#         dataset_info = {
+#             "we_model": embeddings_magnitude_model,
+#             "topn": i+2,  # 9
+#             "k": i+2,
+#             "optim_algo": optim_algo,
+#             "initial_guesses": initial_guesses,
+#             "initial_guesses_length": len(initial_guesses),
+#             "ground_truth": initial_guesses,
+#             "ground_truth_length": len(initial_guesses),
+#             "sklearn_metric_ap_score_enabled": True,
+#             "objective_metric": objective_metric,
+#             "enable_most_similar_approx": enable_most_similar_approx
+#         }
+#         if verbose:
+#             print(f'\n{i})) started')  # 7
+#         old_initial_guesses = initial_guesses
+#         if verbose:
+#             print(f'old_initial_guesses: [{old_initial_guesses}]')
 
-        initial_guesses = get_optimum(okg, dataset_info, choose_x0, filename, verbose=verbose)
 
-        solution = initial_guesses['solution']
-        the_most_similar_words = initial_guesses['the_most_similar_words']
-        get_similar_and_save_results(okg, filename, solution,
-                                     len(ground_truth),
-                                     "ITERATION",
-                                     ground_truth,
-                                     dataset_info,
-                                     enable_most_similar_approx=enable_most_similar_approx)
-        if verbose:
-            print(f'the_most_similar_words: [{the_most_similar_words}]')
+#         args = {
+#             "okg": okg, 
+#             "dataset_info": dataset_info, 
+#             "choose_x0_closure": choose_x0, 
+#             "filename": filename, 
+#             "verbose": verbose
+#         }
+#         initial_guesses = get_optimum(args)
 
-        the_most_similar_words = remove_words_doesnt_match(okg, the_most_similar_words, old_initial_guesses, max=1, verbose=verbose)  # 8
+#         solution = initial_guesses['solution']
+#         the_most_similar_words = initial_guesses['the_most_similar_words']
+#         get_similar_and_save_results(okg, filename, solution,
+#                                      len(ground_truth),
+#                                      "ITERATION",
+#                                      ground_truth,
+#                                      dataset_info,
+#                                      enable_most_similar_approx=enable_most_similar_approx)
+#         if verbose:
+#             print(f'the_most_similar_words: [{the_most_similar_words}]')
 
-        initial_guesses = the_most_similar_words
-        if initial_guesses == old_initial_guesses:
-            return initial_guesses
-        if verbose:
-            print(f'\n{i})) {initial_guesses}')
+#         the_most_similar_words = remove_words_doesnt_match(okg, the_most_similar_words, old_initial_guesses, max=1, verbose=verbose)  # 8
 
-    return initial_guesses
+#         initial_guesses = the_most_similar_words
+#         if initial_guesses == old_initial_guesses:
+#             return initial_guesses
+#         if verbose:
+#             print(f'\n{i})) {initial_guesses}')
+
+#     return initial_guesses
 
 
 

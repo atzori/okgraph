@@ -142,30 +142,31 @@ class Metric:
         return out_list
 
     @staticmethod
-    def get_print_and_save_calculus(filename: str,
-                                    dataset_info: dict,
-                                    results: [int],
-                                    save_info_title: str = "",
-                                    verbose: bool = False,
-                                    save_results: bool = True):
+    def calculate_all_and_save(filename: str,
+                                dataset_info: dict,
+                                verbose: bool = False):
         """
 
         :param filename:
         :param dataset_info:
-        :param results:
-        :param save_info_title:
         :param verbose:
         :return:
         """
+
+        results = dataset_info["results"]
+        save_info_title = dataset_info["save_info_title"]
+
+        # Add titles and inizial results (centroid)
+        if "initial_res" in dataset_info:
+            initial_res = dataset_info["initial_res"]
+            results = initial_res["results"]
+            Metric.calculate_all_and_save(filename, initial_res, verbose)
+
         with open(filename, mode='a') as my_csv_data:
-            if save_results:
-                writer = csv.writer(my_csv_data, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            writer = csv.writer(my_csv_data, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             num_lines = sum(1 for _ in open(filename))
             dataset_info['INFO'] = save_info_title
-            out_calc = Metric.calculate_all(dataset_info, results, verbose)
-
-            if not save_results:
-                return out_calc
+            out_calc = Metric.calculate_all(dataset_info, verbose)
 
             titles = []
             results = []
@@ -182,27 +183,25 @@ class Metric:
                 else:
                     results.append('')
 
-            if num_lines == 0 and save_results:
+            if num_lines == 0:
                 writer.writerow(titles)
 
-            if save_results:
-                writer.writerow(results)
+            writer.writerow(results)
 
         return out_calc
 
     @staticmethod
     def calculate_all(dataset_info: dict,
-                      results: [int] = [],
                       verbose: bool = False):
         """
 
         :param dataset_info:
-        :param results:
         :param verbose:
         :return:
         """
         exp_date = dataset_info["exp_date"]
         objective_metric = dataset_info["objective_metric"]
+        results = dataset_info["results"]
 
         out_calc = dict(DATE=exp_date)
 

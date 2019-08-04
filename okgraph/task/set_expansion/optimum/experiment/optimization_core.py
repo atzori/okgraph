@@ -8,46 +8,54 @@ import time
 import uuid
 import datetime
 
+
 def get_similar_and_save_results(okg: okgraph.OKgraph,
-                                 filename: str,
-                                 vector: [float],
-                                 topn: int,
-                                 save_info_title: str,
-                                 ground_truth: [str],
-                                 dataset_info: dict,
-                                 enable_most_similar_approx=False,
-                                 save_results=True):
+                                filename: str,
+                                vector: [float],
+                                topn: int,
+                                ground_truth: [str],
+                                dataset_info: dict,
+                                enable_most_similar_approx=False,
+                                save_results=True,
+                                verbose=False):
     """
 
     :param okg:
     :param filename:
     :param vector:
     :param topn:
-    :param save_info_title:
     :param ground_truth:
     :param dataset_info:
     :param enable_most_similar_approx:
+    :param verbose:
     :return:
     """
+
     if enable_most_similar_approx is True:
         the_most_similar = okg.v.most_similar_approx(vector, topn=topn)
     else:
         the_most_similar = okg.v.most_similar(vector, topn=topn)
     the_most_similar_words = [w for w, v in the_most_similar]
+
     now = datetime.datetime.now()
     dataset_info['exp_date'] = now.strftime("%Y-%m-%d %H:%M:%S")
     dataset_info['solution'] = vector
     dataset_info['the_most_similar_words'] = the_most_similar_words
     dataset_info['missing_words'] = [item for item in ground_truth if item not in the_most_similar_words]
     dataset_info['wrong_words'] = [item for item in the_most_similar_words if item not in ground_truth]
-    p_list = [1 if word in ground_truth else 0 for word in the_most_similar_words]
-    return Metric.get_print_and_save_calculus(filename, dataset_info, p_list, save_info_title=save_info_title, save_results=save_results)
+    dataset_info['results'] = [1 if word in ground_truth else 0 for word in the_most_similar_words]
+
+    if not save_results:
+        return Metric.calculate_all(dataset_info, verbose)
+
+    return Metric.calculate_all_and_save(filename, dataset_info, verbose=verbose)
 
 
 def create_objective(okg, ground_truth_set, ground_truth_set_vectors, dataset_info=dict(),
                      enable_most_similar_approx=False,
                      objective_metric=None,
                      verbose=False):
+
     globals()['iterations'] = 0
     globals()['max_avgp'] = 0
     k = dataset_info["topn"]
@@ -69,7 +77,8 @@ def create_objective(okg, ground_truth_set, ground_truth_set_vectors, dataset_in
 
         if verbose:
             print(f'...', end='')
-        avgp = Metric.calculate_all(dataset_info, true_false_list, verbose=False)[objective_metric]
+
+        avgp = Metric.calculate_all(dataset_info, verbose=verbose)[objective_metric]
 
         max_avgp = globals()['max_avgp']
         if abs(avgp) > abs(max_avgp):
@@ -163,9 +172,14 @@ def get_optimum(args_dict):
         print(f'\t\t\t\t\t\t\t\tx0 = ({len(x0)}) : {x0[:3]}... ')
     
     dataset_info['exp_id'] = str(uuid.uuid4())
-    initial_res = get_similar_and_save_results(okg, filename, x0, topn, "CENTROID", ground_truth, dataset_info,
-                                               enable_most_similar_approx=enable_most_similar_approx, 
-                                               save_results=False)
+    initial_res = get_similar_and_save_results(okg, filename, x0, topn, ground_truth, dataset_info,
+                                                enable_most_similar_approx=enable_most_similar_approx,
+                                                save_results=False,
+                                                verbose=verbose)
+            
+    initial_res["save_info_title"] = "CENTROID"
+    dataset_info['initial_res'] = initial_res
+
     if verbose:
         print(f' most similar: {initial_res["the_most_similar_words"][:3]}...\n', end='')
 
@@ -192,19 +206,17 @@ def get_optimum(args_dict):
         if verbose:
             print(f'\tSUCCESS :) - {solution.message} - but wait.....')
 
-
-
-    initial_res = get_similar_and_save_results(okg, filename, x0, topn, "CENTROID", ground_truth, dataset_info,
-                                               enable_most_similar_approx=enable_most_similar_approx)
-
     dataset_info["optim_message"] = solution.message
     dataset_info["nfev"] = solution.nfev
 
     stop = timeit.default_timer()
     dataset_info["tot_time"] = str(stop - start).replace('.','P').replace(',','.').replace('P',',')
+    dataset_info["save_info_title"] = "OPTIMIZED"
 
-    optimized_res = get_similar_and_save_results(okg, filename, solution.x, topn, "OPTIMIZED", ground_truth, dataset_info,
-                                                 enable_most_similar_approx=enable_most_similar_approx)
+    optimized_res = get_similar_and_save_results(okg, filename, solution.x, topn, ground_truth, dataset_info,
+                                                enable_most_similar_approx=enable_most_similar_approx,
+                                                save_results=True,
+                                                verbose=verbose)
 
     missing_words = optimized_res["missing_words"]
     wrong_words = optimized_res["wrong_words"]

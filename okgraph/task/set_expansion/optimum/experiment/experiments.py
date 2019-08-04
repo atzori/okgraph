@@ -257,6 +257,7 @@ def experiment_t1(args_dict):
     optim_algos_list = args_dict['optim_algos_list']
     ground_truths = args_dict['ground_truths']
     models = args_dict['models']
+    verbose = args_dict['verbose']
     lazy_loading = args_dict['lazy_loading']
     print(f"Starting experiments... ["+str(optim_algos_list)+"] " )
     ## (k, n) make an expertiment with a list of "k" elements for "n" times
@@ -265,7 +266,7 @@ def experiment_t1(args_dict):
                     optim_algos=optim_algos_list,
                     objective_metrics=['AP@k'],
                     lazy_loading=lazy_loading,
-                    verbose=False)
+                    verbose=verbose)
 
     thread_list = globals()['thread_list'][0:5]
     MAX_RUNNING_THREADS_AT_A_TIME = max_at_a_time
@@ -296,7 +297,9 @@ thread_list = []
 n=0
 args = {
     "max_at_a_time": 3,
-    "optim_algos_list": ['TNC', 'SLSQP', 'dogleg', 'trust-ncg', 'BFGS', 'COBYLA', 'nelder-mead', 'Newton-CG', 'CG', 'powell'],
+    "verbose": False,
+    # "optim_algos_list": ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg'],
+    "optim_algos_list": ['powell'],
     "ground_truths": ['period_7_element'],# 'usa_states', 'universe_solar_planets', 'king_of_rome', 'period_7_element'],
     "models": [embeddings_magnitude_modelGlove840B],#embeddings_magnitude_modelGN , embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
     "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value

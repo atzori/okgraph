@@ -177,12 +177,13 @@ def get_optimum(args_dict):
         print(f'\t\t\t\t\t\t\t\tx0 = ({len(x0)}) : {x0[:3]}... ')
     
     dataset_info['exp_id'] = str(uuid.uuid4())
+    dataset_info["save_info_title"] = "CENTROID"
+    dataset_info['INFO'] = dataset_info["save_info_title"]
     initial_res = get_similar_and_save_results(okg, filename, x0, topn, ground_truth, dataset_info,
                                                 enable_most_similar_approx=enable_most_similar_approx,
                                                 save_results=False,
                                                 verbose=verbose)
             
-    initial_res["save_info_title"] = "CENTROID"
     dataset_info['initial_res'] = initial_res
 
     if verbose:
@@ -217,7 +218,7 @@ def get_optimum(args_dict):
     stop = timeit.default_timer()
     dataset_info["tot_time"] = str(stop - start).replace('.','P').replace(',','.').replace('P',',')
     dataset_info["save_info_title"] = "OPTIMIZED"
-
+    dataset_info['INFO'] = dataset_info["save_info_title"]
     optimized_res = get_similar_and_save_results(okg, filename, solution.x, topn, ground_truth, dataset_info,
                                                 enable_most_similar_approx=enable_most_similar_approx,
                                                 save_results=True,

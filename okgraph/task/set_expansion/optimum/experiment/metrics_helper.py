@@ -143,8 +143,6 @@ class Metric:
 
     @staticmethod
     def get_exp_string_and_output_calculus(filename, dataset_info, verbose):
-        save_info_title = dataset_info["save_info_title"]
-        dataset_info['INFO'] = save_info_title
         out_calc = Metric.calculate_all(dataset_info, verbose)
 
         titles = []
@@ -188,7 +186,6 @@ class Metric:
 
             writer = csv.writer(my_csv_data, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-            # results = dataset_info["results"]
             final_results_and_titles = Metric.get_exp_string_and_output_calculus(filename, dataset_info, verbose)
 
             # Add titles
@@ -272,7 +269,7 @@ class Metric:
             print(f'{out_calc["DATE"]} [{out_calc["TrueP"]}/{out_calc["ground_truth_length"]}] : '
                   f'\t{objective_metric} {out_calc[objective_metric]} '
                   f'\t{out_calc["INFO"]} '
-                  f'\t{out_calc["tot_time"]} '
+                  f'\t{out_calc["tot_time"]} ' if 'tot_time' in out_calc else ''
                   f'\tMAP {out_calc["MAP"]} '
                   f'\tPa50 {out_calc["Pa50"]} '
                   f'\tAP@50 {out_calc["AP@50"]} '

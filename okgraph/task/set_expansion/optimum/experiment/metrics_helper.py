@@ -142,6 +142,33 @@ class Metric:
         return out_list
 
     @staticmethod
+    def get_exp_string_and_output_calculus(filename, dataset_info, verbose):
+        save_info_title = dataset_info["save_info_title"]
+        dataset_info['INFO'] = save_info_title
+        out_calc = Metric.calculate_all(dataset_info, verbose)
+
+        titles = []
+        results_list = []
+        title_before = ''
+        for out_calc_key in out_calc['ORDERED_KEYS']:
+            if title_before == 'objective_metric':
+                titles.append('objective_metric_result')
+            else:
+                titles.append(out_calc_key)
+            title_before = out_calc_key
+
+            if out_calc.get(out_calc_key) is not None:
+                results_list.append(out_calc.get(out_calc_key))
+            else:
+                results_list.append('')
+
+        return dict(titles=titles, results_list=results_list, out_calc=out_calc)
+
+        
+
+
+
+    @staticmethod
     def calculate_all_and_save(filename: str,
                                 dataset_info: dict,
                                 verbose: bool = False):
@@ -153,42 +180,31 @@ class Metric:
         :return:
         """
 
-        results = dataset_info["results"]
-        save_info_title = dataset_info["save_info_title"]
-
-        # Add titles and inizial results (centroid)
-        if "initial_res" in dataset_info:
-            initial_res = dataset_info["initial_res"]
-            results = initial_res["results"]
-            Metric.calculate_all_and_save(filename, initial_res, verbose)
 
         with open(filename, mode='a') as my_csv_data:
+
             writer = csv.writer(my_csv_data, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             num_lines = sum(1 for _ in open(filename))
-            dataset_info['INFO'] = save_info_title
-            out_calc = Metric.calculate_all(dataset_info, verbose)
 
-            titles = []
-            results = []
-            title_before = ''
-            for out_calc_key in out_calc['ORDERED_KEYS']:
-                if title_before == 'objective_metric':
-                    titles.append('objective_metric_result')
-                else:
-                    titles.append(out_calc_key)
-                title_before = out_calc_key
+            # results = dataset_info["results"]
+            final_results_and_titles = Metric.get_exp_string_and_output_calculus(filename, dataset_info, verbose)
 
-                if out_calc.get(out_calc_key) is not None:
-                    results.append(out_calc.get(out_calc_key))
-                else:
-                    results.append('')
-
+            # Add titles
             if num_lines == 0:
+                titles = final_results_and_titles.get('titles')
                 writer.writerow(titles)
 
-            writer.writerow(results)
+            # add inizial results (centroid)
+            if "initial_res" in dataset_info:
+                initial_dataset_info = dataset_info["initial_res"]
+                initial_results = Metric.get_exp_string_and_output_calculus(filename, initial_dataset_info, verbose).get('results_list')
+                writer.writerow(initial_results)
 
-        return out_calc
+            # add final optimised results
+            final_results = final_results_and_titles.get('results_list')
+            writer.writerow(final_results)
+
+        return final_results_and_titles.get('out_calc')
 
     @staticmethod
     def calculate_all(dataset_info: dict,

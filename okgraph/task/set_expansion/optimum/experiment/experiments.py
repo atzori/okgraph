@@ -209,7 +209,7 @@ def run_experiments(models: list,
             for initial_guesses in initial_guesses_list:
                 if len(initial_guesses) <= 0:
                     print(f'ERROR: Cannot calculate with an initial guesses length equal to zero [{embeddings_magnitude_model}] [{ground_truth_name}].')
-                    return
+                    continue # go to the next iteration
         
                 for optim_algo in optim_algos:
                     filename = f'results/res_{optim_algo}_{now.strftime("%Y-%m-%d_%H:%M:%S.%f")[:-3]}.csv'
@@ -268,7 +268,7 @@ def experiment_t1(args_dict):
                     lazy_loading=lazy_loading,
                     verbose=verbose)
 
-    thread_list = globals()['thread_list'][0:5]
+    thread_list = globals()['thread_list']
     MAX_RUNNING_THREADS_AT_A_TIME = max_at_a_time
     TOTAL_THREADS_TO_RUN = len(thread_list)
     thread_list_index = 0
@@ -296,12 +296,14 @@ print("STARTING")
 thread_list = []
 n=0
 args = {
-    "max_at_a_time": 3,
+    "max_at_a_time": 20,
     "verbose": False,
-    # "optim_algos_list": ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg'],
-    "optim_algos_list": ['powell'],
-    "ground_truths": ['period_7_element'],# 'usa_states', 'universe_solar_planets', 'king_of_rome', 'period_7_element'],
-    "models": [embeddings_magnitude_modelGlove840B],#embeddings_magnitude_modelGN , embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
+    # "optim_algos_list": ['COBYLA'],
+    "optim_algos_list": ['COBYLA', 'powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg'],
+    "ground_truths": ['usa_states', 'universe_solar_planets', 'king_of_rome', 'period_7_element'],
+    # "ground_truths": ['usa_states'],
+    "models": [embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGN , embeddings_magnitude_modelGlove840B],
+    # "models": [embeddings_magnitude_modelGN],#embeddings_magnitude_modelGN , embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
     "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value
                         #   -1 to disable lazy-loading and pre-load all vectors into memory (a la Gensim), 
                         #   0 (default) to enable lazy-loading with an unbounded in-memory LRU cache, or 

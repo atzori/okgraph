@@ -5,6 +5,7 @@ import numpy as np
 import datetime
 import scipy
 import threading
+import time
 
 from dataset_helper import *
 from optimization_core import *
@@ -214,10 +215,6 @@ def run_experiments(models: list,
                     filename = f'results/res_{optim_algo}_{now.strftime("%Y-%m-%d_%H:%M:%S.%f")[:-3]}.csv'
                     for objective_metric in objective_metrics:
 
-                        print(f'Computing x0 from [{len(initial_guesses)}] vectors '
-                            f'optim_algo: [{optim_algo}] '
-                            f'by using : [{objective_metric}]')
-
                         dataset_info = {
                             "we_model": embeddings_magnitude_model,
                             "topn": k_topn,
@@ -244,31 +241,23 @@ def run_experiments(models: list,
                         }
                         globals()['thread_list'].append(threading.Thread(name="T" + str(n), target=get_optimum, args=(args,)))
                         thread_list = globals()['thread_list']
-                        globals()['thread_list'][-1].start()
-                        print(f'\nRunning {len(thread_list)} threads')
-
 
                         if verbose:
                             print(f'\n\n')
-                        else:
-                            print(f'ENDED ONE OF [{len(initial_guesses)}] vectors '
-                                f'optim_algo: [{optim_algo}] '
-                                f'by using : [{objective_metric}] >>> [{filename}]')
+                        # else:
+                        #     print(f'ENDED ONE OF [{len(initial_guesses)}] vectors '
+                        #         f'optim_algo: [{optim_algo}] '
+                        #         f'by using : [{objective_metric}] >>> [{filename}]')
                         tmp -= 1
-
-        if verbose:
-            print(f'Optimization ended')
-            
-        print(f'filename = {filename}')
-
 
 
 
 def experiment_t1(args_dict):
-    optim_algos_list=args_dict['optim_algos_list']
-    ground_truths=args_dict['ground_truths']
-    models=args_dict['models']
-    lazy_loading=args_dict['lazy_loading']
+    max_at_a_time = 1 if args_dict['max_at_a_time'] is None else args_dict['max_at_a_time']
+    optim_algos_list = args_dict['optim_algos_list']
+    ground_truths = args_dict['ground_truths']
+    models = args_dict['models']
+    lazy_loading = args_dict['lazy_loading']
     print(f"Starting experiments... ["+str(optim_algos_list)+"] " )
     ## (k, n) make an expertiment with a list of "k" elements for "n" times
     run_experiments(models=models,
@@ -277,8 +266,25 @@ def experiment_t1(args_dict):
                     objective_metrics=['AP@k'],
                     lazy_loading=lazy_loading,
                     verbose=False)
-    n_threads = len(globals()['thread_list'])
-    print(f"Running [{n_threads}] threads/experiments." )
+
+    thread_list = globals()['thread_list'][0:5]
+    MAX_RUNNING_THREADS_AT_A_TIME = max_at_a_time
+    TOTAL_THREADS_TO_RUN = len(thread_list)
+    thread_list_index = 0
+    tmp_chr = '\\'
+    print(f"Starting [{TOTAL_THREADS_TO_RUN}] threads/experiments." )
+    while (thread_list_index < len(thread_list)):
+        time.sleep(0.5)
+        l = threading.enumerate()
+        while len(l) < MAX_RUNNING_THREADS_AT_A_TIME:
+            thread_list[thread_list_index].start()
+            thread_list_index = thread_list_index + 1
+            l = threading.enumerate()
+
+        tmp_chr = '\\' if tmp_chr == '/' else '/'
+        print(f'\r Threads started [{thread_list_index}] {tmp_chr} {thread_list_index}/{TOTAL_THREADS_TO_RUN} threads ({len(l)} running)', end='')
+
+
 
 
 print("STARTING")
@@ -289,9 +295,9 @@ print("STARTING")
 thread_list = []
 n=0
 args = {
-    # "optim_algos_list": ['BFGS', 'COBYLA', 'powell'],#, 'BFGS', 'COBYLA', 'nelder-mead', 'Newton-CG', 'CG'],
-    "optim_algos_list": ['TNC'],#, 'SLSQP', 'dogleg'],#, 'trust-ncg', 'BFGS', 'COBYLA', 'nelder-mead', 'Newton-CG', 'CG', 'powell'],
-    "ground_truths": ['usa_states'],# 'usa_states', 'universe_solar_planets', 'king_of_rome', 'period_7_element'],
+    "max_at_a_time": 3,
+    "optim_algos_list": ['TNC', 'SLSQP', 'dogleg', 'trust-ncg', 'BFGS', 'COBYLA', 'nelder-mead', 'Newton-CG', 'CG', 'powell'],
+    "ground_truths": ['period_7_element'],# 'usa_states', 'universe_solar_planets', 'king_of_rome', 'period_7_element'],
     "models": [embeddings_magnitude_modelGlove840B],#embeddings_magnitude_modelGN , embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
     "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value
                         #   -1 to disable lazy-loading and pre-load all vectors into memory (a la Gensim), 

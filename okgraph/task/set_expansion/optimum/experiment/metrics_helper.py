@@ -7,7 +7,7 @@ from math import log
 from sklearn import metrics
 import numpy as np
 import csv
-
+import os.path
 
 class Metric:
 
@@ -180,11 +180,13 @@ class Metric:
         :return:
         """
 
+        num_lines = 0
+        if os.path.exists(filename):
+            num_lines = sum(1 for _ in open(filename))
 
         with open(filename, mode='a') as my_csv_data:
 
             writer = csv.writer(my_csv_data, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            num_lines = sum(1 for _ in open(filename))
 
             # results = dataset_info["results"]
             final_results_and_titles = Metric.get_exp_string_and_output_calculus(filename, dataset_info, verbose)

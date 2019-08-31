@@ -23,7 +23,7 @@ MySettings.resultsRange = "A1:AS5200";
 function searchWorstAndBestCases() {
 
     var objective_metric_list = ["AP@k"];
-    var optim_algo_list = ['powell']//, 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg', 'COBYLA'];
+    var optim_algo_list = ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg', 'COBYLA'];
     var we_model_list = ["models/GoogleNews-vectors-negative300.magnitude", "models/glove.840B.300d.magnitude"];
     var ground_truth_name_list = ["usa_states", "universe_solar_planets", "king_of_rome", "period_7_element"];
 
@@ -69,6 +69,7 @@ function addRowWithAverageWorstAndBestCase(sheetName, filters, row_i) {
     var bestAndWorstCases = getBestAndWorstCaseFrom(filteredRows)
     var rowsOfWorstCaseExperiment = bestAndWorstCases.rowsOfWorstCaseExperiment;
     var rowsOfBestCaseExperiment = bestAndWorstCases.rowsOfBestCaseExperiment;
+    var averageCaseObj = bestAndWorstCases.averageCaseObj;
 
     var worstCaseExperimentId = rowsOfWorstCaseExperiment.centroid[ColumnIndex.experimentId];
     var bestCaseExperimentId = rowsOfBestCaseExperiment.centroid[ColumnIndex.experimentId];
@@ -77,7 +78,7 @@ function addRowWithAverageWorstAndBestCase(sheetName, filters, row_i) {
     if (!worstCaseExperimentId || !bestCaseExperimentId) { return false; }
 
     var worstCaseObj = getDataObjOfRowsTwin(rowsOfWorstCaseExperiment);
-    var bestCaseObj = getDataObjOfRowsTwin(rowsOfBestCaseExperiment);
+    var bestCaseObj = getDataObjOfRowsTwin(rowsOfBestCaseExperiment);    
 
     var today = new Date();
     var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -91,6 +92,11 @@ function addRowWithAverageWorstAndBestCase(sheetName, filters, row_i) {
     getSheet(sheetName).getRange(cols[col_i++] + row_i).setValue(worstCaseObj.centroidResult);
     getSheet(sheetName).getRange(cols[col_i++] + row_i).setValue(worstCaseObj.optimizedResult);
     getSheet(sheetName).getRange(cols[col_i++] + row_i).setValue(worstCaseObj.improvement);
+
+    // average case
+    getSheet(sheetName).getRange(cols[col_i++] + row_i).setValue(averageCaseObj.centroidResult);
+    getSheet(sheetName).getRange(cols[col_i++] + row_i).setValue(averageCaseObj.optimizedResult);
+    getSheet(sheetName).getRange(cols[col_i++] + row_i).setValue(averageCaseObj.improvement);
 
     // best case
     getSheet(sheetName).getRange(cols[col_i++] + row_i).setValue(bestCaseObj.centroidResult);
@@ -172,6 +178,14 @@ function getBestAndWorstCaseFrom(filteredRows) {
     var rowsOfWorstCaseExperiment = null;
     var rowsOfBestCaseExperiment = null;
     var experimentIds = [];
+    var averageCaseObj = {
+        centroidResult: -1,
+        optimizedResult: -1,
+        improvement: -1,
+    }
+    var centroidList = []
+    var optimizedList = []
+    var improvementList = []
 
     for (var i = 0; i < filteredRows.length; i++) {
         var row = filteredRows[i];
@@ -203,12 +217,20 @@ function getBestAndWorstCaseFrom(filteredRows) {
                 rowsOfBestCaseExperiment = getACopy(experimentRows);
                 bestCaseValue = actualDifference;
             }
+
+            centroidList.push(objectiveMetricResultCentroid)
+            optimizedList.push(objectiveMetricResultOptimized)
+            var improvement = objectiveMetricResultCentroid === 0 ? 0 : objectiveMetricResultOptimized / objectiveMetricResultCentroid - 1;
+            improvementList.push(improvement)
         }
     }
-
+    averageCaseObj.centroidResult = centroidList.reduce(function (prev, curr) {return prev + curr}) / centroidList.length;
+    averageCaseObj.optimizedResult = optimizedList.reduce(function (prev, curr) {return prev + curr}) / optimizedList.length;
+    averageCaseObj.improvement = improvementList.reduce(function (prev, curr) {return prev + curr}) / improvementList.length;
     return {
         rowsOfWorstCaseExperiment: rowsOfWorstCaseExperiment,
         rowsOfBestCaseExperiment: rowsOfBestCaseExperiment,
+        averageCaseObj: averageCaseObj,
     };
 }
 

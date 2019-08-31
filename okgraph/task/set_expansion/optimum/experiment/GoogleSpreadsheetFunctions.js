@@ -29,9 +29,9 @@ function searchWorstAndBestCases() {
                     var rwawabc = addRowWithAverageWorstAndBestCase(MySettings.sheetWorstAndBestCasesName, filters, row_i);
                     if (rwawabc) { // if something has been added...
                         row_i = row_i + 1;
-                        total = total - 1;
-                        getSheet(MySettings.sheetWorstAndBestCasesName).getRange("A1").setValue("Wait.. -" + total);
                     }
+                    total = total - 1;
+                    getSheet(MySettings.sheetWorstAndBestCasesName).getRange("A1").setValue("Wait.. -" + total);
                 });
             });
         });
@@ -178,6 +178,7 @@ function getBestAndWorstCaseExperimentIdFrom(allRows, filteredRows) {
     var worstCaseExperimentId = null;
     var bestCaseExperimentId = null;
     var worstCaseValue = null;
+    var worstCaseCentroidValue = null;
     var bestCaseValue = null;
 
     for (var i = 0; i < filteredRows.length; i++) {
@@ -185,21 +186,26 @@ function getBestAndWorstCaseExperimentIdFrom(allRows, filteredRows) {
 
         // prendi l'id della riga e recupera anche la riga del CENTROID
         var experimentId = rowOptimized[ColumnIndex.experimentId];
-        rowCentroid = getRowByExperimentId(allRows, experimentId)["centroid"];
+        var rowCentroid = getRowByExperimentId(allRows, experimentId)["centroid"];
 
         // leggi objective_metric_result OPTIMIZED e sottrai a objective_metric_result CENTROID
-        objectiveMetricResultOptimized = rowOptimized[ColumnIndex.objective_metric_result];
-        objectiveMetricResultCentroid = rowCentroid[ColumnIndex.objective_metric_result];
+        var objectiveMetricResultOptimized = rowOptimized[ColumnIndex.objective_metric_result];
+        var objectiveMetricResultCentroid = rowCentroid[ColumnIndex.objective_metric_result];
         var actualDifference = objectiveMetricResultOptimized - objectiveMetricResultCentroid;
 
         // memorizza quella con l'improvement minore
-        if (!worstCaseExperimentId || actualDifference < worstCaseValue) {
+        if (!worstCaseExperimentId
+            || actualDifference < worstCaseValue
+            || objectiveMetricResultCentroid < worstCaseCentroidValue
+        ) {
             worstCaseExperimentId = experimentId;
             worstCaseValue = actualDifference;
         }
 
         // memorizza quella con l'improvement maggiore
-        if (!bestCaseExperimentId || actualDifference > bestCaseValue) {
+        if (!bestCaseExperimentId
+            || actualDifference > bestCaseValue
+        ) {
             bestCaseExperimentId = experimentId;
             bestCaseValue = actualDifference;
         }
@@ -212,13 +218,6 @@ function getBestAndWorstCaseExperimentIdFrom(allRows, filteredRows) {
 
 
 
-
-function getMaxInColumn(column) {
-    var colArray = SpreadsheetApp.getActiveSheet().getDataRange().getValues()
-    var maxInColumn = colArray.sort(function (a, b) { return b - a })[0][0];
-    SpreadsheetApp.getActiveSheet().getRange('I24').setValue('aaa');
-    SpreadsheetApp.getActiveSheet().getRange('I24').setValue(maxInColumn);
-}
 
 function getSheet(name) {
     var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();

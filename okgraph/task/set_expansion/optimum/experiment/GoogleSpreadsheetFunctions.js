@@ -11,9 +11,10 @@ ColumnIndex.ground_truth_name = 42; // usa_states
 ColumnIndex.experimentId = 43;
 
 var MySettings = function () { }
-MySettings.sheetWorstAndBestCasesName = "Worst&BestCases";
 MySettings.sheetResultsName = "Results";
 MySettings.resultsRange = "A1:AS5200";
+MySettings.only_successful_enabled = false;
+MySettings.sheetWorstAndBestCasesName = MySettings.only_successful_enabled ? "Worst&BestCases" : "Worst&BestCasesSuccessAndNot";
 
 var sheetWorstAndBestCases = getSheet(MySettings.sheetWorstAndBestCasesName);
 var sheetResults = getSheet(MySettings.sheetResultsName);
@@ -38,7 +39,6 @@ function searchWorstAndBestCases() {
 
     optim_algo_list.forEach(function (optim_algo) {
         var filters1 = {
-            only_successful: true,
             optim_algo: optim_algo,
         }
         var preFilteredRows = getFilteredRowsByFilters(allRows, filters1);
@@ -70,7 +70,6 @@ var cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'
 function addRowWithAverageWorstAndBestCase(rows, sheet, filters, row_i) {
 
     var col_i = 0;
-    Logger.log("PRE filteredRows.length: " + rows.length)
     var filteredRows = getFilteredRowsByFilters(rows, filters);
     // Logger.log('filters: ' + JSON.stringify(filters))
     Logger.log("filteredRows.length: " + filteredRows.length)
@@ -84,9 +83,11 @@ function addRowWithAverageWorstAndBestCase(rows, sheet, filters, row_i) {
 
     var worstCaseExperimentId = rowsOfWorstCaseExperiment.centroid[ColumnIndex.experimentId];
     var bestCaseExperimentId = rowsOfBestCaseExperiment.centroid[ColumnIndex.experimentId];
-    Logger.log("worstCaseExperimentId: " + worstCaseExperimentId)
-    Logger.log("bestCaseExperimentId: " + bestCaseExperimentId)
-    if (!worstCaseExperimentId || !bestCaseExperimentId) { return false; }
+    if (!worstCaseExperimentId || !bestCaseExperimentId) {
+        Logger.log("Not found: worstCaseExperimentId: " + worstCaseExperimentId)
+        Logger.log("Not found: bestCaseExperimentId: " + bestCaseExperimentId)
+        return false;
+    }
 
     var worstCaseObj = getDataObjOfRowsTwin(rowsOfWorstCaseExperiment);
     var bestCaseObj = getDataObjOfRowsTwin(rowsOfBestCaseExperiment);
@@ -161,8 +162,7 @@ function getDataObjOfRowsTwin(rowsObject) {
 
 var filterChoosen = function (filters) {
     return function (row) {
-        return (!filters.only_successful || (row[ColumnIndex.optim_message] === '' || row[ColumnIndex.optim_message] === 'Optimization terminated successfully.'))
-            && (!filters.optim_algo || row[ColumnIndex.optim_algo] === filters.optim_algo)
+        return (!filters.optim_algo || row[ColumnIndex.optim_algo] === filters.optim_algo)
             && (!filters.objective_metric || row[ColumnIndex.objective_metric] === filters.objective_metric)
             && (!filters.we_model || row[ColumnIndex.we_model] === filters.we_model)
             && (!filters.ground_truth_name || row[ColumnIndex.ground_truth_name] === filters.ground_truth_name)
@@ -174,6 +174,9 @@ function getRowByExperimentId(rows, experimentId) {
     var rowsExperiment = rows.filter(function (row) {
         return row[ColumnIndex.experimentId] === experimentId;
     })
+    if (rowsExperiment.length !== 2) {
+        Logger.log("WARNING: it was expected to have 2 rows (experimentId: " + experimentId + ") but got " + rowsExperiment.length + ".")
+    }
     return { // rowsObject
         centroid: rowsExperiment.filter(function (row) {
             return row[ColumnIndex.INFO] === "CENTROID";
@@ -184,6 +187,10 @@ function getRowByExperimentId(rows, experimentId) {
     }
 }
 
+function isSuccessful(row) {
+    var optim_message = row[ColumnIndex.optim_message];
+    return optim_message === 'Optimization terminated successfully.'
+}
 
 function getBestAndWorstCaseFrom(filteredRows) {
 
@@ -206,7 +213,7 @@ function getBestAndWorstCaseFrom(filteredRows) {
     for (var i = 0; i < filteredRows.length; i++) {
         var row = filteredRows[i];
         var experimentId = row[ColumnIndex.experimentId];
-        if (experimentIds.indexOf(experimentId) === -1) {
+        if (experimentIds.indexOf(experimentId) === -1 && (!MySettings.only_successful_enabled || isSuccessful(row))) {
             experimentIds.push(experimentId);
             var experimentRows = getRowByExperimentId(filteredRows, experimentId);
             if (experimentRows.centroid && experimentRows.optimized) {
@@ -240,9 +247,9 @@ function getBestAndWorstCaseFrom(filteredRows) {
                 optimizedList.push(objectiveMetricResultOptimized);
                 improvementList.push(getImprovement(objectiveMetricResultCentroid, objectiveMetricResultOptimized));
             } else {
-                Logger.log("Error experimentId doesn't exists: " + experimentId);
-                Logger.log("experimentRows.centroid: " + experimentRows.centroid);
-                Logger.log("experimentRows.optimized: " + experimentRows.optimized);
+                Logger.log("Error experimentId doesn't exists or doesn't has optimized and centroid rows: " + experimentId);
+                // Logger.log("experimentRows.centroid: " + experimentRows.centroid);
+                // Logger.log("experimentRows.optimized: " + experimentRows.optimized);
             }
         }
     }

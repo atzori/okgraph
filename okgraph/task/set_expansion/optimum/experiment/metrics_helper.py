@@ -251,13 +251,14 @@ class Metric:
         out_calc['ORDERED_KEYS'] = ['DATE', 'Pa50', 'topn', 'k', 'initial_guesses_length', 'ground_truth_length', 'initial_guesses',
                                     'INFO', 'optim_algo', 'objective_metric', objective_metric,
                                     'Pa5', 'Pa10', 'Pa20', 'Pa50', 'AP@k', 'MAP']
-        out_calc['ORDERED_KEYS'] += sklearn_score_averages_keys
+        if dataset_info['sklearn_metric_ap_score_enabled'] is True:
+            out_calc['ORDERED_KEYS'] += sklearn_score_averages_keys
         out_calc['ORDERED_KEYS'] += ['TrueP',
                                      'optim_message', 'nfev',
                                      'CG', 'DCG', 'IDCG', 'NDCG',
                                      'AP@5', 'AP@10', 'AP@20', 'AP@50', 'AP@100',
                                      'missing_words', 'wrong_words', 'we_model',
-                                     'PRECISION', 'RECALL', 'Interp_Prec', 'the_most_similar_words', 'tot_time', 'ground_truth_name', 'exp_id']
+                                     'PRECISION', 'RECALL', 'Interp_Prec', 'the_most_similar_words', 'tot_time', 'ground_truth_name', 'exp_id', 'ground_truth_missing_on_we', 'ground_truth_missing_on_we_len']
 
         if verbose:
         #     print(f'{out_calc}', end='')

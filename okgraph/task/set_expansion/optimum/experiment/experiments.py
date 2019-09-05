@@ -180,6 +180,10 @@ def run_experiments(models: list,
                 print(f'Getting the ground_truth and without_not_exists')
             ground_truth = [w.replace(" ", "_") for w in ground_truth]
             ground_truth_without_not_exists = [e for e in ground_truth if e in okg.v]
+            ground_truth_missing_on_we = [e for e in ground_truth if e not in okg.v]
+            ground_truth_missing_on_we_len = len(ground_truth_missing_on_we)
+            
+            
             if verbose:
                 print(f'DONE. ground_truth=[{ground_truth}] and without_not_exists=[{ground_truth_without_not_exists}]')
             enable_most_similar_approx = False
@@ -230,7 +234,8 @@ def run_experiments(models: list,
                             "objective_metric": objective_metric,
                             "enable_most_similar_approx": enable_most_similar_approx,
                             "verbose": verbose,
-                            "ground_truth_without_not_exists": ground_truth_without_not_exists,
+                            "ground_truth_missing_on_we": ground_truth_missing_on_we,
+                            "ground_truth_missing_on_we_len": ground_truth_missing_on_we_len,
                         }
 
                         args = {

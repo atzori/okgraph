@@ -131,15 +131,17 @@ function addRowWithAverageWorstAndBestCase(rows, sheet, filters, row_i) {
 }
 
 function getWEModelLabel(model) {
-    switch (model) {
-        case 'models/GoogleNews-vectors-negative300.magnitude': return 'Google News 100B';
-        case 'models/glove.840B.300d.magnitude': return 'Common Crawl 840B';
-        case 'models/glove.6B.300d.magnitude': return 'Wikipedia 2014 + Gigaword 5 6B';
-        case 'models/wiki-news-300d-1M.magnitude': return 'English Wikipedia 2017 16B';
-        default:
-            break;
+    const models = {
+        'models/GoogleNews-vectors-negative300.magnitude' : 'Google News 100B (W2V)',
+        'models/glove.6B.300d.magnitude' : 'Wikipedia 2014 + Gigaword 5 6B (GloVe)',
+        'models/glove-lemmatized.6B.300d.magnitude' : 'Wikipedia 2014 + Gigaword 5 6B lemmatized (GloVe)',
+        'models/glove.840B.300d.magnitude' : 'Common Crawl 840B (GloVe)',
+        'models/glove.twitter.27B.200d.magnitude' : 'Twitter 27B (GloVe)',
+        'models/wiki-news-300d-1M.magnitude' : 'English Wikipedia 2017 16B (fastText)',
+        'models/wiki-news-300d-1M-subword.magnitude' : 'English Wikipedia 2017 + subword 16B (fastText)',
+        'models/crawl-300d-2M.magnitude' : 'Common Crawl 600B (fastText)',
     }
-    return model;
+    return models[model] || model;
 }
 
 function getImprovement(centroidResult, optimizedResult) {

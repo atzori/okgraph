@@ -66,7 +66,7 @@ def get_random_lists(ground_truth: list, seed_sizes: [int], verbose = False) -> 
         if verbose:
             print(f'\r get random list of seed_size {seed_size} ...', end='')
         
-        tmp_try = 100
+        tmp_try = 500
         tmp_prev = []
         while tmp_try>0 and len(out_list) < seed_repetitions:
             to_add = get_random_from(ground_truth, seed_len)
@@ -82,7 +82,7 @@ def get_random_lists(ground_truth: list, seed_sizes: [int], verbose = False) -> 
                 if tmp_try == 0:
                     print('Too many tries on get_random_lists')
             else:
-                tmp_try = 100
+                tmp_try = 500
 
             tmp_prev = "".join(to_add)
 
@@ -98,8 +98,12 @@ okgraph_path = 'models/'
 corpus_file_path = okgraph_path + 'text7.head.gz'
 embeddings_magnitude_modelGN = okgraph_path + 'GoogleNews-vectors-negative300.magnitude'
 embeddings_magnitude_modelWikiGigawordGlove6B = okgraph_path + 'glove.6B.300d.magnitude' # Wikipedia 2014 + Gigaword 5 6B	
+# 'models/glove-lemmatized.6B.300d.magnitude' : 'Wikipedia 2014 + Gigaword 5 6B lemmatized (GloVe)',
 embeddings_magnitude_modelCommonCrawlGlove840B = okgraph_path + 'glove.840B.300d.magnitude' # Common Crawl 840B
+# 'models/glove.twitter.27B.200d.magnitude' : 'Twitter 27B (GloVe)',
 embeddings_magnitude_EnglishWikipedia2017_16B = okgraph_path + 'wiki-news-300d-1M.magnitude'
+embeddings_magnitude_EnglishWikipedia2017subword_16B = okgraph_path + 'wiki-news-300d-1M-subword.magnitude'
+embeddings_magnitude_CommonCrawl600B = okgraph_path + 'crawl-300d-2M.magnitude'
 embeddings_magnitude_modelT7 = okgraph_path + 'text7.head.magnitude'
 try_times = 10
 # seed_sizes = [(k, try_times) for k in [1, 2, 3, 5, 10, 20, 30, 40, 50]]
@@ -156,6 +160,19 @@ def generate_seed_sizes(max: int):
             out_ss.append((i, num_comb))
     return out_ss
 
+def get_we_model_content_from_filename(filename):
+    models = {
+        'models/GoogleNews-vectors-negative300.magnitude' : 'Google News 100B (W2V)',
+        'models/glove.6B.300d.magnitude' : 'Wikipedia 2014 + Gigaword 5 6B (GloVe)',
+        'models/glove-lemmatized.6B.300d.magnitude' : 'Wikipedia 2014 + Gigaword 5 6B lemmatized (GloVe)',
+        'models/glove.840B.300d.magnitude' : 'Common Crawl 840B (GloVe)',
+        'models/glove.twitter.27B.200d.magnitude' : 'Twitter 27B (GloVe)',
+        'models/wiki-news-300d-1M.magnitude' : 'English Wikipedia 2017 16B (fastText)',
+        'models/wiki-news-300d-1M-subword.magnitude' : 'English Wikipedia 2017 + subword 16B (fastText)',
+        'models/crawl-300d-2M.magnitude' : 'Common Crawl 600B (fastText)',
+    }
+    return models.get(filename, filename)
+
 
 def run_experiments(models: list,
                     ground_truths: list,
@@ -165,6 +182,9 @@ def run_experiments(models: list,
                     verbose: bool = False):
 
     n=1
+    csv_general_info_rows = []
+    csv_general_info_row_titles=["we_model_content", "we_model", "ground_truth_name", "ground_truth_length", "ground_truth_missing_on_we_len", "ground_truth_missing_on_we", "we_model_content"]
+
     for embeddings_magnitude_model in models:
     
         if verbose:
@@ -212,31 +232,34 @@ def run_experiments(models: list,
             tmp = total
 
             for initial_guesses in initial_guesses_list:
+                
                 if len(initial_guesses) <= 0:
                     print(f'ERROR: Cannot calculate with an initial guesses length equal to zero [{embeddings_magnitude_model}] [{ground_truth_name}].')
                     continue # go to the next iteration
-        
+            
                 for optim_algo in optim_algos:
                     filename = f'results/res_{optim_algo}_{now.strftime("%Y-%m-%d_%H:%M:%S.%f")[:-3]}.csv'
                     for objective_metric in objective_metrics:
 
                         dataset_info = {
                             "we_model": embeddings_magnitude_model,
+                            "we_model_content": get_we_model_content_from_filename(embeddings_magnitude_model),
                             "topn": k_topn,
                             "k": k_topn,
-                            "optim_algo": optim_algo,
                             "initial_guesses": initial_guesses,
                             "initial_guesses_length": len(initial_guesses),
                             "ground_truth_name": ground_truth_name,
                             "ground_truth": ground_truth,
                             "ground_truth_length": len(ground_truth),
                             "sklearn_metric_ap_score_enabled": sklearn_metric_ap_score_enabled,
-                            "objective_metric": objective_metric,
                             "enable_most_similar_approx": enable_most_similar_approx,
                             "verbose": verbose,
                             "ground_truth_missing_on_we": ground_truth_missing_on_we,
                             "ground_truth_missing_on_we_len": ground_truth_missing_on_we_len,
                         }
+
+                        dataset_info["optim_algo"] = optim_algo
+                        dataset_info["objective_metric"] = objective_metric
 
                         args = {
                             "okg": okg, 
@@ -245,6 +268,7 @@ def run_experiments(models: list,
                             "filename": filename, 
                             "verbose": verbose
                         }
+
                         globals()['thread_list'].append(threading.Thread(name="T" + str(n), target=get_optimum, args=(args,)))
                         thread_list = globals()['thread_list']
 
@@ -255,6 +279,16 @@ def run_experiments(models: list,
                         #         f'optim_algo: [{optim_algo}] '
                         #         f'by using : [{objective_metric}] >>> [{filename}]')
                         tmp -= 1
+
+            # csv_general_info_onerow = []
+            # for csv_general_info_row_title in csv_general_info_row_titles:
+            #     csv_general_info_onerow.append(str(dataset_info[csv_general_info_row_title]))
+            # csv_general_info_rows.append(csv_general_info_onerow)
+
+                        
+    # filename = f'results/dataset_info_{now.strftime("%Y-%m-%d_%H:%M:%S.%f")[:-3]}.csv'
+    # Metric.save(filename, row_titles=csv_general_info_row_titles, rows=csv_general_info_rows, verbose=verbose)
+
 
 
 
@@ -302,14 +336,23 @@ print("STARTING")
 thread_list = []
 n=0
 args = {
-    "max_at_a_time": 10,
+    "max_at_a_time": 50,
     "verbose": False,
-    # "optim_algos_list": ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg'],#''COBYLA'],
+    "optim_algos_list": ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg','COBYLA'],
+    # "optim_algos_list": [None],#, 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg'],#''COBYLA'],
     # "ground_truths": ['usa_states', 'universe_solar_planets', 'king_of_rome', 'periodic_table_of_elements'],
     # "models": [embeddings_magnitude_modelGN],#embeddings_magnitude_modelGN , embeddings_magnitude_modelWikiGigawordGlove6B, embeddings_magnitude_modelCommonCrawlGlove840B],
-    "optim_algos_list": ['TNC'],
-    "ground_truths": ['usa_states'],
-    "models": [embeddings_magnitude_modelGN],
+    # "optim_algos_list": [None],
+    # "ground_truths": ['usa_states', 'universe_solar_planets', 'king_of_rome', 'periodic_table_of_elements'],
+    "ground_truths": ['usa_states', 'universe_solar_planets', 'periodic_table_of_elements'],
+    "models": [
+        embeddings_magnitude_modelGN,
+        # embeddings_magnitude_modelWikiGigawordGlove6B,
+        # embeddings_magnitude_modelCommonCrawlGlove840B,
+        # embeddings_magnitude_EnglishWikipedia2017_16B,
+        # embeddings_magnitude_EnglishWikipedia2017subword_16B,
+        # embeddings_magnitude_CommonCrawl600B,
+    ],
     "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value
                         #   -1 to disable lazy-loading and pre-load all vectors into memory (a la Gensim), 
                         #   0 (default) to enable lazy-loading with an unbounded in-memory LRU cache, or 

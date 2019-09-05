@@ -142,8 +142,10 @@ class Metric:
         return out_list
 
     @staticmethod
-    def get_exp_string_and_output_calculus(filename, dataset_info, verbose):
-        out_calc = Metric.calculate_all(dataset_info, verbose)
+    def get_exp_string_and_output_calculus(out_calc, verbose):
+    # def get_exp_string_and_output_calculus(filename, dataset_info, verbose):
+        # out_calc = Metric.calculate_all(dataset_info, verbose)
+        # out_calc = dataset_info['out_calc']
 
         titles = []
         results_list = []
@@ -167,9 +169,10 @@ class Metric:
 
 
     @staticmethod
-    def calculate_all_and_save(filename: str,
-                                dataset_info: dict,
-                                verbose: bool = False):
+    def save(filename: str,
+            row_titles: str,
+            rows: [str],
+            verbose: bool = False):
         """
 
         :param filename:
@@ -186,28 +189,18 @@ class Metric:
 
             writer = csv.writer(my_csv_data, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-            final_results_and_titles = Metric.get_exp_string_and_output_calculus(filename, dataset_info, verbose)
-
             # Add titles
             if num_lines == 0:
-                titles = final_results_and_titles.get('titles')
-                writer.writerow(titles)
+                writer.writerow(row_titles)
 
-            # add inizial results (centroid)
-            if "initial_res" in dataset_info:
-                initial_dataset_info = dataset_info["initial_res"]
-                initial_results = Metric.get_exp_string_and_output_calculus(filename, initial_dataset_info, verbose).get('results_list')
-                writer.writerow(initial_results)
+            for row in rows:
+                writer.writerow(row)
 
-            # add final optimised results
-            final_results = final_results_and_titles.get('results_list')
-            writer.writerow(final_results)
-
-        return final_results_and_titles.get('out_calc')
 
     @staticmethod
     def calculate_all(dataset_info: dict,
-                      verbose: bool = False):
+                      verbose: bool = False,
+                      only: str = None):
         """
 
         :param dataset_info:
@@ -218,6 +211,9 @@ class Metric:
         objective_metric = dataset_info["objective_metric"]
         results = dataset_info["results"]
 
+        if only == 'AP@k':
+            return Metric.avg_precision(results, Metric.precision(results))[-1]
+
         out_calc = dict(DATE=exp_date)
 
         for key in dataset_info.keys():
@@ -226,7 +222,7 @@ class Metric:
         out_calc['TrueP'] = results.count(1)
         out_calc['TrueF'] = results.count(0)
         out_calc['PRECISION'] = Metric.precision(results)
-        out_calc['RECALL'] = Metric.recall(results)
+        out_calc['RECALL'] = '' if len(results)<2 else Metric.recall(results)
         out_calc['Interp_Prec'] = Metric.interpolated_precision(results, out_calc['PRECISION'])
         out_calc['AP'] = Metric.avg_precision(results, out_calc['PRECISION'])
         out_calc['AP@k'] = out_calc['AP'][-1]

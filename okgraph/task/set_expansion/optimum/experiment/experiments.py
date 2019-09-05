@@ -97,8 +97,9 @@ def get_random_lists(ground_truth: list, seed_sizes: [int], verbose = False) -> 
 okgraph_path = 'models/'
 corpus_file_path = okgraph_path + 'text7.head.gz'
 embeddings_magnitude_modelGN = okgraph_path + 'GoogleNews-vectors-negative300.magnitude'
-embeddings_magnitude_modelGlove6B = okgraph_path + 'glove.6B.300d.magnitude'
-embeddings_magnitude_modelGlove840B = okgraph_path + 'glove.840B.300d.magnitude'
+embeddings_magnitude_modelWikiGigawordGlove6B = okgraph_path + 'glove.6B.300d.magnitude' # Wikipedia 2014 + Gigaword 5 6B	
+embeddings_magnitude_modelCommonCrawlGlove840B = okgraph_path + 'glove.840B.300d.magnitude' # Common Crawl 840B
+embeddings_magnitude_EnglishWikipedia2017_16B = okgraph_path + 'wiki-news-300d-1M.magnitude'
 embeddings_magnitude_modelT7 = okgraph_path + 'text7.head.magnitude'
 try_times = 10
 # seed_sizes = [(k, try_times) for k in [1, 2, 3, 5, 10, 20, 30, 40, 50]]
@@ -182,9 +183,9 @@ def run_experiments(models: list,
             if verbose:
                 print(f'DONE. ground_truth=[{ground_truth}] and without_not_exists=[{ground_truth_without_not_exists}]')
             enable_most_similar_approx = False
-            for one_model_name in ["GoogleNews-vectors-negative300", "glove.6B.300d", "glove.840B.300d"]:
+            for one_model_name in ["GoogleNews-vectors-negative300", "glove.6B.300d", "glove.840B.300d", "wiki-news-300d-1M"]:
                 enable_most_similar_approx = enable_most_similar_approx or (one_model_name in embeddings_magnitude_model)
-            sklearn_metric_ap_score_enabled = True  # False can reduce computation time if sklearn not used in the objective_metrics
+            sklearn_metric_ap_score_enabled = False  # False can reduce computation time if sklearn not used in the objective_metrics
 
             if verbose:
                 print(f'Getting the initial_guesses_list')
@@ -228,9 +229,9 @@ def run_experiments(models: list,
                             "sklearn_metric_ap_score_enabled": sklearn_metric_ap_score_enabled,
                             "objective_metric": objective_metric,
                             "enable_most_similar_approx": enable_most_similar_approx,
-                            "verbose": verbose
+                            "verbose": verbose,
+                            "ground_truth_without_not_exists": ground_truth_without_not_exists,
                         }
-                        # _ = get_optimum(okg, dataset_info, choose_x0, filename, verbose=verbose)
 
                         args = {
                             "okg": okg, 
@@ -277,7 +278,7 @@ def experiment_t1(args_dict):
     while (thread_list_index < len(thread_list)):
         time.sleep(0.5)
         l = threading.enumerate()
-        while len(l) < MAX_RUNNING_THREADS_AT_A_TIME:
+        while (thread_list_index < len(thread_list)) and (len(l) < MAX_RUNNING_THREADS_AT_A_TIME):
             thread_list[thread_list_index].start()
             thread_list_index = thread_list_index + 1
             l = threading.enumerate()
@@ -296,14 +297,14 @@ print("STARTING")
 thread_list = []
 n=0
 args = {
-    "max_at_a_time": 20,
+    "max_at_a_time": 10,
     "verbose": False,
-    # "optim_algos_list": ['COBYLA'],
-    "optim_algos_list": ['COBYLA', 'powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg'],
-    "ground_truths": ['usa_states', 'universe_solar_planets', 'king_of_rome', 'period_7_element'],
-    # "ground_truths": ['usa_states'],
-    "models": [embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGN , embeddings_magnitude_modelGlove840B],
-    # "models": [embeddings_magnitude_modelGN],#embeddings_magnitude_modelGN , embeddings_magnitude_modelGlove6B, embeddings_magnitude_modelGlove840B],
+    # "optim_algos_list": ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg'],#''COBYLA'],
+    # "ground_truths": ['usa_states', 'universe_solar_planets', 'king_of_rome', 'periodic_table_of_elements'],
+    # "models": [embeddings_magnitude_modelGN],#embeddings_magnitude_modelGN , embeddings_magnitude_modelWikiGigawordGlove6B, embeddings_magnitude_modelCommonCrawlGlove840B],
+    "optim_algos_list": ['TNC'],
+    "ground_truths": ['usa_states'],
+    "models": [embeddings_magnitude_modelGN],
     "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value
                         #   -1 to disable lazy-loading and pre-load all vectors into memory (a la Gensim), 
                         #   0 (default) to enable lazy-loading with an unbounded in-memory LRU cache, or 

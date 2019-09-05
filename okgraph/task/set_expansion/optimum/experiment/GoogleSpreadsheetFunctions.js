@@ -5,6 +5,7 @@ ColumnIndex.INFO = 7; // OPTIMIZED, CENTROID
 ColumnIndex.optim_algo = 8; // BFGS, nelder-mead, powell.....
 ColumnIndex.objective_metric = 9; // AP@k
 ColumnIndex.objective_metric_result = 10; // 0.348842 ...
+ColumnIndex.Pa50 = 14 // 0.98 ...
 ColumnIndex.optim_message = 23; // Success..
 ColumnIndex.we_model = 36; //  models/GoogleNews-vectors-negative300.magnitude
 ColumnIndex.ground_truth_name = 42; // usa_states
@@ -13,7 +14,8 @@ ColumnIndex.experimentId = 43;
 var MySettings = function () { }
 MySettings.sheetResultsName = "Results";
 MySettings.resultsRange = "A1:AS5200";
-MySettings.only_successful_enabled = false;
+MySettings.only_successful_enabled = true;
+MySettings.improvementV = 2;
 MySettings.sheetWorstAndBestCasesName = MySettings.only_successful_enabled ? "Worst&BestCases" : "Worst&BestCasesSuccessAndNot";
 
 var sheetWorstAndBestCases = getSheet(MySettings.sheetWorstAndBestCasesName);
@@ -25,7 +27,7 @@ function searchWorstAndBestCases() {
     var optim_algo_list = ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg', 'COBYLA'];
     // var optim_algo_list = ['nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg', 'COBYLA'];
     var we_model_list = ["models/GoogleNews-vectors-negative300.magnitude", "models/glove.840B.300d.magnitude"];
-    var ground_truth_name_list = ["usa_states", "universe_solar_planets", "king_of_rome", "period_7_element"];
+    var ground_truth_name_list = ["usa_states", "universe_solar_planets", "king_of_rome", "periodic_table_of_elements"];
 
     var row_i = 3;
     var total = [objective_metric_list, optim_algo_list, we_model_list, ground_truth_name_list]
@@ -72,13 +74,13 @@ function addRowWithAverageWorstAndBestCase(rows, sheet, filters, row_i) {
     var col_i = 0;
     var filteredRows = getFilteredRowsByFilters(rows, filters);
     // Logger.log('filters: ' + JSON.stringify(filters))
-    Logger.log("filteredRows.length: " + filteredRows.length)
+    Logger.log("filteredRows.length: " + filteredRows.length);
     if (filteredRows.length <= 0) { return false; }
 
     var bestAndWorstCases = getBestAndWorstCaseFrom(filteredRows)
-    var rowsOfWorstCaseExperiment = bestAndWorstCases.rowsOfWorstCaseExperiment;
-    var rowsOfBestCaseExperiment = bestAndWorstCases.rowsOfBestCaseExperiment;
-    var averageCaseObj = bestAndWorstCases.averageCaseObj;
+    var rowsOfWorstCaseExperiment = MySettings.improvementV === 1 ? bestAndWorstCases.rowsOfWorstCaseExperiment : bestAndWorstCases.rowsOfWorstCaseExperimentV2;
+    var rowsOfBestCaseExperiment = MySettings.improvementV === 1 ? bestAndWorstCases.rowsOfBestCaseExperiment : bestAndWorstCases.rowsOfBestCaseExperimentV2;
+    var averageCaseObj = MySettings.improvementV === 1 ? bestAndWorstCases.averageCaseObj : bestAndWorstCases.averageCaseObjV2;
     if (!rowsOfWorstCaseExperiment || !rowsOfBestCaseExperiment) { return false; }
 
     var worstCaseExperimentId = rowsOfWorstCaseExperiment.centroid[ColumnIndex.experimentId];
@@ -97,7 +99,7 @@ function addRowWithAverageWorstAndBestCase(rows, sheet, filters, row_i) {
     var dateTime = time;
 
     sheet.getRange(cols[col_i++] + row_i).setValue(dateTime);
-    sheet.getRange(cols[col_i++] + row_i).setValue(filteredRows.length / 2);
+    sheet.getRange(cols[col_i++] + row_i).setValue(bestAndWorstCases.numberOfUsedRows);
     sheet.getRange(cols[col_i++] + row_i).setValue(filters.optim_algo);
 
     // worst case
@@ -118,7 +120,7 @@ function addRowWithAverageWorstAndBestCase(rows, sheet, filters, row_i) {
 
 
     sheet.getRange(cols[col_i++] + row_i).setValue(filters.ground_truth_name);
-    sheet.getRange(cols[col_i++] + row_i).setValue(filters.we_model);
+    sheet.getRange(cols[col_i++] + row_i).setValue(getWEModelLabel(filters.we_model));
     sheet.getRange(cols[col_i++] + row_i).setValue(filters.objective_metric);
 
 
@@ -126,6 +128,18 @@ function addRowWithAverageWorstAndBestCase(rows, sheet, filters, row_i) {
     sheet.getRange(cols[col_i++] + row_i).setValue(bestCaseObj.experimentId);
     return true;
 
+}
+
+function getWEModelLabel(model) {
+    switch (model) {
+        case 'models/GoogleNews-vectors-negative300.magnitude': return 'Google News 100B';
+        case 'models/glove.840B.300d.magnitude': return 'Common Crawl 840B';
+        case 'models/glove.6B.300d.magnitude': return 'Wikipedia 2014 + Gigaword 5 6B';
+        case 'models/wiki-news-300d-1M.magnitude': return 'English Wikipedia 2017 16B';
+        default:
+            break;
+    }
+    return model;
 }
 
 function getImprovement(centroidResult, optimizedResult) {
@@ -197,10 +211,20 @@ function getBestAndWorstCaseFrom(filteredRows) {
     var worstCaseCentroidValue = 999;
     var worstCaseValue = 999;
     var bestCaseValue = -1;
+    var worstCaseValueV2 = 999;
+    var bestCaseValueV2 = -1;
     var rowsOfWorstCaseExperiment = null;
     var rowsOfBestCaseExperiment = null;
+    var rowsOfWorstCaseExperimentV2 = null;
+    var rowsOfBestCaseExperimentV2 = null;
     var experimentIds = [];
     var averageCaseObj = {
+        centroidResult: -1,
+        optimizedResult: -1,
+        improvementFromList: -1,
+        improvementFromAVG: -1,
+    }
+    var averageCaseObjV2 = {
         centroidResult: -1,
         optimizedResult: -1,
         improvementFromList: -1,
@@ -210,10 +234,19 @@ function getBestAndWorstCaseFrom(filteredRows) {
     var optimizedList = []
     var improvementList = []
 
+    var centroidListV2 = []
+    var optimizedListV2 = []
+    var improvementListV2 = []
+
+    var numberOfUsedRows = 0;
+
     for (var i = 0; i < filteredRows.length; i++) {
         var row = filteredRows[i];
         var experimentId = row[ColumnIndex.experimentId];
-        if (experimentIds.indexOf(experimentId) === -1 && (!MySettings.only_successful_enabled || isSuccessful(row))) {
+        var isOptimizedOne = row[ColumnIndex.INFO] === "OPTIMIZED";
+        if (isOptimizedOne && experimentIds.indexOf(experimentId) === -1
+            && MySettings.only_successful_enabled === isSuccessful(row)
+        ) {
             experimentIds.push(experimentId);
             var experimentRows = getRowByExperimentId(filteredRows, experimentId);
             if (experimentRows.centroid && experimentRows.optimized) {
@@ -225,6 +258,8 @@ function getBestAndWorstCaseFrom(filteredRows) {
                 var objectiveMetricResultCentroid = rowCentroid[ColumnIndex.objective_metric_result];
                 var objectiveMetricResultOptimized = rowOptimized[ColumnIndex.objective_metric_result];
                 var actualDifference = objectiveMetricResultOptimized - objectiveMetricResultCentroid;
+                var Pa50centroid = rowCentroid[ColumnIndex.Pa50];
+                var Pa50optimized = rowOptimized[ColumnIndex.Pa50];
 
                 // memorizza quella con l'improvement minore
                 if (!rowsOfWorstCaseExperiment
@@ -235,7 +270,6 @@ function getBestAndWorstCaseFrom(filteredRows) {
                     worstCaseValue = actualDifference;
                     worstCaseCentroidValue = objectiveMetricResultCentroid;
                 }
-
                 // memorizza quella con l'improvement maggiore
                 if (!rowsOfBestCaseExperiment
                     || actualDifference >= bestCaseValue) {
@@ -243,9 +277,32 @@ function getBestAndWorstCaseFrom(filteredRows) {
                     bestCaseValue = actualDifference;
                 }
 
+
+                // memorizza quella con l'improvement minore
+                if (!rowsOfWorstCaseExperimentV2
+                    || Pa50centroid < worstCaseValueV2
+                ) {
+                    rowsOfWorstCaseExperimentV2 = getACopy(experimentRows);
+                    worstCaseValueV2 = Pa50centroid;
+                }
+                // memorizza quella con l'improvement maggiore
+                if (!rowsOfBestCaseExperimentV2
+                    || Pa50optimized >= bestCaseValueV2) {
+                    rowsOfBestCaseExperimentV2 = getACopy(experimentRows);
+                    bestCaseValueV2 = Pa50optimized;
+                }
+
+
+                numberOfUsedRows++;
                 centroidList.push(objectiveMetricResultCentroid);
                 optimizedList.push(objectiveMetricResultOptimized);
                 improvementList.push(getImprovement(objectiveMetricResultCentroid, objectiveMetricResultOptimized));
+
+                if (typeof Pa50centroid === 'number' && typeof Pa50optimized === 'number') {
+                    centroidListV2.push(Pa50centroid);
+                    optimizedListV2.push(Pa50optimized);
+                    improvementListV2.push(getImprovement(Pa50centroid, Pa50optimized));
+                }
             } else {
                 Logger.log("Error experimentId doesn't exists or doesn't has optimized and centroid rows: " + experimentId);
                 // Logger.log("experimentRows.centroid: " + experimentRows.centroid);
@@ -258,10 +315,20 @@ function getBestAndWorstCaseFrom(filteredRows) {
     averageCaseObj.optimizedResult = optimizedList.length > 0 ? optimizedList.reduce(function (prev, curr) { return prev + curr }) / optimizedList.length : 0;
     averageCaseObj.improvementFromList = improvementList.length > 0 ? improvementList.reduce(function (prev, curr) { return prev + curr }) / improvementList.length : 0;
     averageCaseObj.improvementFromAVG = getImprovement(averageCaseObj.centroidResult, averageCaseObj.optimizedResult);
+
+    averageCaseObjV2.centroidResult = centroidListV2.length > 0 ? centroidListV2.reduce(function (prev, curr) { return prev + curr }) / centroidListV2.length : 0;
+    averageCaseObjV2.optimizedResult = optimizedListV2.length > 0 ? optimizedListV2.reduce(function (prev, curr) { return prev + curr }) / optimizedListV2.length : 0;
+    averageCaseObjV2.improvementFromList = improvementListV2.length > 0 ? improvementListV2.reduce(function (prev, curr) { return prev + curr }) / improvementListV2.length : 0;
+    averageCaseObjV2.improvementFromAVG = getImprovement(averageCaseObjV2.centroidResult, averageCaseObjV2.optimizedResult);
+
     return {
         rowsOfWorstCaseExperiment: rowsOfWorstCaseExperiment,
         rowsOfBestCaseExperiment: rowsOfBestCaseExperiment,
+        rowsOfWorstCaseExperimentV2: rowsOfWorstCaseExperimentV2,
+        rowsOfBestCaseExperimentV2: rowsOfBestCaseExperimentV2,
         averageCaseObj: averageCaseObj,
+        averageCaseObjV2: averageCaseObjV2,
+        numberOfUsedRows: numberOfUsedRows,
     };
 }
 

@@ -9,7 +9,7 @@ import uuid
 import datetime
 
 
-def get_similar_and_save_results(okg: okgraph.OKgraph,
+def get_similar_and_results(okg: okgraph.OKgraph,
                                 filename: str,
                                 vector: [float],
                                 topn: int,
@@ -37,18 +37,13 @@ def get_similar_and_save_results(okg: okgraph.OKgraph,
         the_most_similar = okg.v.most_similar(vector, topn=topn)
     the_most_similar_words = [w for w, v in the_most_similar]
 
-    now = datetime.datetime.now()
-    dataset_info['exp_date'] = now.strftime("%Y-%m-%d %H:%M:%S")
     dataset_info['solution'] = vector
     dataset_info['the_most_similar_words'] = the_most_similar_words
     dataset_info['missing_words'] = [item for item in ground_truth if item not in the_most_similar_words]
     dataset_info['wrong_words'] = [item for item in the_most_similar_words if item not in ground_truth]
     dataset_info['results'] = [1 if word in ground_truth else 0 for word in the_most_similar_words]
 
-    if not save_results:
-        return Metric.calculate_all(dataset_info, verbose)
-
-    return Metric.calculate_all_and_save(filename, dataset_info, verbose=verbose)
+    return Metric.calculate_all(dataset_info, verbose)
 
 
 def create_objective(okg, ground_truth_set, ground_truth_set_vectors, dataset_info=dict(),
@@ -78,7 +73,8 @@ def create_objective(okg, ground_truth_set, ground_truth_set_vectors, dataset_in
         if verbose:
             print(f'...', end='')
 
-        avgp = Metric.calculate_all(dataset_info, verbose=verbose)[objective_metric]
+        dataset_info["results"] = true_false_list
+        avgp = Metric.calculate_all(dataset_info, verbose=verbose, only=objective_metric)
 
         max_avgp = globals()['max_avgp']
         if abs(avgp) > abs(max_avgp):
@@ -176,15 +172,17 @@ def get_optimum(args_dict):
     if verbose:
         print(f'\t\t\t\t\t\t\t\tx0 = ({len(x0)}) : {x0[:3]}... ')
     
+    now = datetime.datetime.now()
+    dataset_info['exp_date'] = now.strftime("%Y-%m-%d %H:%M:%S")
     dataset_info['exp_id'] = str(uuid.uuid4())
     dataset_info["save_info_title"] = "CENTROID"
     dataset_info['INFO'] = dataset_info["save_info_title"]
-    initial_res = get_similar_and_save_results(okg, filename, x0, topn, ground_truth, dataset_info,
+    initial_res = dict(dataset_info)
+    initial_res = get_similar_and_results(okg, filename, x0, topn, ground_truth, initial_res,
                                                 enable_most_similar_approx=enable_most_similar_approx,
                                                 save_results=False,
                                                 verbose=verbose)
-            
-    dataset_info['initial_res'] = initial_res
+    dataset_info['initial_res'] = dict(initial_res)
 
     if verbose:
         print(f' most similar: {initial_res["the_most_similar_words"][:3]}...\n', end='')
@@ -193,8 +191,11 @@ def get_optimum(args_dict):
 
     if optim_algo is None:
         solution = so.minimize(objective, x0)
-    elif optim_algo in ['powell', 'CG', 'TNC', 'COBYLA', 'SLSQP']:
+    elif optim_algo in ['powell', 'CG', 'COBYLA', 'SLSQP']:
         solution = so.minimize(objective, x0, method=optim_algo)
+    elif optim_algo in ['TNC']:
+        bounds = ((-1.0), (1.0 for _ in range(len(x0))))
+        solution = so.minimize(objective, x0, method=optim_algo, bounds=bounds) # tol=1e-10
     elif optim_algo == 'nelder-mead':
         solution = so.minimize(objective, x0, method='nelder-mead', options={'xtol': 1e-8, 'disp': True})
     elif optim_algo in ['BFGS', 'dogleg', 'trust-ncg']:
@@ -219,10 +220,19 @@ def get_optimum(args_dict):
     dataset_info["tot_time"] = str(stop - start).replace('.','P').replace(',','.').replace('P',',')
     dataset_info["save_info_title"] = "OPTIMIZED"
     dataset_info['INFO'] = dataset_info["save_info_title"]
-    optimized_res = get_similar_and_save_results(okg, filename, solution.x, topn, ground_truth, dataset_info,
+    optimized_res = get_similar_and_results(okg, filename, solution.x, topn, ground_truth, dataset_info,
                                                 enable_most_similar_approx=enable_most_similar_approx,
                                                 save_results=True,
                                                 verbose=verbose)
+    dataset_info = optimized_res
+
+    initial_calculus =  Metric.get_exp_string_and_output_calculus(initial_res, verbose)
+    optimized_calculus =  Metric.get_exp_string_and_output_calculus(optimized_res, verbose)
+    row_titles = optimized_calculus.get('titles')
+    rows = [initial_calculus.get('results_list'), 
+            optimized_calculus.get('results_list')]
+
+    Metric.save(filename, row_titles=row_titles, rows=rows , verbose=verbose)
 
     missing_words = optimized_res["missing_words"]
     wrong_words = optimized_res["wrong_words"]

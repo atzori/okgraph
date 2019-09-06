@@ -151,16 +151,28 @@ def remove_words_doesnt_match(okg: okgraph.OKgraph, words: list, initial_guesses
 
 
 def generate_seed_sizes(max: int):
-    out_ss = [(max, 1)]
-    for i in range(max-(max%10), 9, -10):
-        max_comb = scipy.special.comb(max, i, exact=True)
-        out_ss.append((i, 10 if 10<max_comb else max ))
-    for i in [5,3,2,1]:
-        if i<=max:
-            max_comb = scipy.special.comb(max, i, exact=True)
-            num_comb = 10 if 10<max_comb else max
-            out_ss.append((i, num_comb))
-    return out_ss
+    out_ss = []
+    list_to_use = [1,2,3,5]
+    while True:
+        for i in list_to_use:
+            if i<max:
+                max_comb = scipy.special.comb(max, i, exact=True)
+                num_comb = 10 if 10<max_comb else max
+                out_ss.append((i, num_comb))
+            else:
+                out_ss.append((max, 1))
+                return out_ss
+        list_to_use = [e*10 for e in list_to_use];
+
+    # for i in range(max-(max%10), 9, -10):
+    #     max_comb = scipy.special.comb(max, i, exact=True)
+    #     out_ss.append((i, 10 if 10<max_comb else max ))
+    # for i in [5,3,2,1]:
+    #     if i<=max:
+    #         max_comb = scipy.special.comb(max, i, exact=True)
+    #         num_comb = 10 if 10<max_comb else max
+    #         out_ss.append((i, num_comb))
+    # return out_ss
 
 def get_we_model_content_from_filename(filename):
     models = {
@@ -184,6 +196,8 @@ def run_experiments(models: list,
                     verbose: bool = False):
 
     n=1
+
+    now = datetime.datetime.now()
 
     for embeddings_magnitude_model in models:
     
@@ -217,8 +231,6 @@ def run_experiments(models: list,
             initial_guesses_list = get_random_lists(ground_truth_without_not_exists, seed_sizes, verbose=verbose)#[0:1]
             if verbose:
                 print(f'Done. initial_guesses_list={initial_guesses_list} ')
-
-            now = datetime.datetime.now()
 
             if verbose:
                 print(f'initial_guesses_list length = {len(initial_guesses_list)}')

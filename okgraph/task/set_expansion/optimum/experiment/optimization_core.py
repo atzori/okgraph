@@ -194,7 +194,7 @@ def get_optimum(args_dict):
     elif optim_algo in ['powell', 'CG', 'COBYLA', 'SLSQP']:
         solution = so.minimize(objective, x0, method=optim_algo)
     elif optim_algo in ['TNC']:
-        bounds = ((-1.0), (1.0 for _ in range(len(x0))))
+        bounds = [((-1.0), (1.0)) for _ in range(len(x0))]
         solution = so.minimize(objective, x0, method=optim_algo, bounds=bounds) # tol=1e-10
     elif optim_algo == 'nelder-mead':
         solution = so.minimize(objective, x0, method='nelder-mead', options={'xtol': 1e-8, 'disp': True})

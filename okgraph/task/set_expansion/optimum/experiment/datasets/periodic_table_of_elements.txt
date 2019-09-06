@@ -107,9 +107,9 @@ Seaborgium
 Bohrium
 Hassium
 Meitnerium
-Darmstadtium 
-Roentgenium 
-Copernicium 
+Darmstadtium
+Roentgenium
+Copernicium
 Nihonium
 Flerovium
 Moscovium

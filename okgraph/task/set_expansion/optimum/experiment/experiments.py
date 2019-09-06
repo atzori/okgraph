@@ -6,6 +6,7 @@ import datetime
 import scipy
 import threading
 import time
+import copy
 
 from dataset_helper import *
 from optimization_core import *
@@ -262,10 +263,10 @@ def run_experiments(models: list,
                         dataset_info["objective_metric"] = objective_metric
 
                         args = {
-                            "okg": okg, 
-                            "dataset_info": dataset_info, 
-                            "choose_x0_closure": choose_x0, 
-                            "filename": filename, 
+                            "okg": copy.copy(okg), 
+                            "dataset_info": copy.deepcopy(dataset_info), 
+                            "choose_x0_closure": copy.deepcopy(choose_x0), 
+                            "filename": copy.deepcopy(filename),
                             "verbose": verbose
                         }
 
@@ -280,10 +281,10 @@ def run_experiments(models: list,
                         #         f'by using : [{objective_metric}] >>> [{filename}]')
                         tmp -= 1
 
-            # csv_general_info_onerow = []
-            # for csv_general_info_row_title in csv_general_info_row_titles:
-            #     csv_general_info_onerow.append(str(dataset_info[csv_general_info_row_title]))
-            # csv_general_info_rows.append(csv_general_info_onerow)
+    #         csv_general_info_onerow = []
+    #         for csv_general_info_row_title in csv_general_info_row_titles:
+    #             csv_general_info_onerow.append(str(dataset_info[csv_general_info_row_title]))
+    #         csv_general_info_rows.append(csv_general_info_onerow)
 
                         
     # filename = f'results/dataset_info_{now.strftime("%Y-%m-%d_%H:%M:%S.%f")[:-3]}.csv'
@@ -330,21 +331,30 @@ def experiment_t1(args_dict):
 
 print("STARTING")
 print("STARTING")
-print("STARTING")
-print("STARTING")
-# optim_algos_list = ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'COBYLA', 'SLSQP', 'dogleg', 'trust-ncg']
+
 thread_list = []
 n=0
 args = {
-    "max_at_a_time": 50,
+    "max_at_a_time": 20,
     "verbose": False,
-    "optim_algos_list": ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg','COBYLA'],
-    # "optim_algos_list": [None],#, 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg'],#''COBYLA'],
-    # "ground_truths": ['usa_states', 'universe_solar_planets', 'king_of_rome', 'periodic_table_of_elements'],
-    # "models": [embeddings_magnitude_modelGN],#embeddings_magnitude_modelGN , embeddings_magnitude_modelWikiGigawordGlove6B, embeddings_magnitude_modelCommonCrawlGlove840B],
-    # "optim_algos_list": [None],
-    # "ground_truths": ['usa_states', 'universe_solar_planets', 'king_of_rome', 'periodic_table_of_elements'],
-    "ground_truths": ['usa_states', 'universe_solar_planets', 'periodic_table_of_elements'],
+    "optim_algos_list": [
+        'powell', 
+        'nelder-mead', 
+        'BFGS', 
+        # 'Newton-CG', 
+        # 'CG', 
+        # 'TNC', 
+        # 'SLSQP', 
+        # 'dogleg', 
+        # 'trust-ncg',
+        # 'COBYLA'
+    ],
+    "ground_truths": [
+        'usa_states', 
+        'universe_solar_planets', 
+        'periodic_table_of_elements',
+        # 'kings_of_rome',
+    ],
     "models": [
         embeddings_magnitude_modelGN,
         # embeddings_magnitude_modelWikiGigawordGlove6B,

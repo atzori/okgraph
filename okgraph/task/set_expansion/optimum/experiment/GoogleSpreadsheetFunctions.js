@@ -27,7 +27,7 @@ function searchWorstAndBestCases() {
     var optim_algo_list = ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg', 'COBYLA'];
     // var optim_algo_list = ['nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg', 'COBYLA'];
     var we_model_list = ["models/GoogleNews-vectors-negative300.magnitude", "models/glove.840B.300d.magnitude"];
-    var ground_truth_name_list = ["usa_states", "universe_solar_planets", "king_of_rome", "periodic_table_of_elements"];
+    var ground_truth_name_list = ["usa_states", "universe_solar_planets", "kings_of_rome", "periodic_table_of_elements"];
 
     var row_i = 3;
     var total = [objective_metric_list, optim_algo_list, we_model_list, ground_truth_name_list]

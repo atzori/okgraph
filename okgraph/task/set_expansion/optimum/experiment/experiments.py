@@ -97,14 +97,15 @@ def get_random_lists(ground_truth: list, seed_sizes: [int], verbose = False) -> 
 
 okgraph_path = 'models/'
 corpus_file_path = okgraph_path + 'text7.head.gz'
-embeddings_magnitude_modelGN = okgraph_path + 'GoogleNews-vectors-negative300.magnitude'
-embeddings_magnitude_modelWikiGigawordGlove6B = okgraph_path + 'glove.6B.300d.magnitude' # Wikipedia 2014 + Gigaword 5 6B	
-# 'models/glove-lemmatized.6B.300d.magnitude' : 'Wikipedia 2014 + Gigaword 5 6B lemmatized (GloVe)',
-embeddings_magnitude_modelCommonCrawlGlove840B = okgraph_path + 'glove.840B.300d.magnitude' # Common Crawl 840B
-# 'models/glove.twitter.27B.200d.magnitude' : 'Twitter 27B (GloVe)',
-embeddings_magnitude_EnglishWikipedia2017_16B = okgraph_path + 'wiki-news-300d-1M.magnitude'
-embeddings_magnitude_EnglishWikipedia2017subword_16B = okgraph_path + 'wiki-news-300d-1M-subword.magnitude'
-embeddings_magnitude_CommonCrawl600B = okgraph_path + 'crawl-300d-2M.magnitude'
+embeddings_magnitude_modelGN = okgraph_path + 'GoogleNews-vectors-negative300.magnitude', # Google News 100B
+embeddings_magnitude_modelWikiGigawordGlove6B = okgraph_path + 'glove.6B.300d.magnitude', # Wikipedia 2014 + Gigaword 5 6B
+embeddings_magnitude_modelWikiGigawordGloveLemmatized6B = okgraph_path + 'glove-lemmatized.6B.300d.magnitude', # Wikipedia 2014 + Gigaword 5 6B lemmatized (GloVe)
+embeddings_magnitude_modelCommonCrawlGlove840B = okgraph_path + 'glove.840B.300d.magnitude', # Common Crawl 840B
+embeddings_magnitude_modelTwitter27B = okgraph_path + 'glove.twitter.27B.200d.magnitude', # Twitter 27B (GloVe)
+embeddings_magnitude_modelEnglishWikipedia2017_16B = okgraph_path + 'wiki-news-300d-1M.magnitude', # English Wikipedia 2017 16B	
+embeddings_magnitude_modelEnglishWikipedia2017Subword16B = okgraph_path + 'wiki-news-300d-1M-subword.magnitude', # English Wikipedia 2017 + subword 16B	
+embeddings_magnitude_modelCommonCrawl600B = okgraph_path + 'crawl-300d-2M.magnitude', # Common Crawl 600B	
+
 embeddings_magnitude_modelT7 = okgraph_path + 'text7.head.magnitude'
 try_times = 10
 # seed_sizes = [(k, try_times) for k in [1, 2, 3, 5, 10, 20, 30, 40, 50]]
@@ -183,8 +184,6 @@ def run_experiments(models: list,
                     verbose: bool = False):
 
     n=1
-    csv_general_info_rows = []
-    csv_general_info_row_titles=["we_model_content", "we_model", "ground_truth_name", "ground_truth_length", "ground_truth_missing_on_we_len", "ground_truth_missing_on_we", "we_model_content"]
 
     for embeddings_magnitude_model in models:
     
@@ -345,10 +344,12 @@ args = {
     "models": [
         embeddings_magnitude_modelGN,
         # embeddings_magnitude_modelWikiGigawordGlove6B,
+        # embeddings_magnitude_modelWikiGigawordGloveLemmatized6B,
         # embeddings_magnitude_modelCommonCrawlGlove840B,
-        # embeddings_magnitude_EnglishWikipedia2017_16B,
-        # embeddings_magnitude_EnglishWikipedia2017subword_16B,
-        # embeddings_magnitude_CommonCrawl600B,
+        # embeddings_magnitude_modelTwitter27B,
+        # embeddings_magnitude_modelEnglishWikipedia2017_16B,
+        # embeddings_magnitude_modelEnglishWikipedia2017Subword16B,
+        # embeddings_magnitude_modelCommonCrawl600B,
     ],
     "lazy_loading": 0   #  You can pass in an optional lazy_loading argument to the constructor with the value
                         #   -1 to disable lazy-loading and pre-load all vectors into memory (a la Gensim), 

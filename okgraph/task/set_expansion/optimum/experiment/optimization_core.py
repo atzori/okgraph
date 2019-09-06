@@ -144,13 +144,15 @@ def get_optimum(args_dict):
     we_model = dataset_info['we_model']
     start = timeit.default_timer()
 
-    print(f'Computing x0 from [{len(initial_guesses)}] vectors '
-        f'optim_algo: [{optim_algo}] '
-        f'by using : [{objective_metric}]')
+
 
     globals()['num_started_exp'] = globals()['num_started_exp'] + 1
     num_started_exp = globals()['num_started_exp']
     if verbose == True:
+        print(f'Computing x0 from [{len(initial_guesses)}] vectors '
+            f'optim_algo: [{optim_algo}] '
+            f'by using : [{objective_metric}]')
+
         print(f'\t### Starting #{num_started_exp} optimization enable_most_similar_approx:{enable_most_similar_approx} of ({len(ground_truth)}) : {ground_truth[:3]}...'
             f'\n\t initial_guesses len : [{len(initial_guesses)}] vectors '
             f'\n\t optim_algo          : [{optim_algo}] '
@@ -250,7 +252,7 @@ def get_optimum(args_dict):
             print(f'\n\n\t\tWINNER!!!!  Wrong ({len(wrong_words)}): {wrong_words}')
             print(f'\n\n\t\tWINNER!!!!\n\n\n\n')
     
-    print(f'# ENDED Computed x0 from [{len(initial_guesses)}] vectors '
+    print(f'\n# ENDED Computed x0 from [{len(initial_guesses)}] vectors '
             f'optim_algo: [{optim_algo}] '
             f'by using : [{objective_metric}] ENDED [{filename}] #')
 

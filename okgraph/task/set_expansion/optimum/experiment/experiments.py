@@ -97,14 +97,14 @@ def get_random_lists(ground_truth: list, seed_sizes: [int], verbose = False) -> 
 
 okgraph_path = 'models/'
 corpus_file_path = okgraph_path + 'text7.head.gz'
-embeddings_magnitude_modelGN = okgraph_path + 'GoogleNews-vectors-negative300.magnitude', # Google News 100B
-embeddings_magnitude_modelWikiGigawordGlove6B = okgraph_path + 'glove.6B.300d.magnitude', # Wikipedia 2014 + Gigaword 5 6B
-embeddings_magnitude_modelWikiGigawordGloveLemmatized6B = okgraph_path + 'glove-lemmatized.6B.300d.magnitude', # Wikipedia 2014 + Gigaword 5 6B lemmatized (GloVe)
-embeddings_magnitude_modelCommonCrawlGlove840B = okgraph_path + 'glove.840B.300d.magnitude', # Common Crawl 840B
-embeddings_magnitude_modelTwitter27B = okgraph_path + 'glove.twitter.27B.200d.magnitude', # Twitter 27B (GloVe)
-embeddings_magnitude_modelEnglishWikipedia2017_16B = okgraph_path + 'wiki-news-300d-1M.magnitude', # English Wikipedia 2017 16B	
-embeddings_magnitude_modelEnglishWikipedia2017Subword16B = okgraph_path + 'wiki-news-300d-1M-subword.magnitude', # English Wikipedia 2017 + subword 16B	
-embeddings_magnitude_modelCommonCrawl600B = okgraph_path + 'crawl-300d-2M.magnitude', # Common Crawl 600B	
+embeddings_magnitude_modelGN = okgraph_path + 'GoogleNews-vectors-negative300.magnitude' # Google News 100B
+embeddings_magnitude_modelWikiGigawordGlove6B = okgraph_path + 'glove.6B.300d.magnitude' # Wikipedia 2014 + Gigaword 5 6B
+embeddings_magnitude_modelWikiGigawordGloveLemmatized6B = okgraph_path + 'glove-lemmatized.6B.300d.magnitude' # Wikipedia 2014 + Gigaword 5 6B lemmatized (GloVe)
+embeddings_magnitude_modelCommonCrawlGlove840B = okgraph_path + 'glove.840B.300d.magnitude' # Common Crawl 840B
+embeddings_magnitude_modelTwitter27B = okgraph_path + 'glove.twitter.27B.200d.magnitude' # Twitter 27B (GloVe)
+embeddings_magnitude_modelEnglishWikipedia2017_16B = okgraph_path + 'wiki-news-300d-1M.magnitude' # English Wikipedia 2017 16B	
+embeddings_magnitude_modelEnglishWikipedia2017Subword16B = okgraph_path + 'wiki-news-300d-1M-subword.magnitude' # English Wikipedia 2017 + subword 16B	
+embeddings_magnitude_modelCommonCrawl600B = okgraph_path + 'crawl-300d-2M.magnitude' # Common Crawl 600B	
 
 embeddings_magnitude_modelT7 = okgraph_path + 'text7.head.magnitude'
 try_times = 10
@@ -203,6 +203,7 @@ def run_experiments(models: list,
     
         if verbose:
             print(f'Loading model: {embeddings_magnitude_model}')
+
         okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_magnitude_model, lazy_loading=lazy_loading)
         if verbose:
             print(f'Model: {embeddings_magnitude_model} LOADED')
@@ -333,12 +334,12 @@ print("STARTING")
 thread_list = []
 n=0
 args = {
-    "max_at_a_time": 20,
+    "max_at_a_time": 50,
     "verbose": False,
     "optim_algos_list": [
         'powell', 
-        'nelder-mead', 
-        'BFGS', 
+        # 'nelder-mead', 
+        # 'BFGS', 
         # 'Newton-CG', 
         # 'CG', 
         # 'TNC', 

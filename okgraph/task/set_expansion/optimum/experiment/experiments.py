@@ -229,9 +229,6 @@ def run_experiments(models: list,
                 print(f'initial_guesses_list = {initial_guesses_list}')
                 print(f'optim_algos = {optim_algos}')
 
-            total = len(optim_algos) * len(initial_guesses_list) * len(objective_metrics) * k_topn
-            tmp = total
-
             for initial_guesses in initial_guesses_list:
                 
                 if len(initial_guesses) <= 0:
@@ -279,16 +276,6 @@ def run_experiments(models: list,
                         #     print(f'ENDED ONE OF [{len(initial_guesses)}] vectors '
                         #         f'optim_algo: [{optim_algo}] '
                         #         f'by using : [{objective_metric}] >>> [{filename}]')
-                        tmp -= 1
-
-    #         csv_general_info_onerow = []
-    #         for csv_general_info_row_title in csv_general_info_row_titles:
-    #             csv_general_info_onerow.append(str(dataset_info[csv_general_info_row_title]))
-    #         csv_general_info_rows.append(csv_general_info_onerow)
-
-                        
-    # filename = f'results/dataset_info_{now.strftime("%Y-%m-%d_%H:%M:%S.%f")[:-3]}.csv'
-    # Metric.save(filename, row_titles=csv_general_info_row_titles, rows=csv_general_info_rows, verbose=verbose)
 
 
 

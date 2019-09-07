@@ -314,7 +314,8 @@ def experiment_t1(args_dict):
     thread_list_index = 0
     tmp_chr = '\\'
     print(f"Starting [{TOTAL_THREADS_TO_RUN}] threads/experiments." )
-    while (thread_list_index < len(thread_list)):
+    another_loop_cmon = True
+    while another_loop_cmon:
         time.sleep(0.5)
         l = threading.enumerate()
         while (thread_list_index < len(thread_list)) and (len(l) < MAX_RUNNING_THREADS_AT_A_TIME):
@@ -324,6 +325,7 @@ def experiment_t1(args_dict):
 
         tmp_chr = '\\' if tmp_chr == '/' else '/'
         print(f'\r Threads started [{thread_list_index}] {tmp_chr} {thread_list_index}/{TOTAL_THREADS_TO_RUN} threads ({len(l)} running)', end='')
+        another_loop_cmon = True if len(l) >= 1 else False
 
 
 

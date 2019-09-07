@@ -9,7 +9,7 @@ BASE_PATH=$(eval echo ~$USER)/okgraph_clone_and_experiments
 REPO_ROOT_PATH=$BASE_PATH/repo
 MAGNITUDE_MODELS_PATH=$BASE_PATH/models
 
-for model in "glove.6B.300d" "glove.840B.300d" "GoogleNews-vectors-negative300"; do
+for model in "glove.6B.300d" "glove.840B.300d" "GoogleNews-vectors-negative300" "wiki-news-300d-1M"; do
     MAGNITUDE_MODEL_POSITION=$MAGNITUDE_MODELS_PATH/$model.magnitude
     NEW_MAGNITUDE_FILE=$REPO_ROOT_PATH/okgraph/task/set_expansion/optimum/experiment/models/$model.magnitude
     echo "Creting a link of $MAGNITUDE_MODEL_POSITION"

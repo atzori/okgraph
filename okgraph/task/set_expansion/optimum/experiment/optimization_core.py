@@ -254,6 +254,7 @@ def get_optimum(args_dict):
     
     print(f'\n# ENDED Computed x0 from [{len(initial_guesses)}] vectors '
             f'optim_algo: [{optim_algo}] '
-            f'by using : [{objective_metric}] ENDED [{filename}] #')
+            f'on: [{ground_truth_name}] '
+            f'using: [{objective_metric}] >> [{filename}] #')
 
     return optimized_res

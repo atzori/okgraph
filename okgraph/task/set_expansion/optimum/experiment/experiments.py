@@ -334,7 +334,7 @@ print("STARTING")
 thread_list = []
 n=0
 args = {
-    "max_at_a_time": 50,
+    "max_at_a_time": 25,
     "verbose": False,
     "optim_algos_list": [
         'powell', 

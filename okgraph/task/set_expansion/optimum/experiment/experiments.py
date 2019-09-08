@@ -336,7 +336,7 @@ print("STARTING")
 thread_list = []
 n=0
 args = {
-    "max_at_a_time": 25,
+    "max_at_a_time": 5,
     "verbose": False,
     "optim_algos_list": [
         'powell', 
@@ -351,9 +351,10 @@ args = {
         # 'COBYLA'
     ],
     "ground_truths": [
-        'usa_states', 
-        'universe_solar_planets', 
-        'periodic_table_of_elements',
+        # 'usa_states', 
+        # 'universe_solar_planets', 
+        'periodic_table_of_elements_lower',
+        # 'periodic_table_of_elements',
         # 'kings_of_rome',
     ],
     "models": [

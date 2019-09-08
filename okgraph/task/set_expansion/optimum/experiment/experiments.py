@@ -107,7 +107,7 @@ embeddings_magnitude_modelEnglishWikipedia2017Subword16B = okgraph_path + 'wiki-
 embeddings_magnitude_modelCommonCrawl600B = okgraph_path + 'crawl-300d-2M.magnitude' # Common Crawl 600B	
 
 embeddings_magnitude_modelT7 = okgraph_path + 'text7.head.magnitude'
-try_times = 10
+# try_times = 10
 # seed_sizes = [(k, try_times) for k in [1, 2, 3, 5, 10, 20, 30, 40, 50]]
 
 
@@ -150,14 +150,14 @@ def remove_words_doesnt_match(okg: okgraph.OKgraph, words: list, initial_guesses
 
 
 
-def generate_seed_sizes(max: int):
+def generate_seed_sizes(max: int, try_times: int = 10):
     out_ss = []
     list_to_use = [1,2,3,5]
     while True:
         for i in list_to_use:
             if i<max:
                 max_comb = scipy.special.comb(max, i, exact=True)
-                num_comb = 10 if 10<max_comb else max
+                num_comb = try_times if try_times<max_comb else max
                 out_ss.append((i, num_comb))
             else:
                 out_ss.append((max, 1))
@@ -193,6 +193,7 @@ def run_experiments(models: list,
                     optim_algos: list,
                     objective_metrics: list,
                     lazy_loading: int = 0,
+                    max_emperiments: int = 10,
                     verbose: bool = False):
 
     n=1
@@ -228,7 +229,7 @@ def run_experiments(models: list,
 
             if verbose:
                 print(f'Getting the initial_guesses_list')
-            seed_sizes = generate_seed_sizes(len(ground_truth_without_not_exists))
+            seed_sizes = generate_seed_sizes(len(ground_truth_without_not_exists), try_times=max_emperiments)
             initial_guesses_list = get_random_lists(ground_truth_without_not_exists, seed_sizes, verbose=verbose)#[0:1]
             if verbose:
                 print(f'Done. initial_guesses_list={initial_guesses_list} ')
@@ -306,6 +307,7 @@ def experiment_t1(args_dict):
                     optim_algos=optim_algos_list,
                     objective_metrics=['AP@k'],
                     lazy_loading=lazy_loading,
+                    max_emperiments=args_dict['max_emperiments'],
                     verbose=verbose)
 
     thread_list = globals()['thread_list']
@@ -336,7 +338,8 @@ print("STARTING")
 thread_list = []
 n=0
 args = {
-    "max_at_a_time": 5,
+    "max_at_a_time": 4, # number of parallel experiments (threads)
+    "max_emperiments": 10, # number of experiments with same seed size
     "verbose": False,
     "optim_algos_list": [
         'powell', 

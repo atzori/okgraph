@@ -16,7 +16,15 @@ MySettings.sheetResultsName = "Results";
 MySettings.resultsRange = "A1:AS5200";
 MySettings.only_successful_enabled = true;
 MySettings.improvementV = 2;
-MySettings.sheetWorstAndBestCasesName = MySettings.only_successful_enabled ? "Worst&BestCases" : "Worst&BestCasesSuccessAndNot";
+
+// MySettings.sheetWorstAndBestCasesName = MySettings.only_successful_enabled ? "Worst&BestCases" : "Worst&BestCasesSuccessAndNot";
+if (MySettings.improvementV == 2) {
+  MySettings.sheetWorstAndBestCasesName = MySettings.only_successful_enabled ? "W&BC(AP@k)" : "W&BCAll(AP@k)";
+} else {
+  MySettings.sheetWorstAndBestCasesName = MySettings.only_successful_enabled ? "W&BC(IMPR)" : "W&BCAll(IMPR)";
+}
+
+
 
 var sheetWorstAndBestCases = getSheet(MySettings.sheetWorstAndBestCasesName);
 var sheetResults = getSheet(MySettings.sheetResultsName);
@@ -27,7 +35,7 @@ function searchWorstAndBestCases() {
     var optim_algo_list = ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg', 'COBYLA'];
     // var optim_algo_list = ['nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg', 'COBYLA'];
     var we_model_list = ["models/GoogleNews-vectors-negative300.magnitude", "models/glove.840B.300d.magnitude"];
-    var ground_truth_name_list = ["usa_states", "universe_solar_planets", "kings_of_rome", "periodic_table_of_elements"];
+    var ground_truth_name_list = ["usa_states", "universe_solar_planets", "king_of_rome", "periodic_table_of_elements"];
 
     var row_i = 3;
     var total = [objective_metric_list, optim_algo_list, we_model_list, ground_truth_name_list]
@@ -132,14 +140,10 @@ function addRowWithAverageWorstAndBestCase(rows, sheet, filters, row_i) {
 
 function getWEModelLabel(model) {
     const models = {
-        'models/GoogleNews-vectors-negative300.magnitude' : 'Google News 100B (W2V)',
-        'models/glove.6B.300d.magnitude' : 'Wikipedia 2014 + Gigaword 5 6B (GloVe)',
-        'models/glove-lemmatized.6B.300d.magnitude' : 'Wikipedia 2014 + Gigaword 5 6B lemmatized (GloVe)',
-        'models/glove.840B.300d.magnitude' : 'Common Crawl 840B (GloVe)',
-        'models/glove.twitter.27B.200d.magnitude' : 'Twitter 27B (GloVe)',
-        'models/wiki-news-300d-1M.magnitude' : 'English Wikipedia 2017 16B (fastText)',
-        'models/wiki-news-300d-1M-subword.magnitude' : 'English Wikipedia 2017 + subword 16B (fastText)',
-        'models/crawl-300d-2M.magnitude' : 'Common Crawl 600B (fastText)',
+        'models/GoogleNews-vectors-negative300.magnitude': 'Google News 100B',
+        'models/glove.840B.300d.magnitude': 'Common Crawl 840B',
+        'models/glove.6B.300d.magnitude': 'Wikipedia 2014 + Gigaword 5 6B',
+        'models/wiki-news-300d-1M.magnitude': 'English Wikipedia 2017 16B',
     }
     return models[model] || model;
 }
@@ -280,14 +284,14 @@ function getBestAndWorstCaseFrom(filteredRows) {
                 }
 
 
-                // memorizza quella con l'improvement minore
+                // memorizza quella con l'improvement minore in termini di AP@k
                 if (!rowsOfWorstCaseExperimentV2
                     || Pa50centroid < worstCaseValueV2
                 ) {
                     rowsOfWorstCaseExperimentV2 = getACopy(experimentRows);
                     worstCaseValueV2 = Pa50centroid;
                 }
-                // memorizza quella con l'improvement maggiore
+                // memorizza quella con l'improvement maggiore in termini di AP@k
                 if (!rowsOfBestCaseExperimentV2
                     || Pa50optimized >= bestCaseValueV2) {
                     rowsOfBestCaseExperimentV2 = getACopy(experimentRows);

@@ -288,14 +288,14 @@ function getBestAndWorstCaseFrom(filteredRows) {
                 }
 
 
-                // memorizza quella con l'improvement minore
+                // memorizza quella con l'improvement minore in termini di AP@k
                 if (!rowsOfWorstCaseExperimentV2
                     || Pa50centroid < worstCaseValueV2
                 ) {
                     rowsOfWorstCaseExperimentV2 = getACopy(experimentRows);
                     worstCaseValueV2 = Pa50centroid;
                 }
-                // memorizza quella con l'improvement maggiore
+                // memorizza quella con l'improvement maggiore in termini di AP@k
                 if (!rowsOfBestCaseExperimentV2
                     || Pa50optimized >= bestCaseValueV2) {
                     rowsOfBestCaseExperimentV2 = getACopy(experimentRows);

@@ -14,7 +14,7 @@ ColumnIndex.experimentId = 43;
 var MySettings = function () { }
 MySettings.sheetResultsName = "Results";
 MySettings.resultsRange = "A1:AS5200";
-MySettings.only_successful_enabled = true;
+MySettings.only_successful_enabled = false;
 MySettings.improvementV = 2;
 
 // MySettings.sheetWorstAndBestCasesName = MySettings.only_successful_enabled ? "Worst&BestCases" : "Worst&BestCasesSuccessAndNot";
@@ -24,6 +24,20 @@ if (MySettings.improvementV == 2) {
   MySettings.sheetWorstAndBestCasesName = MySettings.only_successful_enabled ? "W&BC(IMPR)" : "W&BCAll(IMPR)";
 }
 
+function searchAll() {
+
+  var cases = [
+    {succ: true, imprV: 1},
+    {succ: false, imprV: 1},
+    {succ: true, imprV: 2},
+    {succ: false, imprV: 2},
+  ];
+  cases.forEach(function (oneCase) {
+                MySettings.only_successful_enabled = oneCase.succ;
+                MySettings.improvementV = oneCase.imprV;
+                searchWorstAndBestCases();
+  });
+}
 
 
 var sheetWorstAndBestCases = getSheet(MySettings.sheetWorstAndBestCasesName);
@@ -35,7 +49,7 @@ function searchWorstAndBestCases() {
     var optim_algo_list = ['powell', 'nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg', 'COBYLA'];
     // var optim_algo_list = ['nelder-mead', 'BFGS', 'Newton-CG', 'CG', 'TNC', 'SLSQP', 'dogleg', 'trust-ncg', 'COBYLA'];
     var we_model_list = ["models/GoogleNews-vectors-negative300.magnitude", "models/glove.840B.300d.magnitude"];
-    var ground_truth_name_list = ["usa_states", "universe_solar_planets", "kings_of_rome", "periodic_table_of_elements"];
+    var ground_truth_name_list = ["usa_states", "universe_solar_planets", "kings_of_rome", "king_of_rome", "periodic_table_of_elements", "period_7_element"];
 
     var row_i = 3;
     var total = [objective_metric_list, optim_algo_list, we_model_list, ground_truth_name_list]

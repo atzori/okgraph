@@ -88,7 +88,7 @@ function addRowWithAverageWorstAndBestCase(rows, sheet, filters, row_i) {
 
     var col_i = 0;
     var filteredRows = getFilteredRowsByFilters(rows, filters);
-    // Logger.log('filters: ' + JSON.stringify(filters))
+    // Logger.log('filters: ' + JSON.stringify(filters, null, 2))
     Logger.log("filteredRows.length: " + filteredRows.length);
     if (filteredRows.length <= 0) { return false; }
 
@@ -275,8 +275,6 @@ function getBestAndWorstCaseFrom(filteredRows) {
                 var objectiveMetricResultCentroid = rowCentroid[ColumnIndex.objective_metric_result];
                 var objectiveMetricResultOptimized = rowOptimized[ColumnIndex.objective_metric_result];
                 var actualDifference = objectiveMetricResultOptimized - objectiveMetricResultCentroid;
-                var Pa50centroid = rowCentroid[ColumnIndex.Pa50];
-                var Pa50optimized = rowOptimized[ColumnIndex.Pa50];
 
                 // memorizza quella con l'improvement minore
                 if (!rowsOfWorstCaseExperiment
@@ -297,16 +295,16 @@ function getBestAndWorstCaseFrom(filteredRows) {
 
                 // memorizza quella con l'improvement minore in termini di AP@k
                 if (!rowsOfWorstCaseExperimentV2
-                    || Pa50centroid < worstCaseValueV2
+                    || objectiveMetricResultCentroid < worstCaseValueV2
                 ) {
                     rowsOfWorstCaseExperimentV2 = getACopy(experimentRows);
-                    worstCaseValueV2 = Pa50centroid;
+                    worstCaseValueV2 = objectiveMetricResultCentroid;
                 }
                 // memorizza quella con l'improvement maggiore in termini di AP@k
                 if (!rowsOfBestCaseExperimentV2
-                    || Pa50optimized >= bestCaseValueV2) {
+                    || objectiveMetricResultOptimized >= bestCaseValueV2) {
                     rowsOfBestCaseExperimentV2 = getACopy(experimentRows);
-                    bestCaseValueV2 = Pa50optimized;
+                    bestCaseValueV2 = objectiveMetricResultOptimized;
                 }
 
 
@@ -315,11 +313,10 @@ function getBestAndWorstCaseFrom(filteredRows) {
                 optimizedList.push(objectiveMetricResultOptimized);
                 improvementList.push(getImprovement(objectiveMetricResultCentroid, objectiveMetricResultOptimized));
 
-                if (typeof Pa50centroid === 'number' && typeof Pa50optimized === 'number') {
-                    centroidListV2.push(Pa50centroid);
-                    optimizedListV2.push(Pa50optimized);
-                    improvementListV2.push(getImprovement(Pa50centroid, Pa50optimized));
-                }
+                centroidListV2.push(objectiveMetricResultCentroid);
+                optimizedListV2.push(objectiveMetricResultOptimized);
+                improvementListV2.push(getImprovement(objectiveMetricResultCentroid, objectiveMetricResultOptimized));
+
             } else {
                 Logger.log("Error experimentId doesn't exists or doesn't has optimized and centroid rows: " + experimentId);
                 // Logger.log("experimentRows.centroid: " + experimentRows.centroid);

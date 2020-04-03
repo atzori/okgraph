@@ -7,45 +7,45 @@ cwd = os.getcwd()
 print( cwd )
 corpus_file_path = cwd + '/tests/data/text8'
 embeddings_file_path = cwd + '/tests/data/text8.magnitude'
-indexing_folder = cwd + '/tests/data/indexdir/'
+indexing_folder = cwd + '/tests/data/indexdir/text8'
 dict_total= cwd + '/tests/data/dictTotal.npy'
 #embeddings_file_path = cwd + '/tests/data/GoogleNews-vectors-negative300.magnitude'
 
 
 class OKGraphTest(unittest.TestCase):
 
-    def test_init_with_textgz(self):
+    def test_01_init_with_textgz(self):
         """ create a magnitude file if not exists and not passed as argument"""
         magnitude_file = corpus_file_path + '.magnitude'
         if os.path.exists(magnitude_file):
             os.remove(magnitude_file)
         self.assertFalse(os.path.exists(magnitude_file))
-        okg = okgraph.OKgraph(corpus=corpus_file_path, dict_total=dict_total, index=indexing_folder, create_Index=True)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, dictionary_path=dict_total, index_path=indexing_folder, create_index=True)
         self.assertTrue(os.path.exists(magnitude_file))
-        self.assertIsInstance(okg.v, Magnitude)
+        self.assertIsInstance(okg.embeddings, Magnitude)
         self.assertIsInstance(okg.corpus, str)
-        self.assertGreater(len(okg.v), 0)
+        self.assertGreater(len(okg.embeddings), 0)
 
-    def test_init_model_exists_and_implicitly_passed(self):
+    def test_02_init_model_exists_and_implicitly_passed(self):
         """ uses an existing magnitude file if it is named <corpus>.magnitude even if not passed as argument"""
-        corpus_file = 'tests/data/text7'
+        corpus_file = 'tests/data/text8'
         magnitude_file = corpus_file + '.magnitude'
         self.assertTrue(os.path.exists(magnitude_file))
         modificationTime = os.path.getmtime(magnitude_file)
-        okg = okgraph.OKgraph(corpus=corpus_file_path, dict_total=dict_total, index=indexing_folder, create_Index=True)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, dictionary_path=dict_total, index_path=indexing_folder, create_index=True)
         self.assertTrue(os.path.exists(magnitude_file))
         self.assertEqual(modificationTime, os.path.getmtime(magnitude_file))
-        self.assertIsInstance(okg.v, Magnitude)
+        self.assertIsInstance(okg.embeddings, Magnitude)
         self.assertIsInstance(okg.corpus, str)
-        self.assertGreater(len(okg.v), 0)
+        self.assertGreater(len(okg.embeddings), 0)
 
 
-    def test_init_with_text_and_model(self):
+    def test_03_init_with_text_and_model(self):
         """ check passing magnitude file as argument """
 
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dict_total=dict_total, index=indexing_folder)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
 
-        self.assertIsInstance(okg.v, Magnitude)
+        self.assertIsInstance(okg.embeddings, Magnitude)
         self.assertIsInstance(okg.corpus, str)
 
         with self.assertRaises(RuntimeError):
@@ -56,7 +56,7 @@ class OKGraphTest(unittest.TestCase):
             okgraph.OKgraph(corpus='anotherNone', embeddings='http://not.available.org/path')
 
 
-    def test_set_expansion(self):
+    def test_04_set_expansion(self):
         """ Test if set expansion result contains some of the expected values.
         Test if set expansion does not contains any unexpected value.
         Test if algorithm behaviour is respected.
@@ -89,11 +89,11 @@ class OKGraphTest(unittest.TestCase):
         self.assertTrue(len(result_1) <= result_1_k,
                         msg="k value must be <= of the list length")
 
-    def test_relation_expansion(self):
+    def test_05_relation_expansion(self):
         pass
 
-    def test_relation_labeling(self):
-        okg = okgraph.OKgraph(embeddings=embeddings_file_path, dict_total=dict_total, index=indexing_folder)
+    def test_06_relation_labeling(self):
+        okg = okgraph.OKgraph(embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
         w1 = okg.w(words=['rome', 'italy'])
         w2 = okg.w(words=['berlin', 'germany'])
 
@@ -108,9 +108,11 @@ class OKGraphTest(unittest.TestCase):
 
         intersection = okg.relation_labeling([w1, w2])
 
-        self.assertTrue(len(intersection) == 0)
+        print(intersection)
 
-    def test_set_labeling(self):
+        self.assertTrue(len(intersection) != 0)
+
+    def test_07_set_labeling(self):
         pass
 
 

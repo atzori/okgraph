@@ -1,11 +1,11 @@
 import logging
+import numpy as np
 import operator
 import re
 import string
 from os import path
 from logging.config import fileConfig
 
-import numpy as np
 
 LOG_CONFIG_FILE = path.dirname(path.realpath(__file__)) + '/logging.ini'
 if not path.isfile(LOG_CONFIG_FILE):
@@ -16,36 +16,58 @@ logger = logging.getLogger()
 logger.info(f'Log config file is: {LOG_CONFIG_FILE}')
 
 
-# generatore parola per parola
-def get_word(filename):
-    """generatore parola per parola"""
-    regex = re.compile('[%s]' % re.escape(string.punctuation))  # espressione regolare che rimuove la punteggiatura
-    with open(filename) as file:
-        for line in file:
-            line = regex.sub(' ', line)  # sostituisci la punteggiatura con uno spazio
-            listaParole = line.lower().split()
+def get_words(file_path: str):
+    """
+    Reads a text file and convert it to a list of its words in lowercase format.
+    :param file_path: path (with name) of the file
+    :return: a list of words (strings)
+    """
+    # Regular expression that identifies the punctuation
+    regex = re.compile('[%s]' % re.escape(string.punctuation))
 
-            for w in listaParole:
+    # Read the file line by line and extract all the words
+    with open(file_path) as file_path:
+        for line in file_path:
+            line = regex.sub(' ', line)
+            words = line.lower().split()
+
+            for w in words:
                 yield w
 
 
-def creation(path, name='dictTotal.npy', save=True):
-    g = get_word(path)
-    dict_creation = {}
-    logger.info('Start creation dictionary')
+def create_dictionary(file_path: str, dictionary_path: str = 'dictTotal.npy', dictionary_save: bool = True):
+    """
+    Creates a dictionary of the words in the file using the structure {word in file: occurrences of word in file}
+    :param file_path: path (with name) of the file
+    :param dictionary_path: path (with name) of the dictionary's file
+    :param dictionary_save: save or not the created dictionary into a file whose name is specified by 'dictionary_path'
+    :return: the created dictionary
+    """
+    # Get all the words from the file
+    words = get_words(file_path)
 
-    for word in g:
-        dict_creation[word] = dict_creation.get(word, 0) + 1
+    logger.info('Start dictionary\'s creation')  # LOG INFO
 
-    if save == True:
-        np.save(name, dict_creation)
+    # Create a dictionary of the type {word in file: occurrences of word in file}
+    dictionary = {}
+    for word in words:
+        dictionary[word] = dictionary.get(word, 0) + 1
 
-    dict_creation = dict(sorted(dict_creation.items(), key=operator.itemgetter(1), reverse=True))
-    logger.info('End creation')
-    return dict_creation
+    # Order the dictionary by the word's occurrences (from greater to smaller)
+    dictionary = dict(sorted(dictionary.items(), key=operator.itemgetter(1), reverse=True))
+
+    # If wanted, save the dictionary into a file with the specified path
+    if dictionary_save is True:
+        np.save(dictionary_path, dictionary)
+
+    logger.info('End of dictionary\'s creation')  # LOG INFO
+
+    # Return the created dictionary
+    return dictionary
 
 
 def head(path, n=0, file=None, gzip=False):
+    # TODO: add documentation
     from os import system
     system('head -c ' + str(n) + ' ' + path + ' > ' + file)
     if gzip is True:
@@ -53,6 +75,7 @@ def head(path, n=0, file=None, gzip=False):
 
 
 def tail(path, n=0, file=None, gzip=False):
+    # TODO: add documentation
     from os import system
     system('tail -c ' + str(n) + ' ' + path + ' > ' + file)
     if gzip is True:
@@ -60,6 +83,7 @@ def tail(path, n=0, file=None, gzip=False):
 
 
 def download(url, path_name='text8.zip', name='Text8 Dataset'):
+    # TODO: add documentation
     from urllib.request import urlretrieve
     from tqdm import tqdm
 

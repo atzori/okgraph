@@ -91,6 +91,12 @@ class OKGraphTest(unittest.TestCase):
                         msg="k value must be <= of the list length")
 
     def test_05_relation_expansion(self):
+        okg = okgraph.OKgraph(embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
+        seed = [('rome', 'italy'), ('berlin', 'germany')]
+
+        expansion = okg.relation_expansion(seed)
+
+        print('Expansion of {seed} is {expansion}'.format(seed=seed, expansion=expansion))
         pass
 
     def test_06_relation_labeling(self):
@@ -103,7 +109,7 @@ class OKGraphTest(unittest.TestCase):
         self.assertTrue(len(sliding_windows[0].results) > 0,
                         msg='windows one between rome and italy is not empty')
 
-        sliding_windows.append(SlidingWindows(words=pairs[0], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
+        sliding_windows.append(SlidingWindows(words=pairs[1], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
         print('Pair {pair} produced result {result}'.format(pair=pairs[1], result=sliding_windows[1].results))
         self.assertTrue(len(sliding_windows[1].results) > 0,
                         msg='windows two between berlin and germany is not empty')

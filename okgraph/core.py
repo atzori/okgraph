@@ -136,6 +136,14 @@ class OKgraph:
 
         return algorithm.task(self.embeddings, options=options)
 
+    def relation_expansion(self, seed: [(str, str)], k: int = 15, algo: str = 'intersection'):
+        package = algorithms_package + '.relation_expansion.' + algo
+        algorithm = getattr(__import__(package, fromlist=[algo]), algo)
+
+        options = {'seed': seed, 'k': k}
+
+        return algorithm.task(self.embeddings, self.dictionary, self.index, options)
+
     def relation_labeling(self, seed: [(str, str)], k: int = 15, algo: str = 'intersection', ):
         package = algorithms_package + '.relation_labeling.' + algo
         algorithm = getattr(__import__(package, fromlist=[algo]), algo)

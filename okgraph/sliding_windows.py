@@ -59,7 +59,7 @@ class SlidingWindows:
         if not isinstance(window_center_size, int):
             raise TypeError('error type in window_center_size')
 
-        self.verbose = info
+        self.info = info
 
         self.words = words
         # Get the corpus data
@@ -127,9 +127,9 @@ class SlidingWindows:
         re_match_precedent_if = r'?=(' + re_any_word + r'){0,' + str(window_center_size) + r'}'
 
         #  Expression with word one as the limit of the left margin:
-        exp1 = re_margin + re_word_one + r'(' + re_match_precedent_if + word_two + r')' + re_center + re_margin
+        exp1 = re_margin + re_word_one + r'(' + re_match_precedent_if + re_word_two + r')' + re_center + re_margin
         #  Expression two:
-        exp2 = re_margin + re_word_two + r'(' + re_match_precedent_if + word_one + r')' + re_center + re_margin
+        exp2 = re_margin + re_word_two + r'(' + re_match_precedent_if + re_word_one + r')' + re_center + re_margin
         #  Final expression: exp1 OR exp2
         regex = re.compile(r'(' + exp1 + r')' + r'|' + r'(' + exp2 + r')')
 
@@ -160,7 +160,7 @@ class SlidingWindows:
         # Apply the regular expression to every document
         query_results = [regex.search(doc) for doc in query_results]
         # Extract the matching windows (when present) from the results of the search with the regular expression
-        query_results = [doc.group(0) if doc is not None else '' for doc in query_results]
+        query_results = [doc.group(0) for doc in query_results if doc is not None]
         # QSTN: what does happen here?
         # TODO: add documentation
         windows_list = []
@@ -196,7 +196,7 @@ class SlidingWindows:
         :param windows: list of all the windows from the corpus
         :return: dictionary {word: number of windows containing the word}
         """
-        if self.verbose is True:
+        if self.info is True:
             dictionary_keys = tqdm(list(dictionary.keys()))
         else:
             dictionary_keys = list(dictionary.keys())
@@ -218,16 +218,13 @@ class SlidingWindows:
         :param total_occurrences: total amount of occurrences in the dictionary
         :return: dictionary {word: word's frequency}
         """
-        if self.verbose is True:
+        if self.info is True:
             occurrence_dictionary_keys = tqdm(list(occurrence_dictionary.keys()))
         else:
             occurrence_dictionary_keys = list(occurrence_dictionary.keys())
 
         f_dict = {}
         for word in occurrence_dictionary_keys:
-            # QSTN: the third term of the tuple is never referenced, is it useless?
-            #  The first term is referenced somewhere, but it could be replaced, leaving this dictionary a pure
-            #  frequency dictionary, would be better, right?
             f_dict[word] = occurrence_dictionary.get(word) / total_occurrences
 
         return f_dict
@@ -242,7 +239,7 @@ class SlidingWindows:
         :param total_occurrences: total amount of occurrences in the dictionary
         :return: dictionary {word: word's inverse frequency}
         """
-        if self.verbose is True:
+        if self.info is True:
             occurrence_dictionary_keys = tqdm(list(occurrence_dictionary.keys()))
         else:
             occurrence_dictionary_keys = list(occurrence_dictionary.keys())
@@ -262,7 +259,7 @@ class SlidingWindows:
         :param corpus_dictionary: dictionary {word: occurrences of word in corpus}
         :return: the ratio dictionary {word: log(word window frequency / word corpus frequency)}
         """
-        if self.verbose is True:
+        if self.info is True:
             windows_dictionary_keys = tqdm(list(windows_dictionary.keys()))
         else:
             windows_dictionary_keys = list(windows_dictionary.keys())
@@ -296,7 +293,7 @@ class SlidingWindows:
         :param windows_list: list of windows
         :return: the TF-IDF dictionary {word in window: TF-IDF}
         """
-        if self.verbose is True:
+        if self.info is True:
             windows_frequency_dictionary_keys = tqdm(list(windows_frequency_dictionary.keys()))
         else:
             windows_frequency_dictionary_keys = list(windows_frequency_dictionary.keys())
@@ -327,7 +324,7 @@ class SlidingWindows:
         clean_dictionary = tf_idf_dictionary
 
         # Remove the words whose occurrences are higher than the total amount of unique words
-        if self.verbose is True:
+        if self.info is True:
             windows_dictionary_keys = tqdm(list(windows_dictionary.keys()))
         else:
             windows_dictionary_keys = list(windows_dictionary.keys())
@@ -336,7 +333,7 @@ class SlidingWindows:
                 clean_dictionary.pop(key)
 
         # Remove words shorter than 3 characters
-        if self.verbose is True:
+        if self.info is True:
             clean_dictionary_keys = tqdm(list(clean_dictionary.keys()))
         else:
             clean_dictionary_keys = list(clean_dictionary.keys())
@@ -345,7 +342,7 @@ class SlidingWindows:
                 clean_dictionary.pop(key)
 
         # Remove words with a ratio that is lower than the specified threshold
-        if self.verbose is True:
+        if self.info is True:
             clean_dictionary_keys = tqdm(list(clean_dictionary.keys()))
         else:
             clean_dictionary_keys = list(clean_dictionary.keys())
@@ -354,7 +351,7 @@ class SlidingWindows:
                 clean_dictionary.pop(key)
 
         # Remove numbers (their string representation)
-        if self.verbose is True:
+        if self.info is True:
             clean_dictionary_keys = tqdm(list(clean_dictionary.keys()))
         else:
             clean_dictionary_keys = list(clean_dictionary.keys())
@@ -374,20 +371,20 @@ class SlidingWindows:
         :return: a dictionary {word (label): TF-IDF}
         """
 
-        if len(self.windows_list) == 0:
-            raise ValueError('Empty list')
+        results_dict = {}
+        if len(self.windows_list) > 0:
+            # Remove the two words, 'cause they can't be one of the label
+            self.windows_dictionary.pop(self.words[0])
+            self.windows_dictionary.pop(self.words[1])
 
-        # Remove the two words, 'cause they can't be one of the label
-        self.windows_dictionary.pop(self.words[0])
-        self.windows_dictionary.pop(self.words[1])
-
-        # Find the labels
-        windows_occurrence_dict = self.windows_occurrence_dictionary(self.windows_dictionary, self.windows_list)
-        windows_frequency_dict = self.frequency_dictionary(self.windows_dictionary, self.windows_total_occurrences)
-        ratio_dict = self.ratio_dictionary(self.windows_dictionary, self.corpus_dictionary)
-        dirty_result_dict = self.tf_idf_dictionary(windows_occurrence_dict, windows_frequency_dict, self.corpus_inverse_frequency_dictionary, self.windows_list)
-        results_dict = self.clean_results(self.windows_dictionary, dirty_result_dict, ratio_dict, threshold)
-        results_dict = dict(sorted(results_dict.items(), key=operator.itemgetter(1), reverse=True))
+            # Find the labels
+            windows_occurrence_dict = self.windows_occurrence_dictionary(self.windows_dictionary, self.windows_list)
+            windows_frequency_dict = self.frequency_dictionary(self.windows_dictionary, self.windows_total_occurrences)
+            ratio_dict = self.ratio_dictionary(self.windows_dictionary, self.corpus_dictionary)
+            dirty_result_dict = self.tf_idf_dictionary(windows_occurrence_dict, windows_frequency_dict,
+                                                       self.corpus_inverse_frequency_dictionary, self.windows_list)
+            results_dict = self.clean_results(self.windows_dictionary, dirty_result_dict, ratio_dict, threshold)
+            results_dict = dict(sorted(results_dict.items(), key=operator.itemgetter(1), reverse=True))
 
         return results_dict
 

@@ -144,14 +144,10 @@ class OKgraph:
 
         return algorithm.task(self.embeddings, options=options)
 
-    def w(self, l=12, d=6, words:[str] = None):
-
-        return SlidingWindows(words, corpus_dictionary_path=self.dictionary, window_total_size=l, window_center_size=d, corpus_index_path=self.index)
-
-    def relation_labeling(self, windows: [SlidingWindows] = None, algo: str = "intersection", ):
-
-        # automatically get the file of the algorithm task
-        package = algorithms_package + ".relation_labeling." + algo
+    def relation_labeling(self, seed: [(str, str)], k: int = 15, algo: str = 'intersection', ):
+        package = algorithms_package + '.relation_labeling.' + algo
         algorithm = getattr(__import__(package, fromlist=[algo]), algo)
 
-        return algorithm.task(windows)
+        options = {'seed': seed, 'k': k}
+
+        return algorithm.task(self.dictionary, self.index, options)

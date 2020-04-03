@@ -1,5 +1,6 @@
 import unittest
 import okgraph
+from okgraph.sliding_windows import SlidingWindows
 import os
 from pymagnitude import Magnitude
 
@@ -94,21 +95,22 @@ class OKGraphTest(unittest.TestCase):
 
     def test_06_relation_labeling(self):
         okg = okgraph.OKgraph(embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
-        w1 = okg.w(words=['rome', 'italy'])
-        w2 = okg.w(words=['berlin', 'germany'])
+        pairs = [('rome', 'italy'), ('berlin', 'germany')]
+        sliding_windows = []
 
-        self.assertTrue(len(w1.results)>1,
+        sliding_windows.append(SlidingWindows(words=pairs[0], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
+        print('Pair {pair} produced result {result}'.format(pair=pairs[0], result=sliding_windows[0].results))
+        self.assertTrue(len(sliding_windows[0].results) > 0,
                         msg='windows one between rome and italy is not empty')
 
-        self.assertTrue(len(w2.results) > 2,
+        sliding_windows.append(SlidingWindows(words=pairs[0], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
+        print('Pair {pair} produced result {result}'.format(pair=pairs[1], result=sliding_windows[1].results))
+        self.assertTrue(len(sliding_windows[1].results) > 0,
                         msg='windows two between berlin and germany is not empty')
 
-        print(w1.results)
-        print(w2.results)
+        intersection = okg.relation_labeling(pairs)
 
-        intersection = okg.relation_labeling([w1, w2])
-
-        print(intersection)
+        print('Labels describing the pairs of words: {labels}'.format(labels=intersection))
 
         self.assertTrue(len(intersection) != 0)
 

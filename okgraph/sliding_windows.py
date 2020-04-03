@@ -32,17 +32,17 @@ class SlidingWindows:
     """
 
     def __init__(self,
-                 words: [str],
+                 words: (str, str),
                  corpus_index_path: str = 'indexdir',
                  corpus_dictionary_path: str = None,
-                 window_total_size: int = 14,
+                 window_total_size: int = 12,
                  window_center_size: int = 6,
                  info: bool = True
                  ):
         """
         Creates a SlidingWindows object.
         Load the data and find the labels related to the two words of interest.
-        :param words: list of the two words of interest
+        :param words: pair of words whose relation has to be inspected
         :param corpus_index_path: path of the stored and indexed corpus
         :param corpus_dictionary_path: path of the stored dictionary of the corpus {word: occurrences}
         :param window_total_size: total size of a context window
@@ -50,14 +50,14 @@ class SlidingWindows:
         """
 
         # Input check
-        if not isinstance(words, list) and isinstance(words[0], str) and isinstance(words[1], str):
+        if not isinstance(words, tuple) and isinstance(words[0], str) and isinstance(words[1], str):
             raise TypeError('error type in words')
         if len(words) != 2:
-            raise ValueError('words must be a list of 2 strings')
+            raise ValueError('words must be a pair of 2 strings')
         if not isinstance(window_total_size, int):
-            raise TypeError('error type in l')
+            raise TypeError('error type in window_total_size')
         if not isinstance(window_center_size, int):
-            raise TypeError('error type in d')
+            raise TypeError('error type in window_center_size')
 
         self.verbose = info
 

@@ -23,7 +23,11 @@ DEFAULT_NGRAM_END = 6
 class FileConverter:
 
     def corpus_to_gensim_model(corpus_fname: str, save_fname: str = None) -> str:
-        """Read text file and create a gensim model file."""
+        """
+        Reads text file and creates a gensim model file.
+        :param save_fname: name (path) of the model
+        :return: the name of the model
+        """
 
         model = Word2Vec()
 
@@ -49,7 +53,11 @@ class FileConverter:
         return save_fname
 
     def corpus_to_magnitude_model(corpus_fname: str, save_fname: str = None) -> str:
-        """Read a text file and create a Magnitude model file."""
+        """
+        Reads a text file and creates a Magnitude model file
+        :param save_fname: name (path) of the model
+        :return: the name of the model
+        """
 
         logger.info(f'Computing file {corpus_fname}')
 

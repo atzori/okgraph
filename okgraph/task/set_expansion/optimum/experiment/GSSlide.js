@@ -10,7 +10,7 @@ var C = {
     gray: "#D1D5D8",
     white: "#FFFFFF",
 
-}
+};
 
 var UI = {
     // title bar
@@ -22,7 +22,7 @@ var UI = {
     titleBarBorderColor: C.transparent,
     // slide number
     textSlideNumberColor: C.white,
-}
+};
 /**
  * Runs when the add-on is installed.
  * @param {object} e The event parameter for a simple onInstall trigger. To
@@ -86,9 +86,9 @@ function createBars() {
     var titleWidth = (presentation.getPageWidth() - PADDING * 2) / titles.length - PADDING;
     var slides = presentation.getSlides();
     for (var i = 1; i < slides.length - 1; ++i) {
-        addTitlesBackground(slides[i])
-        addTitles(slides[i], titleWidth, titles, i)
-        addSlidesLeftNumberTriangle(slides[i])
+        addTitlesBackground(slides[i]);
+        addTitles(slides[i], titleWidth, titles, i);
+        addSlidesLeftNumberTriangle(slides[i]);
         addSlidesLeftNumber(slides[i], i + 1, slides.length)
     }
 }
@@ -101,7 +101,7 @@ function addSlidesLeftNumberTriangle(slide) {
     var scaleFactor = 1.5;
 
     var backgNumbShape = slide.insertShape(SlidesApp.ShapeType.TRIANGLE,
-        slideWidth - w * scaleFactor, slideHeight - h * scaleFactor, w * scaleFactor, h * scaleFactor)
+        slideWidth - w * scaleFactor, slideHeight - h * scaleFactor, w * scaleFactor, h * scaleFactor);
     backgNumbShape.setRotation(135)
         .setLeft(slideWidth - 40 * scaleFactor)
         .setTop(slideHeight - 24 * scaleFactor);
@@ -123,18 +123,18 @@ function addSlidesLeftNumber(slide, actualSlideNum, totalSlide) {
     var w = 60;
     var h = 30;
 
-    var titleShape = slide.insertTextBox(actualSlideNum + '/' + totalSlide, slideWidth - w, slideHeight - h, w, h)
-    setVerticalAlignment(DocumentApp.VerticalAlignment.BOTTOM)
+    var titleShape = slide.insertTextBox(actualSlideNum + '/' + totalSlide, slideWidth - w, slideHeight - h, w, h);
+    setVerticalAlignment(DocumentApp.VerticalAlignment.BOTTOM);
     titleShape.getText().getParagraphStyle().setParagraphAlignment(SlidesApp.ParagraphAlignment.END);
     titleShape.getText().getTextStyle().setForegroundColor(UI.textSlideNumberColor);
     titleShape.getText().getTextStyle().setFontSize(10);
-    titleShape.setLinkUrl(BAR_ID); // to allow remove it  
+    titleShape.setLinkUrl(BAR_ID); // to allow remove it
 }
 
 function addTitlesBackground(slide) {
     var slideWidth = presentation.getPageWidth();
     var titleShape = slide.insertShape(SlidesApp.ShapeType.RECTANGLE,
-        0, 0, slideWidth, TITLES_HEIGHT + PADDING * 2)
+        0, 0, slideWidth, TITLES_HEIGHT + PADDING * 2);
     titleShape.setLinkUrl(BAR_ID); // to allow remove it
     if (UI.backgTitleBar !== C.transparent) {
         titleShape.getFill().setSolidFill(UI.backgTitleBar, 1)
@@ -154,7 +154,7 @@ function addTitles(slide, titleWidth, titles, actualSlideIndex) {
         var y = 0;
         var titleShape = slide.insertShape(SlidesApp.ShapeType.RECTANGLE,
             x + PADDING * (titleIndex + 1),
-            y + PADDING, titleWidth, TITLES_HEIGHT)
+            y + PADDING, titleWidth, TITLES_HEIGHT);
         titleShape.setLinkUrl(BAR_ID); // to allow remove it
         //titleShape.getBorder().setTransparent();
 

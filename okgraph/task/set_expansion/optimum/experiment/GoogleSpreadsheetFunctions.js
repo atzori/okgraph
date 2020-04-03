@@ -1,22 +1,22 @@
-Logger.clear()
+Logger.clear();
 
-var ColumnIndex = function () { }
+var ColumnIndex = function () { };
 ColumnIndex.INFO = 7; // OPTIMIZED, CENTROID
 ColumnIndex.optim_algo = 8; // BFGS, nelder-mead, powell.....
 ColumnIndex.objective_metric = 9; // AP@k
 ColumnIndex.objective_metric_result = 10; // 0.348842 ...
-ColumnIndex.Pa50 = 14 // 0.98 ...
+ColumnIndex.Pa50 = 14; // 0.98 ...
 ColumnIndex.optim_message = 23; // Success..
 ColumnIndex.we_model = 36; //  models/GoogleNews-vectors-negative300.magnitude
 ColumnIndex.ground_truth_name = 42; // usa_states
 ColumnIndex.experimentId = 43;
 
-var MySettings = function () { }
+var MySettings = function () { };
 MySettings.sheetResultsName = "Results";
 MySettings.resultsRange = "A1:AS5200";
 
 
-var theCase = {succ: true, imprV: 2 } // W&BC(AP@k)
+var theCase = {succ: true, imprV: 2 }; // W&BC(AP@k)
 //var theCase = {succ: true, imprV: 1}  // W&BC(IMPR)
 //var theCase = {succ: false, imprV: 2} // W&BCAll(AP@k)
 //var theCase = {succ: false, imprV: 1} // W&BCAll(IMPR)
@@ -48,7 +48,7 @@ function searchWorstAndBestCases() {
     var total = [objective_metric_list, optim_algo_list, we_model_list, ground_truth_name_list]
         .reduce(function (prev, curr) {
             return ((prev && prev.length) || prev) * curr.length
-        })
+        });
     Logger.info("total: " + total);
     sheetWorstAndBestCases.getRange("A1").setValue("Wait.. -" + total);
     var allRows = sheetResults.getRange(MySettings.resultsRange);
@@ -57,7 +57,7 @@ function searchWorstAndBestCases() {
     optim_algo_list.forEach(function (optim_algo) {
         var filters1 = {
             optim_algo: optim_algo,
-        }
+        };
         var preFilteredRows = getFilteredRowsByFilters(allRows, filters1);
         Logger.info("preFilteredRows: " + preFilteredRows.length);
 
@@ -69,7 +69,7 @@ function searchWorstAndBestCases() {
                         optim_algo: optim_algo,
                         we_model: we_model,
                         ground_truth_name: ground_truth_name,
-                    }
+                    };
                     var rwawabc = addRowWithAverageWorstAndBestCase(preFilteredRows, sheetWorstAndBestCases, filters2, row_i);
                     if (rwawabc) { // if something has been added...
                         row_i = row_i + 1;
@@ -83,7 +83,7 @@ function searchWorstAndBestCases() {
     });
 }
 
-var cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V']
+var cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'];
 function addRowWithAverageWorstAndBestCase(rows, sheet, filters, row_i) {
 
     var col_i = 0;
@@ -92,7 +92,7 @@ function addRowWithAverageWorstAndBestCase(rows, sheet, filters, row_i) {
     Logger.log("filteredRows.length: " + filteredRows.length);
     if (filteredRows.length <= 0) { return false; }
 
-    var bestAndWorstCases = getBestAndWorstCaseFrom(filteredRows)
+    var bestAndWorstCases = getBestAndWorstCaseFrom(filteredRows);
     var rowsOfWorstCaseExperiment = MySettings.improvementV === 1 ? bestAndWorstCases.rowsOfWorstCaseExperiment : bestAndWorstCases.rowsOfWorstCaseExperimentV2;
     var rowsOfBestCaseExperiment = MySettings.improvementV === 1 ? bestAndWorstCases.rowsOfBestCaseExperiment : bestAndWorstCases.rowsOfBestCaseExperimentV2;
     var averageCaseObj = MySettings.improvementV === 1 ? bestAndWorstCases.averageCaseObj : bestAndWorstCases.averageCaseObjV2;
@@ -101,8 +101,8 @@ function addRowWithAverageWorstAndBestCase(rows, sheet, filters, row_i) {
     var worstCaseExperimentId = rowsOfWorstCaseExperiment.centroid[ColumnIndex.experimentId];
     var bestCaseExperimentId = rowsOfBestCaseExperiment.centroid[ColumnIndex.experimentId];
     if (!worstCaseExperimentId || !bestCaseExperimentId) {
-        Logger.log("Not found: worstCaseExperimentId: " + worstCaseExperimentId)
-        Logger.log("Not found: bestCaseExperimentId: " + bestCaseExperimentId)
+        Logger.log("Not found: worstCaseExperimentId: " + worstCaseExperimentId);
+        Logger.log("Not found: bestCaseExperimentId: " + bestCaseExperimentId);
         return false;
     }
 
@@ -155,7 +155,7 @@ function getWEModelLabel(model) {
         'models/wiki-news-300d-1M.magnitude': 'English Wikipedia 2017 16B (fastText)',
         'models/wiki-news-300d-1M-subword.magnitude': 'English Wikipedia 2017 + subword 16B (fastText)',
         'models/crawl-300d-2M.magnitude': 'Common Crawl 600B (fastText)',
-    }
+    };
     return models[model] || model;
 }
 
@@ -198,13 +198,13 @@ var filterChoosen = function (filters) {
             && (!filters.we_model || row[ColumnIndex.we_model] === filters.we_model)
             && (!filters.ground_truth_name || row[ColumnIndex.ground_truth_name] === filters.ground_truth_name)
     }
-}
+};
 
 
 function getRowByExperimentId(rows, experimentId) {
     var rowsExperiment = rows.filter(function (row) {
         return row[ColumnIndex.experimentId] === experimentId;
-    })
+    });
     if (rowsExperiment.length !== 2) {
         Logger.log("WARNING: it was expected to have 2 rows (experimentId: " + experimentId + ") but got " + rowsExperiment.length + ".")
     }
@@ -240,20 +240,20 @@ function getBestAndWorstCaseFrom(filteredRows) {
         optimizedResult: -1,
         improvementFromList: -1,
         improvementFromAVG: -1,
-    }
+    };
     var averageCaseObjV2 = {
         centroidResult: -1,
         optimizedResult: -1,
         improvementFromList: -1,
         improvementFromAVG: -1,
-    }
-    var centroidList = []
-    var optimizedList = []
-    var improvementList = []
+    };
+    var centroidList = [];
+    var optimizedList = [];
+    var improvementList = [];
 
-    var centroidListV2 = []
-    var optimizedListV2 = []
-    var improvementListV2 = []
+    var centroidListV2 = [];
+    var optimizedListV2 = [];
+    var improvementListV2 = [];
 
     var numberOfUsedRows = 0;
 

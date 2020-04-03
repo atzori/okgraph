@@ -127,20 +127,12 @@ class OKgraph:
         self.dictionary = dictionary_path
         self.occurrence_corpus = occurrence_corpus
 
-    def set_expansion(self, seed: [str] = None, algo: str = "centroid", options: dict = {}, k: int = 5):
-        """
-        Returns a **generator** with results not containing the given seed
-        Use itertools to convert to a finite list (see https://stackoverflow.com/a/5234170)
-        e.g.: 'Spain','Portugal','Belgium', ...
-
-        """
-
-        # automatically get the file of the algorithm task
-        package = algorithms_package + ".set_expansion." + algo
+    def set_expansion(self, seed: [str], k: int = 15, algo: str = 'centroid'):
+        # QSTN: Use itertools to convert the results to a finite list (see https://stackoverflow.com/a/5234170)
+        package = algorithms_package + '.set_expansion.' + algo
         algorithm = getattr(__import__(package, fromlist=[algo]), algo)
 
-        options["seed"] = seed
-        options["k"] = k
+        options = {'seed': seed, 'k': k}
 
         return algorithm.task(self.embeddings, options=options)
 

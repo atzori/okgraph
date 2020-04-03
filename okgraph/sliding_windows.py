@@ -2,7 +2,7 @@ import operator
 import re
 import tqdm
 from tqdm import tqdm
-import scipy
+import numpy
 from whoosh import index
 from whoosh.qparser import QueryParser
 import numpy as np
@@ -249,8 +249,7 @@ class SlidingWindows:
 
         if_dict = {}
         for word in occurrence_dictionary_keys:
-            # TODO: change scipy.log10 (deprecated) with numpy.log10
-            if_dict[word] = scipy.log10(total_occurrences / occurrence_dictionary.get(word))
+            if_dict[word] = numpy.log10(total_occurrences / occurrence_dictionary.get(word))
         return if_dict
 
     def ratio_dictionary(self, windows_dictionary, corpus_dictionary):
@@ -280,10 +279,9 @@ class SlidingWindows:
                 # QSTN: probably unreachable
                 ratio = 0
             else:
-                # TODO: change scipy.log10 (deprecated) with numpy.log10
                 window_frequency = windows_dictionary.get(word) / total_windows_occurrences
                 corpus_frequency = corpus_dictionary.get(word) / total_corpus_occurrences
-                ratio = scipy.log10(window_frequency / corpus_frequency)
+                ratio = numpy.log10(window_frequency / corpus_frequency)
 
             ratio_dict[word] = ratio
 

@@ -28,7 +28,7 @@ class SlidingWindows:
         corpus_total_occurrences: total number of occurrences in the corpus
         corpus_inverse_frequency_dictionary: dictionary {word in corpus: inverse frequency]
         results: dictionary of labels {word: TF-IDF}
-        verbose: to print or not messages in the log
+        info: to print or not messages in the log
     """
 
     def __init__(self,
@@ -37,7 +37,7 @@ class SlidingWindows:
                  corpus_dictionary_path: str = None,
                  window_total_size: int = 14,
                  window_center_size: int = 6,
-                 verbose: bool = True
+                 info: bool = True
                  ):
         """
         Creates a SlidingWindows object.
@@ -59,7 +59,7 @@ class SlidingWindows:
         if not isinstance(window_center_size, int):
             raise TypeError('error type in d')
 
-        self.verbose = verbose
+        self.verbose = info
 
         self.words = words
         # Get the corpus data

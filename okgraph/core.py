@@ -8,16 +8,18 @@ from okgraph.sliding_windows import SlidingWindows
 from okgraph.indexing import Indexing
 from okgraph.utils import create_dictionary
 
+# Specify the task's path
 algorithms_package = "okgraph.task"
 
-
+# Create a logger using the specified configuration
 LOG_CONFIG_FILE = path.dirname(path.realpath(__file__)) + '/logging.ini'
 if not path.isfile(LOG_CONFIG_FILE):
     LOG_CONFIG_FILE = path.dirname(path.dirname(LOG_CONFIG_FILE)) + '/logging.ini'
-
 fileConfig(LOG_CONFIG_FILE)
 logger = logging.getLogger()
+# Print a first message in the logger
 logger.info(f'Log config file is: {LOG_CONFIG_FILE}')
+
 
 class OKgraph:
     """OKgraph currently focuses on the following tasks:

@@ -6,12 +6,13 @@ from okgraph.utils import get_words
 from whoosh import index
 from whoosh.fields import Schema, TEXT
 
+# Create a logger using the specified configuration
 LOG_CONFIG_FILE = path.dirname(path.realpath(__file__)) + '/logging.ini'
 if not path.isfile(LOG_CONFIG_FILE):
     LOG_CONFIG_FILE = path.dirname(path.dirname(LOG_CONFIG_FILE)) + '/logging.ini'
-
 fileConfig(LOG_CONFIG_FILE)
 logger = logging.getLogger()
+
 
 class Indexing:
     """
@@ -22,14 +23,14 @@ class Indexing:
     Attributes:
         corpus_path: path of the file (text corpus)
         schema: schema (whoosh Schema) used to represent a document: (title (text ID): content (text))
-        verbose: to print or not messages in the log
+        info: to print or not messages in the log
     """
 
     # Schema's fields
     FIELD_TITLE = 'title'
     FIELD_CONTENT = 'content'
 
-    def __init__(self, corpus_path: str, verbose: bool = True):
+    def __init__(self, corpus_path: str, info: bool = True):
         """
         Define an 'Indexing' object with a reference to the corpus and the document's storing schema.
         :param corpus_path: path (with name) of the text corpus
@@ -40,7 +41,7 @@ class Indexing:
             title=TEXT(stored=True),   # TEXT field for corpus title (indexed and stored)
             content=TEXT(stored=True)  # TEXT field for corpus content (indexed and stored)
         )
-        self.verbose = verbose
+        self.info = info
 
     def __str__(self) -> str:
         """
@@ -53,7 +54,7 @@ class Indexing:
         Starts the indexing process.
         :param index_path: path in which the documents will be stored
         """
-        if self.verbose is True:
+        if self.info is True:
             logger.info('Start documents\' indexing in corpus')  # LOG INFO
 
         # Indexing parameters
@@ -97,7 +98,7 @@ class Indexing:
                     document_count += 1
                     log_count += 1
 
-                    if self.verbose is True:
+                    if self.info is True:
                         if log_count == 1:
                             logger.info('Indexing document number: {0}'.format(document_count))  # LOG INFO
                         if log_count == log_frequency:
@@ -115,7 +116,7 @@ class Indexing:
                     # If the limit has been reached, commit the changes and reset the index
                     #  (start overwriting the old documents)
                     if document_index == document_count_limit:
-                        if self.verbose is True:
+                        if self.info is True:
                             logger.info('Limit of {0} document reached: '
                                         'committing changes'.format(document_count_limit))  # LOG INFO
                         writer.commit()
@@ -124,10 +125,10 @@ class Indexing:
                         document_index = 0
 
             if document_count != 0:
-                if self.verbose is True:
+                if self.info is True:
                     logger.info('Indexed last document with number: {0}'.format(document_count))  # LOG INFO
                     logger.info('Committing')  # LOG INFO
                 writer.commit()
 
-            if self.verbose is True:
+            if self.info is True:
                 logger.info('Ended documents\' indexing in corpus')  # LOG INFO

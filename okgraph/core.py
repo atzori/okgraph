@@ -78,19 +78,19 @@ class OKgraph:
                 embeddings = FileConverter.corpus_to_magnitude_model(corpus_fname=corpus)
                 logger.info(f'Model {embeddings} generated.')
 
-        if index is None and create_Index is True:
+        if not path.exists(index) or create_Index is True:
+            if index is None:
+                index = "indexdir/"
+            if dict_total is None:
+                dict_total = 'dictTotal.npy'
             logger.info(f'Folder indexing for {corpus} not found. Generating index with default options')
-            tmp = Indexing(corpus)
-            tmp = tmp.indexing()
-            index = "indexdir/"
+            tmp = Indexing(path_corpus=corpus)
+            tmp = tmp.indexing(name_path=index)
             logger.info(f'Model index generated.')
             logger.info(f'File dictTotal.npy for {corpus} not found. Generating dictTotal.npy')
-            tmp = creation(corpus, name='dictTotal.npy', save=True)
-            dict_total = 'dictTotal.npy'
+            tmp = creation(corpus, name=dict_total, save=True)
             logger.info(f'dictTotal generated.')
             del tmp
-
-
 
         self.v = Magnitude(embeddings, _number_of_values=k, stream=stream, lazy_loading=lazy_loading)
         self.f = FreqDist()

@@ -5,8 +5,8 @@ from pymagnitude import Magnitude
 
 cwd = os.getcwd()
 print( cwd )
-corpus_file_path = cwd + '/tests/data/text7.gz'
-embeddings_file_path = cwd + '/tests/data/text7.magnitude'
+corpus_file_path = cwd + '/tests/data/text8'
+embeddings_file_path = cwd + '/tests/data/text8.magnitude'
 indexing_folder = cwd + '/tests/data/indexdir/'
 dict_total= cwd + '/tests/data/dictTotal.npy'
 #embeddings_file_path = cwd + '/tests/data/GoogleNews-vectors-negative300.magnitude'
@@ -20,7 +20,7 @@ class OKGraphTest(unittest.TestCase):
         if os.path.exists(magnitude_file):
             os.remove(magnitude_file)
         self.assertFalse(os.path.exists(magnitude_file))
-        okg = okgraph.OKgraph(corpus_file_path)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, dict_total=dict_total, index=indexing_folder, create_Index=True)
         self.assertTrue(os.path.exists(magnitude_file))
         self.assertIsInstance(okg.v, Magnitude)
         self.assertIsInstance(okg.corpus, str)
@@ -32,7 +32,7 @@ class OKGraphTest(unittest.TestCase):
         magnitude_file = corpus_file + '.magnitude'
         self.assertTrue(os.path.exists(magnitude_file))
         modificationTime = os.path.getmtime(magnitude_file)
-        okg = okgraph.OKgraph(corpus_file)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, dict_total=dict_total, index=indexing_folder, create_Index=True)
         self.assertTrue(os.path.exists(magnitude_file))
         self.assertEqual(modificationTime, os.path.getmtime(magnitude_file))
         self.assertIsInstance(okg.v, Magnitude)
@@ -43,7 +43,7 @@ class OKGraphTest(unittest.TestCase):
     def test_init_with_text_and_model(self):
         """ check passing magnitude file as argument """
 
-        okg = okgraph.OKgraph(corpus_file_path, embeddings_file_path)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dict_total=dict_total, index=indexing_folder)
 
         self.assertIsInstance(okg.v, Magnitude)
         self.assertIsInstance(okg.corpus, str)
@@ -93,7 +93,7 @@ class OKGraphTest(unittest.TestCase):
         pass
 
     def test_relation_labeling(self):
-        okg = okgraph.OKgraph(embeddings=embeddings_file_path, index=indexing_folder, dict_total=dict_total)
+        okg = okgraph.OKgraph(embeddings=embeddings_file_path, dict_total=dict_total, index=indexing_folder)
         w1 = okg.w(words=['rome', 'italy'])
         w2 = okg.w(words=['berlin', 'germany'])
 

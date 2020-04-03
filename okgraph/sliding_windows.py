@@ -21,7 +21,7 @@ class SlidingWindows:
         if not isinstance(d, int):
             raise TypeError('error type in d')
 
-        self.dict_total = np.load(dict_total).item()
+        self.dict_total = np.load(dict_total, allow_pickle=True).item()
         self.words = words
         self.l = l
         self.d = d

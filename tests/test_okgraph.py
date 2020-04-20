@@ -63,7 +63,7 @@ class OKGraphTest(unittest.TestCase):
         Test if algorithm behaviour is respected.
         Test if the number of output values is lower or equal to k.
         """
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
 
         """
         Test set expansion algorithm "centroid"
@@ -91,7 +91,7 @@ class OKGraphTest(unittest.TestCase):
                         msg="k value must be <= of the list length")
 
     def test_05_relation_expansion(self):
-        okg = okgraph.OKgraph(embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
         seed = [('rome', 'italy'), ('berlin', 'germany')]
 
         expansion = okg.relation_expansion(seed)
@@ -100,7 +100,7 @@ class OKGraphTest(unittest.TestCase):
         pass
 
     def test_06_relation_labeling(self):
-        okg = okgraph.OKgraph(embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
         pairs = [('rome', 'italy'), ('berlin', 'germany')]
         sliding_windows = []
 

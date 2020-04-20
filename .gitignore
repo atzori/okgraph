@@ -8,6 +8,7 @@ okgraph.egg-info/
 build/
 dist/
 docs/build/
+indexdir/
 venv/
 wheelhouse/
 tests/data/

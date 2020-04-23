@@ -25,8 +25,8 @@ def task(embeddings: Magnitude, dictionary_path: str, index_path: str, options: 
         second_elements.append(pair[1])
 
     # Get the set expansion of the two created lists
-    first_elements_expansion = [r[0] for r in set_expansion_algorithm.task(embeddings, {'seed': first_elements, 'k': k})]
-    second_elements_expansion = [r[0] for r in set_expansion_algorithm.task(embeddings, {'seed': second_elements, 'k': k})]
+    first_elements_expansion = [r[0] for r in set_expansion_algorithm.task(embeddings, {'seed': first_elements, 'k': 2*k})]
+    second_elements_expansion = [r[0] for r in set_expansion_algorithm.task(embeddings, {'seed': second_elements, 'k': 2*k})]
 
     # Create a list of new possible pairs, combining the elements from the expansion of the first elements' set with
     #  the elements from the expansion of the second elements' set
@@ -36,7 +36,7 @@ def task(embeddings: Magnitude, dictionary_path: str, index_path: str, options: 
     #  if the labels of the new pair contains all the labels of the seed, save the label as an expansion of the seed
     labels_expansion = []
     for pair in pairs_expansion:
-        pair_labels = relation_labeling_algorithm.task(dictionary_path, index_path, {'seed': [pair], 'k': k})
+        pair_labels = relation_labeling_algorithm.task(dictionary_path, index_path, {'seed': [pair], 'k': 2*k})
         if set(seed_labels) & set(pair_labels) == set(seed_labels):
             labels_expansion.append(pair)
 

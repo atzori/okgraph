@@ -1,158 +1,234 @@
 import operator
 import re
-import tqdm
-from tqdm import tqdm
 import numpy
+import logging
+from os import path
+from logging.config import fileConfig
 from whoosh import index
 from whoosh.qparser import QueryParser
 import numpy as np
 
+# Create a logger using the specified configuration
+LOG_CONFIG_FILE = path.dirname(path.realpath(__file__)) + '/logging.ini'
+if not path.isfile(LOG_CONFIG_FILE):
+    LOG_CONFIG_FILE = path.dirname(path.dirname(LOG_CONFIG_FILE)) + '/logging.ini'
+fileConfig(LOG_CONFIG_FILE)
+logger = logging.getLogger()
+
 
 class SlidingWindows:
     """
-    A class used to inspect the relation in a pair of words.
-    The relation between the two words is described through a set of labels that are found in the corpus between the
-     words which occurs in the same context of the specified words.
-    The context is represented through a text window of the corpus with a specified dimension in which the two words of
-     interest appear closely.
+    A class used to inspect the context of one or two target words.
+    The words that appear close to the target words inside the corpus are the words with similar meaning to the target
+     words (according to the distributional hypothesis) and are going to be referenced as labels. The labels appear in
+     the same context of the target words.
+    The context is represented by windows of text with specified size containing the target words. The size of a text
+     window is measured in 'words'. The text windows are extracted from the corpus and used to identify the labels.
     Attributes:
-        words: list of the two words whose relation has to be inspected
+        target_words: list of one or two words whose context has to be inspected
         corpus_index_path: path of the stored and indexed corpus
-        window_center_size: max distance between the two words of interest to be considered close (sharing the context)
-        window_offset_size: offset from the two words surrounding the window center
-        window_total_size: total size of a context window (center + 2 * offset)
-        windows_list: list of context windows
-        windows_dictionary: dictionary of the windows {word in window: occurrences in windows}
-        windows_total_occurrences: total number of occurrences in all of the windows
         corpus_dictionary: dictionary of the corpus {word in corpus: occurrences in corpus}
         corpus_total_occurrences: total number of occurrences in the corpus
-        corpus_inverse_frequency_dictionary: dictionary {word in corpus: inverse frequency]
-        results: dictionary of labels {word: TF-IDF}
+        corpus_inverse_frequency_dictionary: dictionary {word in corpus: inverse frequency}
+        window_center_size: max distance (in 'words') between two target words sharing the context
+        window_offset_size: number of additional words surrounding the window's center
+        windows_list: list of context windows
+        windows_dictionary: dictionary of the windows {word in windows: occurrences in windows}
+        windows_total_occurrences: total number of occurrences in all of the windows
+        windows_occurrence_dict: dictionary {word in windows: number of windows containing the word}
+        windows_frequency_dict: dictionary {word in windows: frequency}
+        noise_dict: dictionary {word: log(1 + word window frequency / word corpus frequency)}
+        tf_idf_dict: dictionary {word in window: TF-IDF}
+        results_dict: dictionary {significant word: TF-IDF}
         info: to print or not messages in the log
     """
 
     def __init__(self,
-                 words: (str, str),
+                 target_words: [str],
                  corpus_index_path: str = 'indexdir',
-                 corpus_dictionary_path: str = None,
-                 window_total_size: int = 12,
-                 window_center_size: int = 6,
+                 corpus_dictionary_path: str = 'dictTotal.npy',
+                 window_center_size: int = 7,
+                 window_offset_size: int = 2,
+                 noise_threshold: float = 0.70,
+                 tf_idf_threshold: float = 0.02,
                  info: bool = True
                  ):
         """
         Creates a SlidingWindows object.
-        Load the data and find the labels related to the two words of interest.
-        :param words: pair of words whose relation has to be inspected
+        Load the data and find the labels related to the target words. The labels related to the target words are highly
+         related to the windows' size: little changes in those values could bring wide changes in the results.
+        :param target_words: list of one or two words whose context has to be inspected
         :param corpus_index_path: path of the stored and indexed corpus
         :param corpus_dictionary_path: path of the stored dictionary of the corpus {word: occurrences}
-        :param window_total_size: total size of a context window
         :param window_center_size: max distance between the two words of interest to be considered close
+        :param window_offset_size: number of additional words surrounding the window's center
+        :param noise_threshold: minimum 'noise' value to accept the word as significant
+        :param tf_idf_threshold: minimum 'TF-IDF' value to accept the word as significant
         """
 
         # Input check
-        if not isinstance(words, tuple) and isinstance(words[0], str) and isinstance(words[1], str):
-            raise TypeError('error type in words')
-        if len(words) != 2:
-            raise ValueError('words must be a pair of 2 strings')
-        if not isinstance(window_total_size, int):
-            raise TypeError('error type in window_total_size')
+        if not isinstance(target_words, list):
+            raise TypeError('target_words must be a list of strings')
+        if len(target_words) == 0:
+            raise TypeError('target_words must contain at least one word')
+        if len(target_words) > 2:
+            raise TypeError('target_words must contain at most two words')
         if not isinstance(window_center_size, int):
-            raise TypeError('error type in window_center_size')
+            raise TypeError('window_center_size must be an int')
+        if not isinstance(window_offset_size, int):
+            raise TypeError('window_offset_size must be an int')
 
         self.info = info
 
-        self.words = words
+        if self.info is True:
+            logger.info('SLIDING_WINDOWS: Start windowing of target words: {target}'.format(target=target_words))  # LOG INFO
+        self.target_words = target_words
+
         # Get the corpus data
         self.corpus_index_path = corpus_index_path
+        if self.info is True:
+            logger.info('SLIDING_WINDOWS: Loading corpus data')  # LOG INFO
         self.corpus_dictionary = np.load(corpus_dictionary_path, allow_pickle=True).item()
+
+        # Processing the corpus data
+        if self.info is True:
+            logger.info('SLIDING_WINDOWS: Processing corpus data')  # LOG INFO
+            logger.info('SLIDING_WINDOWS: Total unique corpus words: {n}'.format(n=len(self.corpus_dictionary)))  # LOG INFO
         self.corpus_total_occurrences = self.total_occurrences(self.corpus_dictionary)
+        if self.info is True:
+            logger.info('SLIDING_WINDOWS: Total corpus occurrences: {n}'.format(n=self.corpus_total_occurrences))  # LOG INFO
+        if self.info is True:
+            logger.info('SLIDING_WINDOWS: Building corpus inverse frequency dictionary')  # LOG INFO
         self.corpus_inverse_frequency_dictionary = self.inverse_frequency_dictionary(
             self.corpus_dictionary,
             self.corpus_total_occurrences
         )
+
         # Define the windows' parameters
-        self.window_total_size = window_total_size
         self.window_center_size = window_center_size
-        self.window_offset_size = int((window_total_size - (window_center_size + 2)) / 2)
+        self.window_offset_size = window_offset_size
+
         # Create the windows
-        (self.windows_list, self.windows_dictionary) = self.create_windows(
-            words[0],
-            words[1],
-            window_center_size=self.window_center_size + 1,  # QSTN: why does it do +1? Why not +2?
-            window_offset_size=self.window_offset_size,
-            corpus_index_path=self.corpus_index_path
-        )
-        self.windows_total_occurrences = self.total_occurrences(self.windows_dictionary)
-        # Extract the labels
-        self.results = self._label_extraction()
+        if self.info is True:
+            logger.info('SLIDING_WINDOWS: Creating windows')  # LOG INFO
+        (self.windows_list, self.windows_dictionary) = self.create_windows()
+
+        # Processing windows data
+        if self.info is True:
+            logger.info('SLIDING_WINDOWS: Processing windows data')  # LOG INFO
+            logger.info('SLIDING_WINDOWS: Number of windows: {n}'.format(n=len(self.windows_list)))  # LOG INFO
+        if len(self.windows_list) > 0:
+            if self.info is True:
+                logger.info('SLIDING_WINDOWS: Removing target words from windows dictionary')  # LOG INFO
+            for word in self.target_words:
+                self.windows_dictionary.pop(word)
+            if self.info is True:
+                logger.info('SLIDING_WINDOWS: Total unique windows words: {n}'.format(
+                    n=len(self.windows_dictionary)))  # LOG INFO
+            self.windows_total_occurrences = self.total_occurrences(self.windows_dictionary)
+            if self.info is True:
+                logger.info('SLIDING_WINDOWS: Total windows occurrences: {n}'.format(
+                    n=self.windows_total_occurrences))  # LOG INFO
+            if self.info is True:
+                logger.info('SLIDING_WINDOWS: Building windows occurrence dictionary')  # LOG INFO
+            self.windows_occurrence_dict = self.windows_occurrence_dictionary(self.windows_dictionary, self.windows_list)
+            if self.info is True:
+                logger.info('SLIDING_WINDOWS: Building windows frequency dictionary')  # LOG INFO
+            self.windows_frequency_dict = self.frequency_dictionary(self.windows_dictionary, self.windows_total_occurrences)
+            if self.info is True:
+                logger.info('SLIDING_WINDOWS: Building windows noise dictionary')  # LOG INFO
+            self.noise_dict = self.noise_dictionary(self.windows_dictionary, self.corpus_dictionary)
+            if self.info is True:
+                logger.info('SLIDING_WINDOWS: Building windows TF-IDF dictionary')  # LOG INFO
+            self.tf_idf_dict = self.tf_idf_dictionary(self.windows_occurrence_dict, self.windows_frequency_dict, self.corpus_inverse_frequency_dictionary, self.windows_list)
+            if self.info is True:
+                logger.info('SLIDING_WINDOWS: Cleaning windows TF-IDF dictionary')  # LOG INFO
+            cleaned_tf_idf_dict = self.clean_results(self.windows_dictionary, self.tf_idf_dict, self.noise_dict, noise_threshold, tf_idf_threshold)
+            if self.info is True:
+                logger.info('SLIDING_WINDOWS: Sorting cleaned TF-IDF dictionary to obtain labels')  # LOG INFO
+            self.results_dict = dict(sorted(cleaned_tf_idf_dict.items(), key=operator.itemgetter(1), reverse=True))
+        else:
+            self.windows_total_occurrences = 0
+            self.windows_occurrence_dict = {}
+            self.windows_frequency_dict = {}
+            self.noise_dict = {}
+            self.results_dict = {}
 
     def __str__(self) -> str:
         """
         Returns the object as a string.
         """
-        return 'The windows of ' + self.words[0] + ' and ' + self.words[2]
+        string = 'The windows of ' + self.target_words[0]
+        for e in self.target_words[1:]:
+            string = string + 'and ' + e
+        return string
 
-    def create_windows(self,
-                       word_one: str,
-                       word_two: str,
-                       window_center_size: int = 7,
-                       window_offset_size: int = 3,
-                       corpus_index_path: str = 'indexdir'
-                       ) -> ([[str]], {str : int}):
+    def create_windows(self) -> ([[str]], {str: int}):
         """
-        Extracts the windows from the corpus, to represent the context of the two words of interest.
-        A window is a list of words which respect what follows:
-         - The first and the last 'window_offset_size' words are the margins of the window, with generic words. One of
-            the two words of interest marks the limit between the left margin and the center of the windows, while a
-            generic word marks the limit between the center and the right margin.
-         - The center of the window is filled with generic words, but has to contain the other word of interest in at
-            least one of the positions. The center of the window has a fixed size 'window_center_size'.
-        :param word_one: first word of interest
-        :param word_two: second word of interest
-        :param window_center_size: max distance between the two words of interest to be considered close
-        :param window_offset_size: offset from the two words surrounding the window center
-        :param corpus_index_path: path of the stored and indexed corpus
-        :return: the list of the windows (list of words) containing the two words and the dictionary {word: occurrences}
+        Extracts the windows from the corpus to represent the context of the target words.
+        :return: the list of the windows (list of words) containing the target words and the dictionary {word: occurrences}
           related to these windows
         """
-        # Limit of parsed documents (CHECK THIS)
+        # Limit of parsed documents
         limit = 10000000
 
-        # Create a regular expression to define the windows of interest in which the two words appear closely.
-        re_word_one = word_one + r'\s'
-        re_word_two = word_two + r'\s'
+        # Create a regular expression to define the windows in which the target words appear closely.
+        # A window is a list of words that can be described by the following patterns:
+        # With one target word:
+        #  [offset+center/2 words] [target word 1] [offset+center/2 words]
+        # With two target words:
+        #  [offset words] [target word 1|2] [center words containing the target word 2|1] [offset words]
+        regex = None
         re_any_word = r'(\w+\W*\s)'
-        re_margin = re_any_word + r'{' + str(window_offset_size) + r'}'
-        re_center = re_any_word + r'{' + str(window_center_size) + r'}'
-        re_match_precedent_if = r'?=(' + re_any_word + r'){0,' + str(window_center_size) + r'}'
 
-        #  Expression with word one as the limit of the left margin:
-        exp1 = re_margin + re_word_one + r'(' + re_match_precedent_if + re_word_two + r')' + re_center + re_margin
-        #  Expression two:
-        exp2 = re_margin + re_word_two + r'(' + re_match_precedent_if + re_word_one + r')' + re_center + re_margin
-        #  Final expression: exp1 OR exp2
-        regex = re.compile(r'(' + exp1 + r')' + r'|' + r'(' + exp2 + r')')
+        if len(self.target_words) == 1:
+            re_word_one = self.target_words[0] + r'\s'
+            re_offset = re_any_word + r'{' + str(self.window_offset_size + int(self.window_center_size/2)) + r'}'
 
-        # Search in the indexed corpus the documents containing the two words
-        # QSTN: the 'parse' function cares about the set of words, not their order. The two queries 'word_one word_two'
-        #  and 'word_two word_one' should produce the same results. Do '~d' change something on the query? What is its
-        #  function?
-        ix = index.open_dir(corpus_index_path)
-        query_one = '\"' + word_one + ' ' + word_two + '\"~' + str(window_center_size)
-        query_two = '\"' + word_two + ' ' + word_one + '\"~' + str(window_center_size)
-        query_one_results = QueryParser("content", ix.schema).parse(u'' + query_one)
-        query_two_results = QueryParser("content", ix.schema).parse(u'' + query_two)
+            exp = re_offset + re_word_one + re_offset
 
-        query_results = []
+            regex = re.compile(exp)
 
-        with ix.searcher() as searcher:
-            results = searcher.search(query_one_results, limit=limit)
-            for result in results:
-                query_results.append(result['content'])
-        with ix.searcher() as searcher:
-            results = searcher.search(query_two_results, limit=limit)
-            for result in results:
-                query_results.append(result['content'])
+        if len(self.target_words) == 2:
+            re_word_one = self.target_words[0] + r'\s'
+            re_word_two = self.target_words[1] + r'\s'
+            re_offset = re_any_word + r'{' + str(self.window_offset_size) + r'}'
+            re_center = re_any_word + r'{' + str(self.window_center_size) + r'}'
+            re_match_if = r'?=(' + re_any_word + r'){0,' + str(self.window_center_size) + r'}'
+
+            exp1 = re_offset + re_word_one + r'(' + re_match_if + re_word_two + r')' + re_center + re_any_word + re_offset
+            exp2 = re_offset + re_word_two + r'(' + re_match_if + re_word_one + r')' + re_center + re_any_word + re_offset
+
+            regex = re.compile(r'(' + exp1 + r')' + r'|' + r'(' + exp2 + r')')
+
+        # Search in the indexed corpus the documents containing the target words
+        query_results = None
+        ix = index.open_dir(self.corpus_index_path)
+        if len(self.target_words) == 1:
+            query = '"' + self.target_words[0] + '"'
+            raw_query_results = QueryParser("content", ix.schema).parse(u'' + query)
+
+            query_results = []
+            with ix.searcher() as searcher:
+                results = searcher.search(raw_query_results, limit=limit)
+                for result in results:
+                    query_results.append(result['content'])
+
+        if len(self.target_words) == 2:
+            query_one = '"' + self.target_words[0] + ' ' + self.target_words[1] + '"~' + str(self.window_center_size)
+            query_two = '"' + self.target_words[1] + ' ' + self.target_words[0] + '\"~' + str(self.window_center_size)
+            raw_query_results_one = QueryParser("content", ix.schema).parse(u'' + query_one)
+            raw_query_results_two = QueryParser("content", ix.schema).parse(u'' + query_two)
+
+            query_results = []
+            with ix.searcher() as searcher:
+                results = searcher.search(raw_query_results_one, limit=limit)
+                for result in results:
+                    query_results.append(result['content'])
+            with ix.searcher() as searcher:
+                results = searcher.search(raw_query_results_two, limit=limit)
+                for result in results:
+                    query_results.append(result['content'])
 
         # Filter the content of every matched document:
         #  search in every document the existence of a window in which the two words appear closely (use the previously
@@ -196,11 +272,7 @@ class SlidingWindows:
         :param windows: list of all the windows from the corpus
         :return: dictionary {word: number of windows containing the word}
         """
-        if self.info is True:
-            dictionary_keys = tqdm(list(dictionary.keys()))
-        else:
-            dictionary_keys = list(dictionary.keys())
-
+        dictionary_keys = list(dictionary.keys())
         windows_occurrence_dict = {}
         for word in dictionary_keys:
             for window in windows:
@@ -209,7 +281,8 @@ class SlidingWindows:
 
         return windows_occurrence_dict
 
-    def frequency_dictionary(self, occurrence_dictionary: {str: int}, total_occurrences: int) -> {str: (int, float, [])}:
+    def frequency_dictionary(self, occurrence_dictionary: {str: int}, total_occurrences: int) -> {
+        str: (int, float, [])}:
         """
         Evaluates the frequency of every word in the dictionary.
         The frequency of a word is obtained dividing the word occurrences by the total number of word occurrences in
@@ -218,11 +291,7 @@ class SlidingWindows:
         :param total_occurrences: total amount of occurrences in the dictionary
         :return: dictionary {word: word's frequency}
         """
-        if self.info is True:
-            occurrence_dictionary_keys = tqdm(list(occurrence_dictionary.keys()))
-        else:
-            occurrence_dictionary_keys = list(occurrence_dictionary.keys())
-
+        occurrence_dictionary_keys = list(occurrence_dictionary.keys())
         f_dict = {}
         for word in occurrence_dictionary_keys:
             f_dict[word] = occurrence_dictionary.get(word) / total_occurrences
@@ -239,17 +308,13 @@ class SlidingWindows:
         :param total_occurrences: total amount of occurrences in the dictionary
         :return: dictionary {word: word's inverse frequency}
         """
-        if self.info is True:
-            occurrence_dictionary_keys = tqdm(list(occurrence_dictionary.keys()))
-        else:
-            occurrence_dictionary_keys = list(occurrence_dictionary.keys())
-
+        occurrence_dictionary_keys = list(occurrence_dictionary.keys())
         if_dict = {}
         for word in occurrence_dictionary_keys:
-            if_dict[word] = numpy.log10(total_occurrences / occurrence_dictionary.get(word))
+            if_dict[word] = numpy.log10(1 + total_occurrences / occurrence_dictionary.get(word))
         return if_dict
 
-    def ratio_dictionary(self, windows_dictionary, corpus_dictionary):
+    def noise_dictionary(self, windows_dictionary, corpus_dictionary):
         """
         Evaluates the importance of a word in the defined context, or rather how much that word is characteristic for
          the defined windows. The importance is evaluated through the 'word window frequency / word corpus frequency'
@@ -257,32 +322,28 @@ class SlidingWindows:
          corpus are low rated. A logarithm function is used to scale the ratio.
         :param windows_dictionary: dictionary {word: occurrences of word in windows}
         :param corpus_dictionary: dictionary {word: occurrences of word in corpus}
-        :return: the ratio dictionary {word: log(word window frequency / word corpus frequency)}
+        :return: the noise dictionary {word: log(1 + word window frequency / word corpus frequency)}
         """
-        if self.info is True:
-            windows_dictionary_keys = tqdm(list(windows_dictionary.keys()))
-        else:
-            windows_dictionary_keys = list(windows_dictionary.keys())
-
+        windows_dictionary_keys = list(windows_dictionary.keys())
         total_corpus_occurrences = self.corpus_total_occurrences
         total_windows_occurrences = self.windows_total_occurrences
 
-        ratio_dict = {}
+        noise_dict = {}
         for word in windows_dictionary_keys:
             # QSTN: all the words in the windows dictionary surely are in the corpus dictionary, 'cause windows have
             #  been extracted from the corpus. We are scrolling through the windows, so the if statement will always be
             #  False, right?
             if word not in corpus_dictionary:
                 # QSTN: probably unreachable
-                ratio = 0
+                noise = 0
             else:
                 window_frequency = windows_dictionary.get(word) / total_windows_occurrences
                 corpus_frequency = corpus_dictionary.get(word) / total_corpus_occurrences
-                ratio = numpy.log10(window_frequency / corpus_frequency)
+                noise = numpy.log10(1 + window_frequency / corpus_frequency)
 
-            ratio_dict[word] = ratio
+            noise_dict[word] = noise
 
-        return ratio_dict
+        return noise_dict
 
     def tf_idf_dictionary(self, windows_occurrence_dictionary, windows_frequency_dictionary, corpus_inverse_frequency_dictionary, windows_list):
         """
@@ -293,11 +354,7 @@ class SlidingWindows:
         :param windows_list: list of windows
         :return: the TF-IDF dictionary {word in window: TF-IDF}
         """
-        if self.info is True:
-            windows_frequency_dictionary_keys = tqdm(list(windows_frequency_dictionary.keys()))
-        else:
-            windows_frequency_dictionary_keys = list(windows_frequency_dictionary.keys())
-
+        windows_frequency_dictionary_keys = list(windows_frequency_dictionary.keys())
         tf_idf_dict = {}
         for word in windows_frequency_dictionary_keys:
             # QSTN: all the words in the windows dictionary surely are in the corpus dictionary, 'cause windows have
@@ -311,85 +368,88 @@ class SlidingWindows:
 
         return tf_idf_dict
 
-    def clean_results(self, windows_dictionary, tf_idf_dictionary, ratio_dictionary, threshold=0.50):
+    def clean_results(self, windows_dictionary, tf_idf_dictionary, noise_dictionary, noise_threshold, tf_idf_threshold):
         """
-        Clean the results' dictionary removing the non valid words.
+        Clean the results' dictionary removing the not so significant words.
         :param windows_dictionary: dictionary {word in window: occurrences}
         :param tf_idf_dictionary: dictionary {word in window: TF-IDF}
-        :param ratio_dictionary: dictionary {word: log(word window frequency / word corpus frequency)}
-        :param threshold: minimum 'ratio' value to accept the word as a valid one
-        :return:
+        :param noise_dictionary: dictionary {word: log(1 + word window frequency / word corpus frequency)}
+        :param noise_threshold: minimum 'noise' value to accept the word as significant
+        :param tf_idf_threshold: minimum 'TF-IDF' value to accept the word as significant
+        :return: the cleaned TF-IDF dictionary {significant word in window: TF-IDF}
         """
 
-        clean_dictionary = tf_idf_dictionary
+        clean_dictionary = dict(tf_idf_dictionary)
 
         # Remove the words whose occurrences are higher than the total amount of unique words
         if self.info is True:
-            windows_dictionary_keys = tqdm(list(windows_dictionary.keys()))
-        else:
-            windows_dictionary_keys = list(windows_dictionary.keys())
+            count = 0
+            logger.info('SLIDING_WINDOWS: Removing words whose occurrences are higher than the total amount of unique words')  # LOG INFO
+        windows_dictionary_keys = list(windows_dictionary.keys())
         for key in windows_dictionary_keys:
             if windows_dictionary.get(key) >= len(clean_dictionary):
+                if self.info is True:
+                    count += 1
+                    logger.info('SLIDING_WINDOWS: Removing \'{w}\': {occurences} < {unique}'.format(w=key, occurences=windows_dictionary.get(key), unique=len(clean_dictionary)))  # LOG INFO
                 clean_dictionary.pop(key)
+        if self.info is True:
+            logger.info('SLIDING_WINDOWS: Removed {n} words'.format(n=count))  # LOG INFO
 
         # Remove words shorter than 3 characters
         if self.info is True:
-            clean_dictionary_keys = tqdm(list(clean_dictionary.keys()))
-        else:
-            clean_dictionary_keys = list(clean_dictionary.keys())
+            count = 0
+            logger.info('SLIDING_WINDOWS: Removing words shorter than 3 characters')  # LOG INFO
+        clean_dictionary_keys = list(clean_dictionary.keys())
         for key in clean_dictionary_keys:
             if len(key) < 3:
+                if self.info is True:
+                    count += 1
+                    logger.info('SLIDING_WINDOWS: Removing \'{w}\': len={len} < 3'.format(w=key, len=len(key)))  # LOG INFO
                 clean_dictionary.pop(key)
-
-        # Remove words with a ratio that is lower than the specified threshold
         if self.info is True:
-            clean_dictionary_keys = tqdm(list(clean_dictionary.keys()))
-        else:
-            clean_dictionary_keys = list(clean_dictionary.keys())
+            logger.info('SLIDING_WINDOWS: Removed {n} words'.format(n=count))  # LOG INFO
+
+        # Remove words with a noise or TF-IDF lower than the specified threshold
+        if self.info is True:
+            count = 0
+            logger.info('SLIDING_WINDOWS: Removing words with a noise or TF-IDF lower than the specified threshold')  # LOG INFO
+        clean_dictionary_keys = list(clean_dictionary.keys())
         for key in clean_dictionary_keys:
-            if ratio_dictionary.get(key) < threshold:
+            if noise_dictionary.get(key) < noise_threshold:
+                if self.info is True:
+                    count += 1
+                    logger.info('SLIDING_WINDOWS: Removing \'{w}\': noise={noise} < {threshold}'.format(w=key, noise=noise_dictionary.get(key), threshold=noise_threshold))  # LOG INFO
                 clean_dictionary.pop(key)
-
-        # Remove numbers (their string representation)
+            elif tf_idf_dictionary.get(key) < tf_idf_threshold:
+                if self.info is True:
+                    count += 1
+                    logger.info('SLIDING_WINDOWS: Removing \'{w}\': TF-IDF={tf_idf} < {threshold}'.format(w=key, tf_idf=tf_idf_dictionary.get(key), threshold=tf_idf_threshold))  # LOG INFO
+                clean_dictionary.pop(key)
         if self.info is True:
-            clean_dictionary_keys = tqdm(list(clean_dictionary.keys()))
-        else:
-            clean_dictionary_keys = list(clean_dictionary.keys())
+            logger.info('SLIDING_WINDOWS: Removed {n} words'.format(n=count))  # LOG INFO
+
+        # Remove digits
+        if self.info is True:
+            count = 0
+            logger.info('SLIDING_WINDOWS: Removing digits')  # LOG INFO
+        clean_dictionary_keys = list(clean_dictionary.keys())
         for key in clean_dictionary_keys:
             if str.isnumeric(key):
+                if self.info is True:
+                    count += 1
+                    logger.info('SLIDING_WINDOWS: Removing \'{w}\''.format(w=key))  # LOG INFO
                 clean_dictionary.pop(key)
+        if self.info is True:
+            logger.info('SLIDING_WINDOWS: Removed {n} words'.format(n=count))  # LOG INFO
+
+        if self.info is True:
+            logger.info('SLIDING_WINDOWS: Cleaned dictionary counts {n1} words, againts the {n2} words of the starting dictionary'.format(n1=len(clean_dictionary), n2=len(tf_idf_dictionary)))  # LOG INFO
 
         # Returns the cleaned dictionary
         return clean_dictionary
 
-    def _label_extraction(self, threshold=0.50):
-        """
-        Extracts the labels which describe the relation between the two specified words.
-        The label of interest are the words which appear in the same context of the two words, or rather in the same
-         windows.
-        :param threshold: minimum 'ratio' value to accept the word as a valid one
-        :return: a dictionary {word (label): TF-IDF}
-        """
-
-        results_dict = {}
-        if len(self.windows_list) > 0:
-            # Remove the two words, 'cause they can't be one of the label
-            self.windows_dictionary.pop(self.words[0])
-            self.windows_dictionary.pop(self.words[1])
-
-            # Find the labels
-            windows_occurrence_dict = self.windows_occurrence_dictionary(self.windows_dictionary, self.windows_list)
-            windows_frequency_dict = self.frequency_dictionary(self.windows_dictionary, self.windows_total_occurrences)
-            ratio_dict = self.ratio_dictionary(self.windows_dictionary, self.corpus_dictionary)
-            dirty_result_dict = self.tf_idf_dictionary(windows_occurrence_dict, windows_frequency_dict,
-                                                       self.corpus_inverse_frequency_dictionary, self.windows_list)
-            results_dict = self.clean_results(self.windows_dictionary, dirty_result_dict, ratio_dict, threshold)
-            results_dict = dict(sorted(results_dict.items(), key=operator.itemgetter(1), reverse=True))
-
-        return results_dict
-
     def get_results(self):
-        return self.results
+        return self.results_dict
 
     def get_windows_dictionary(self):
         return self.windows_dictionary

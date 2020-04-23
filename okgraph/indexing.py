@@ -55,7 +55,7 @@ class Indexing:
         :param index_path: path in which the documents will be stored
         """
         if self.info is True:
-            logger.info('Start documents\' indexing in corpus')  # LOG INFO
+            logger.info('INDEXING: Start documents\' indexing in corpus')  # LOG INFO
 
         # Indexing parameters
         document_overlay = 20  # Number of words shared between two documents
@@ -100,7 +100,7 @@ class Indexing:
 
                     if self.info is True:
                         if log_count == 1:
-                            logger.info('Indexing document number: {0}'.format(document_count))  # LOG INFO
+                            logger.info('INDEXING: Indexing document number: {0}'.format(document_count))  # LOG INFO
                         if log_count == log_frequency:
                             log_count = 0
 
@@ -117,7 +117,7 @@ class Indexing:
                     #  (start overwriting the old documents)
                     if document_index == document_count_limit:
                         if self.info is True:
-                            logger.info('Limit of {0} document reached: '
+                            logger.info('INDEXING: Limit of {0} document reached: '
                                         'committing changes'.format(document_count_limit))  # LOG INFO
                         writer.commit()
                         ix = index.open_dir(index_path)
@@ -126,9 +126,9 @@ class Indexing:
 
             if document_count != 0:
                 if self.info is True:
-                    logger.info('Indexed last document with number: {0}'.format(document_count))  # LOG INFO
-                    logger.info('Committing')  # LOG INFO
+                    logger.info('INDEXING: Indexed last document with number: {0}'.format(document_count))  # LOG INFO
+                    logger.info('INDEXING: Committing')  # LOG INFO
                 writer.commit()
 
             if self.info is True:
-                logger.info('Ended documents\' indexing in corpus')  # LOG INFO
+                logger.info('INDEXING: Ended documents\' indexing in corpus')  # LOG INFO

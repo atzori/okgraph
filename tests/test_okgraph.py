@@ -56,7 +56,6 @@ class OKGraphTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             okgraph.OKgraph(corpus='anotherNone', embeddings='http://not.available.org/path')
 
-
     def test_04_set_expansion(self):
         """ Test if set expansion result contains some of the expected values.
         Test if set expansion does not contains any unexpected value.
@@ -93,35 +92,65 @@ class OKGraphTest(unittest.TestCase):
     def test_05_relation_expansion(self):
         okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
         seed = [('rome', 'italy'), ('berlin', 'germany')]
+        k = 15
 
-        expansion = okg.relation_expansion(seed)
+        expansion = okg.relation_expansion(seed, k=k)
 
         print('Expansion of {seed} is {expansion}'.format(seed=seed, expansion=expansion))
-        pass
 
     def test_06_relation_labeling(self):
         okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
-        pairs = [('rome', 'italy'), ('berlin', 'germany')]
+        seed = [('rome', 'italy'), ('berlin', 'germany')]
+        k = 15
         sliding_windows = []
 
-        sliding_windows.append(SlidingWindows(words=pairs[0], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
-        print('Pair {pair} produced result {result}'.format(pair=pairs[0], result=sliding_windows[0].results))
-        self.assertTrue(len(sliding_windows[0].results) > 0,
-                        msg='windows one between rome and italy is not empty')
+        for pair in seed:
+            sliding_windows.append(SlidingWindows(target_words=[pair[0], pair[1]], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
+            result = list(sliding_windows[-1].results_dict.keys())[:k]
+            print('Pair {pair} produced result {result}'.format(pair=pair, result=result))
+            self.assertTrue(len(sliding_windows[0].results_dict) > 0,
+                            msg='windows one between {f} and {s} is not empty'.format(f=pair[0], s=pair[1]))
 
-        sliding_windows.append(SlidingWindows(words=pairs[1], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
-        print('Pair {pair} produced result {result}'.format(pair=pairs[1], result=sliding_windows[1].results))
-        self.assertTrue(len(sliding_windows[1].results) > 0,
-                        msg='windows two between berlin and germany is not empty')
-
-        intersection = okg.relation_labeling(pairs)
+        intersection = okg.relation_labeling(seed, k=k)
 
         print('Labels describing the pairs of words: {labels}'.format(labels=intersection))
 
         self.assertTrue(len(intersection) != 0)
 
     def test_07_set_labeling(self):
-        pass
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
+        seed = ['milan', 'rome', 'turin']
+        k = 15
+        sliding_windows = []
+
+        for word in seed:
+            sliding_windows.append(SlidingWindows(target_words=[word], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
+            result = list(sliding_windows[-1].results_dict.keys())[:k]
+            print('Word {word} produced result {result}'.format(word=word, result=result))
+
+        intersection = okg.set_labeling(seed, k=k)
+
+        print('Labels describing the words: {labels}'.format(labels=intersection))
+
+        self.assertTrue(len(intersection) != 0)
+
+    def test_08_sliding_windows(self):
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
+        seed = [('rome', 'italy'), ('berlin', 'germany')]
+        k = 15
+        sliding_windows = []
+
+        for pair in seed:
+            sliding_windows.append(SlidingWindows(target_words=[pair[0], pair[1]], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
+            result = list(sliding_windows[-1].results_dict.keys())
+            print('Pair {pair} produced result {result}'.format(pair=pair, result=result))
+            self.assertTrue(len(sliding_windows[0].results_dict) > 0,
+                            msg='windows one between {f} and {s} is not empty'.format(f=pair[0], s=pair[1]))
+
+        for sliding_window in sliding_windows:
+            print('Sliding window of target {target}'.format(target=sliding_window.target_words))
+            for key in sliding_window.results_dict:
+                print('{w:20s} TF-IDF={tf_idf:2.8f}, noise={noise:2.8f}'.format(w=key, tf_idf=sliding_window.tf_idf_dict.get(key), noise=sliding_window.noise_dict.get(key)))
 
 
 if __name__ == '__main__':

@@ -151,3 +151,11 @@ class OKgraph:
         options = {'seed': seed, 'k': k}
 
         return algorithm.task(self.dictionary, self.index, options)
+
+    def set_labeling(self, seed: [(str, str)], k: int = 15, algo: str = 'intersection', ):
+        package = algorithms_package + '.set_labeling.' + algo
+        algorithm = getattr(__import__(package, fromlist=[algo]), algo)
+
+        options = {'seed': seed, 'k': k}
+
+        return algorithm.task(self.dictionary, self.index, options)

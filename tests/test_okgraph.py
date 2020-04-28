@@ -56,27 +56,58 @@ class OKGraphTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             okgraph.OKgraph(corpus='anotherNone', embeddings='http://not.available.org/path')
 
-    def test_04_set_expansion(self):
-        """ Test if set expansion result contains some of the expected values.
-        Test if set expansion does not contains any unexpected value.
-        Test if algorithm behaviour is respected.
-        Test if the number of output values is lower or equal to k.
-        """
+    def test_04_relation_expansion(self):
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
+        seed = [('rome', 'italy'), ('berlin', 'germany')]
+        k = 15
+        options = {'relation_labeling_algo': 'intersection',
+                   'relation_labeling_options': {'dictionary': okg.dictionary, 'index': okg.index},
+                   'relation_labeling_k': 15,
+                   'set_expansion_algo': 'centroid',
+                   'set_expansion_options': {'embeddings': okg.embeddings},
+                   'set_expansion_k': 15
+                   }
+
+        expansion = okg.relation_expansion(seed, k, 'intersection', options)
+
+        print('Expansion of {seed} is {expansion}'.format(seed=seed, expansion=expansion))
+
+    def test_05_relation_labeling(self):
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
+        seed = [('rome', 'italy'), ('berlin', 'germany')]
+        k = 15
+        options = {'dictionary': okg.dictionary,
+                   'index': okg.index}
+
+        sliding_windows = []
+        for pair in seed:
+            sliding_windows.append(SlidingWindows(target_words=[pair[0], pair[1]], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
+            result = list(sliding_windows[-1].results_dict.keys())[:k]
+            print('Pair {pair} produced result {result}'.format(pair=pair, result=result))
+            self.assertTrue(len(sliding_windows[0].results_dict) > 0,
+                            msg='windows one between {f} and {s} is not empty'.format(f=pair[0], s=pair[1]))
+
+        intersection = okg.relation_labeling(seed, k, 'intersection', options)
+
+        print('Labels describing the pairs of words: {labels}'.format(labels=intersection))
+
+        self.assertTrue(len(intersection) != 0)
+
+    def test_06_set_expansion(self):
         okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
 
         """
         Test set expansion algorithm "centroid"
         """
 
-        result_1_k = 15
-        result_1 = okg.set_expansion(seed=['milan', 'rome', 'turin'],
-                                     algo='centroid',
-                                     k=result_1_k)
+        seed_1 = ['milan', 'rome', 'turin']
+        seed_2 = ['home', 'house', 'apartment']
+        k = 15
+        options = {'embeddings': okg.embeddings}
 
-        result_2_k = 14
-        result_2 = okg.set_expansion(seed=['home', 'house', 'apartment'],
-                                     algo='centroid',
-                                     k=result_2_k)
+        result_1 = okg.set_expansion(seed_1, k, 'centroid', options)
+
+        result_2 = okg.set_expansion(seed_2, k, 'centroid', options)
 
         intersection = set(result_1) & set(result_2)
 
@@ -86,41 +117,15 @@ class OKGraphTest(unittest.TestCase):
         self.assertTrue(len(intersection) == 0,
                         msg="intersection of different seeds must be empty")
 
-        self.assertTrue(len(result_1) <= result_1_k,
-                        msg="k value must be <= of the list length")
-
-    def test_05_relation_expansion(self):
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
-        seed = [('rome', 'italy'), ('berlin', 'germany')]
-        k = 15
-
-        expansion = okg.relation_expansion(seed, k=k)
-
-        print('Expansion of {seed} is {expansion}'.format(seed=seed, expansion=expansion))
-
-    def test_06_relation_labeling(self):
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
-        seed = [('rome', 'italy'), ('berlin', 'germany')]
-        k = 15
-        sliding_windows = []
-
-        for pair in seed:
-            sliding_windows.append(SlidingWindows(target_words=[pair[0], pair[1]], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
-            result = list(sliding_windows[-1].results_dict.keys())[:k]
-            print('Pair {pair} produced result {result}'.format(pair=pair, result=result))
-            self.assertTrue(len(sliding_windows[0].results_dict) > 0,
-                            msg='windows one between {f} and {s} is not empty'.format(f=pair[0], s=pair[1]))
-
-        intersection = okg.relation_labeling(seed, k=k)
-
-        print('Labels describing the pairs of words: {labels}'.format(labels=intersection))
-
-        self.assertTrue(len(intersection) != 0)
+        self.assertTrue(len(result_1) <= k,
+                        msg="the expansion can't contain more than 'k' elements")
 
     def test_07_set_labeling(self):
         okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
         seed = ['milan', 'rome', 'turin']
         k = 15
+        options = {'dictionary': okg.dictionary,
+                   'index': okg.index}
         sliding_windows = []
 
         for word in seed:
@@ -128,7 +133,7 @@ class OKGraphTest(unittest.TestCase):
             result = list(sliding_windows[-1].results_dict.keys())[:k]
             print('Word {word} produced result {result}'.format(word=word, result=result))
 
-        intersection = okg.set_labeling(seed, k=k)
+        intersection = okg.set_labeling(seed, k, 'intersection', options)
 
         print('Labels describing the words: {labels}'.format(labels=intersection))
 
@@ -137,7 +142,6 @@ class OKGraphTest(unittest.TestCase):
     def test_08_sliding_windows(self):
         okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
         seed = [('rome', 'italy'), ('berlin', 'germany')]
-        k = 15
         sliding_windows = []
 
         for pair in seed:

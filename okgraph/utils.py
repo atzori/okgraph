@@ -39,8 +39,8 @@ def create_dictionary(file_path: str, dictionary_path: str = 'dictTotal.npy', di
     """
     Creates a dictionary of the words in the file using the structure {word in file: occurrences of word in file}
     :param file_path: path (with name) of the file
-    :param dictionary_path: path (with name) of the dictionary's file
-    :param dictionary_save: save or not the created dictionary into a file whose name is specified by 'dictionary_path'
+    :param dictionary_path: path (with name) of the dictionary file
+    :param dictionary_save: save or not the created dictionary into a file whose name is specified by "dictionary_path"
     :return: the created dictionary
     """
     # Get all the words from the file
@@ -53,7 +53,7 @@ def create_dictionary(file_path: str, dictionary_path: str = 'dictTotal.npy', di
     for word in words:
         dictionary[word] = dictionary.get(word, 0) + 1
 
-    # Order the dictionary by the word's occurrences (from greater to smaller)
+    # Order the dictionary by the words occurrences (from greater to smaller)
     dictionary = dict(sorted(dictionary.items(), key=operator.itemgetter(1), reverse=True))
 
     # If wanted, save the dictionary into a file with the specified path

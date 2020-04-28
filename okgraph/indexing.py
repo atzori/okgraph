@@ -16,7 +16,7 @@ logger = logging.getLogger()
 
 class Indexing:
     """
-    A class used to organize a corpus in sub-documents and allow faster searches of word's occurrences into it.
+    A class used to organize a corpus in sub-documents and allow faster searches of word occurrences into it.
     Every sub-document (or document) is a text window extracted from the corpus. All of the documents have the same
      specified dimension and adjoining documents are partially overlaid. Every document has an unique title (ID) and a
      content (the text contained in the window). All of the documents are stored and indexed.
@@ -26,13 +26,13 @@ class Indexing:
         info: to print or not messages in the log
     """
 
-    # Schema's fields
+    # Schema fields
     FIELD_TITLE = 'title'
     FIELD_CONTENT = 'content'
 
     def __init__(self, corpus_path: str, info: bool = True):
         """
-        Define an 'Indexing' object with a reference to the corpus and the document's storing schema.
+        Define an "Indexing" object with a reference to the corpus and the documents storing schema.
         :param corpus_path: path (with name) of the text corpus
         QSTN: index_path could be a valid attribute of the object, not a parameter of indexing
         """
@@ -63,7 +63,7 @@ class Indexing:
         document_size = document_center + 2 * document_overlay  # Total size of a document
 
         document_list = []  # List of words that defines a document
-        document_list_count = document_overlay  # Number of words in the document's constructor list
+        document_list_count = document_overlay  # Number of words in the documents constructor list
         #  (first document has no left overlay: let the counter start like it had and it has been already processed)
         document_index = 0  # ID of the document being indexed and saved
         document_count = 0  # Counter for found documents
@@ -87,7 +87,7 @@ class Indexing:
             #  Divide the corpus in partially overlaid documents
             #  Index and save every document using the specified schema
             for word in get_words(self.corpus_path):
-                # Add the word to list of document's word
+                # Add the word to list of document words
                 document_list.append(word)
                 document_list_count += 1
 
@@ -106,7 +106,7 @@ class Indexing:
 
                     # Convert the temporary list of words, representing the document, into plain text
                     document_content = ' '.join(map(str, document_list))
-                    # Index the document's content using the document's index as its title
+                    # Index the document content using the document index as its title
                     writer.add_document(title=str(hex(document_index)), content=document_content)
 
                     # Get rid of the words that do not overlay with the next document

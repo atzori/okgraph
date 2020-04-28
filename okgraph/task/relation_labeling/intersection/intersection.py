@@ -1,23 +1,26 @@
 from okgraph.sliding_windows import SlidingWindows
 
 
-def task(dictionary_path: str, index_path: str, options: dict):
+def task(seed: [(str, str)], k: int, options: dict):
     """
     Finds labels describing the relation between the pairs of words in the seed.
-    :param dictionary_path: path of the corpus' dictionary
-    :param index_path: path of the indexed corpus' files
-    :param options: task option's:
-                     'seed' is the list of words' pairs that has to be labeled
-                     'k' is the limit to the number of results
-    :return: the labels describing the relation between the pairs of words
+    This task is based on the distributional hypothesis: SlidingWindows objects are used to inspect the context of every
+     seed pair. A set of labels is obtained from every SlidingWindows object. The intersection of all the set of labels
+     is the set of labels which describes the seed pairs.
+    :param seed: list of words pairs that has to be labeled
+    :param k: limit to the number of results
+    :param options: task options:
+                     "dictionary" is the path of the corpus dictionary
+                     "index" is the path of the indexed corpus files
+    :return: the intersection of the labels describing the context of every seed pair
     """
-    # Get the task's parameters
-    seed: [(str, str)] = options.get("seed")
-    k: int = options.get("k")
+    # Get the task parameters
+    dictionary: str = options.get('dictionary')
+    index: str = options.get('index')
 
     # Get the SlidingWindow of every pair of words
     sliding_windows = \
-        [SlidingWindows([element for element in pair], corpus_dictionary_path=dictionary_path, corpus_index_path=index_path) for pair in seed]
+        [SlidingWindows([element for element in pair], corpus_dictionary_path=dictionary, corpus_index_path=index) for pair in seed]
 
     # Get the labels of every pair of words from the related SlidingWindows objects
     all_labels = []

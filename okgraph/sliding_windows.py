@@ -23,15 +23,15 @@ class SlidingWindows:
      words (according to the distributional hypothesis) and are going to be referenced as labels. The labels appear in
      the same context of the target words.
     The context is represented by windows of text with specified size containing the target words. The size of a text
-     window is measured in 'words'. The text windows are extracted from the corpus and used to identify the labels.
+     window is measured in "words". The text windows are extracted from the corpus and used to identify the labels.
     Attributes:
         target_words: list of one or two words whose context has to be inspected
         corpus_index_path: path of the stored and indexed corpus
         corpus_dictionary: dictionary of the corpus {word in corpus: occurrences in corpus}
         corpus_total_occurrences: total number of occurrences in the corpus
         corpus_inverse_frequency_dictionary: dictionary {word in corpus: inverse frequency}
-        window_center_size: max distance (in 'words') between two target words sharing the context
-        window_offset_size: number of additional words surrounding the window's center
+        window_center_size: max distance (in "words") between two target words sharing the context
+        window_offset_size: number of additional words surrounding the window center
         windows_list: list of context windows
         windows_dictionary: dictionary of the windows {word in windows: occurrences in windows}
         windows_total_occurrences: total number of occurrences in all of the windows
@@ -56,14 +56,14 @@ class SlidingWindows:
         """
         Creates a SlidingWindows object.
         Load the data and find the labels related to the target words. The labels related to the target words are highly
-         related to the windows' size: little changes in those values could bring wide changes in the results.
+         related to the windows size: little changes in those values could bring wide changes in the results.
         :param target_words: list of one or two words whose context has to be inspected
         :param corpus_index_path: path of the stored and indexed corpus
         :param corpus_dictionary_path: path of the stored dictionary of the corpus {word: occurrences}
         :param window_center_size: max distance between the two words of interest to be considered close
-        :param window_offset_size: number of additional words surrounding the window's center
-        :param noise_threshold: minimum 'noise' value to accept the word as significant
-        :param tf_idf_threshold: minimum 'TF-IDF' value to accept the word as significant
+        :param window_offset_size: number of additional words surrounding the window center
+        :param noise_threshold: minimum "noise" value to accept the word as significant
+        :param tf_idf_threshold: minimum "TF-IDF" value to accept the word as significant
         """
 
         # Input check
@@ -104,7 +104,7 @@ class SlidingWindows:
             self.corpus_total_occurrences
         )
 
-        # Define the windows' parameters
+        # Define the windows parameters
         self.window_center_size = window_center_size
         self.window_offset_size = window_offset_size
 
@@ -289,7 +289,7 @@ class SlidingWindows:
          the dictionary.
         :param occurrence_dictionary: dictionary {word: occurrences}
         :param total_occurrences: total amount of occurrences in the dictionary
-        :return: dictionary {word: word's frequency}
+        :return: dictionary {word: words frequency}
         """
         occurrence_dictionary_keys = list(occurrence_dictionary.keys())
         f_dict = {}
@@ -302,11 +302,11 @@ class SlidingWindows:
         """
         Evaluates the inverse frequency of every word in the dictionary.
         The inverse frequency of a word is obtained from the division of the total number of word occurrences in the
-         dictionary by the word's occurrences. The result of the division is then scaled using a logarithm to weigh
+         dictionary by the words occurrences. The result of the division is then scaled using a logarithm to weigh
          down the frequent terms while scale up the rare ones.
         :param occurrence_dictionary: dictionary {word: occurrences}
         :param total_occurrences: total amount of occurrences in the dictionary
-        :return: dictionary {word: word's inverse frequency}
+        :return: dictionary {word: words inverse frequency}
         """
         occurrence_dictionary_keys = list(occurrence_dictionary.keys())
         if_dict = {}
@@ -317,7 +317,7 @@ class SlidingWindows:
     def noise_dictionary(self, windows_dictionary, corpus_dictionary):
         """
         Evaluates the importance of a word in the defined context, or rather how much that word is characteristic for
-         the defined windows. The importance is evaluated through the 'word window frequency / word corpus frequency'
+         the defined windows. The importance is evaluated through the "word window frequency / word corpus frequency"
          ratio, so that words appearing mainly in the windows are high rated, while words appearing often in all the
          corpus are low rated. A logarithm function is used to scale the ratio.
         :param windows_dictionary: dictionary {word: occurrences of word in windows}
@@ -358,7 +358,7 @@ class SlidingWindows:
         tf_idf_dict = {}
         for word in windows_frequency_dictionary_keys:
             # QSTN: all the words in the windows dictionary surely are in the corpus dictionary, 'cause windows have
-            #  been extracted from the corpus. We are scrolling through the windows, so none of condition in the if
+            #  been extracted from the corpus. We are scrolling through the windows, so none of the conditions in the if
             #  statement will always be True, right?
             if word not in windows_frequency_dictionary or word not in windows_occurrence_dictionary or word not in corpus_inverse_frequency_dictionary:
                 # QSTN: probably unreachable
@@ -370,12 +370,12 @@ class SlidingWindows:
 
     def clean_results(self, windows_dictionary, tf_idf_dictionary, noise_dictionary, noise_threshold, tf_idf_threshold):
         """
-        Clean the results' dictionary removing the not so significant words.
+        Clean the result dictionary removing the not so significant words.
         :param windows_dictionary: dictionary {word in window: occurrences}
         :param tf_idf_dictionary: dictionary {word in window: TF-IDF}
         :param noise_dictionary: dictionary {word: log(1 + word window frequency / word corpus frequency)}
-        :param noise_threshold: minimum 'noise' value to accept the word as significant
-        :param tf_idf_threshold: minimum 'TF-IDF' value to accept the word as significant
+        :param noise_threshold: minimum "noise" value to accept the word as significant
+        :param tf_idf_threshold: minimum "TF-IDF" value to accept the word as significant
         :return: the cleaned TF-IDF dictionary {significant word in window: TF-IDF}
         """
 
@@ -418,7 +418,7 @@ class SlidingWindows:
             if noise_dictionary.get(key) < noise_threshold:
                 if self.info is True:
                     count += 1
-                    logger.info('SLIDING_WINDOWS: Removing \'{w}\': noise={noise} < {threshold}'.format(w=key, noise=noise_dictionary.get(key), threshold=noise_threshold))  # LOG INFO
+                    logger.info('SLIDING_WINDOWS: Removing \'{w}\': noise={noise:.4f} < {threshold:.2f}'.format(w=key, noise=noise_dictionary.get(key), threshold=noise_threshold))  # LOG INFO
                 clean_dictionary.pop(key)
             elif tf_idf_dictionary.get(key) < tf_idf_threshold:
                 if self.info is True:

@@ -59,7 +59,8 @@ class OKGraphTest(unittest.TestCase):
     def test_04_relation_expansion(self):
         okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
         seed = [('rome', 'italy'), ('berlin', 'germany')]
-        k = 15
+        k = 3
+        """
         options = {'relation_labeling_algo': 'intersection',
                    'relation_labeling_options': {'dictionary': okg.dictionary, 'index': okg.index},
                    'relation_labeling_k': 15,
@@ -67,8 +68,17 @@ class OKGraphTest(unittest.TestCase):
                    'set_expansion_options': {'embeddings': okg.embeddings},
                    'set_expansion_k': 15
                    }
+        """
+        options = {'embeddings': okg.embeddings,
+                   'relation_labeling_algo': 'intersection',
+                   'relation_labeling_options': {'dictionary': okg.dictionary, 'index': okg.index},
+                   'relation_labeling_k': 15,
+                   'set_expansion_algo': 'centroid',
+                   'set_expansion_options': {'embeddings': okg.embeddings},
+                   'set_expansion_k': 15
+                   }
 
-        expansion = okg.relation_expansion(seed, k, 'intersection', options)
+        expansion = okg.relation_expansion(seed, k, 'centroid', options)
 
         print('Expansion of {seed} is {expansion}'.format(seed=seed, expansion=expansion))
 

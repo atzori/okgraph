@@ -2,18 +2,11 @@ from gensim.models.word2vec import Word2Vec
 from gensim.models.word2vec import LineSentence
 from gensim.models.phrases import Phraser, Phrases
 from pymagnitude import converter
-import logging
-from logging.config import fileConfig
-from os import path
+from okgraph.logger import logger
 
-# Create a logger using the specified configuration
-LOG_CONFIG_FILE = path.dirname(path.realpath(__file__)) + '/logging.ini'
-if not path.isfile(LOG_CONFIG_FILE):
-    LOG_CONFIG_FILE = path.dirname(path.dirname(LOG_CONFIG_FILE)) + '/logging.ini'
-fileConfig(LOG_CONFIG_FILE)
-logger = logging.getLogger()
+module_path = str.upper(__name__).replace('OKGRAPH.', '')
 
-# Parameters from pymagnitude converter
+# Default parameters from pymagnitude converter
 DEFAULT_PRECISION = 7
 DEFAULT_NGRAM_BEG = 3
 DEFAULT_NGRAM_END = 6
@@ -21,58 +14,54 @@ DEFAULT_NGRAM_END = 6
 
 class FileConverter:
 
-    def corpus_to_gensim_model(corpus_fname: str, save_fname: str = None, info: bool = True) -> str:
+    def corpus_to_gensim_model(corpus_fname: str, save_fname: str = None) -> str:
         """
         Reads text file and creates a gensim model file.
+        :param corpus_fname: name (path) of the corpus
         :param save_fname: name (path) of the model
-        :return: the name of the model
+        :return: the model name
         """
 
         model = Word2Vec()
 
-        if info is True:
-            logger.info('Computing phrases')
+        logger.info(f'{module_path}: Computing phrases')
         phrases = Phrases(LineSentence(corpus_fname))
 
-        if info is True:
-            logger.info('Generating bigram')
+        logger.info(f'{module_path}: Generating bigram')
         bigram = Phraser(phrases)
 
-        if info is True:
-            logger.info('Building vocabulary')
+        logger.info(f'{module_path}: Building vocabulary')
         model.build_vocab(bigram[LineSentence(corpus_fname)])
 
-        if info is True:
-            logger.info('Training model with total_examples=%d and epochs=%d' % (model.corpus_count, model.epochs))
+        logger.info(f'{module_path}: Training model with total_examples={model.corpus_count} and epochs={model.epochs}')
         model.train(bigram[LineSentence(corpus_fname)], total_examples=model.corpus_count, epochs=model.epochs)
 
         if save_fname is None:
             save_fname = corpus_fname + '.bin'
+            logger.info(f'{module_path}: Save file name not specified. Using default save file named {save_fname}')
 
-        if info is True:
-            logger.info('Saving... [' + save_fname + ']')
+        logger.info(f'{module_path}: Saving... {save_fname}')
         model.wv.save_word2vec_format(save_fname, binary=True)
-        if info is True:
-            logger.info('Saved [' + save_fname + '].')
+        logger.info(f'{module_path}: Saved {save_fname}')
 
         return save_fname
 
-    def corpus_to_magnitude_model(corpus_fname: str, save_fname: str = None, info: bool = True) -> str:
+    def corpus_to_magnitude_model(corpus_fname: str, save_fname: str = None) -> str:
         """
-        Reads a text file and creates a Magnitude model file
+        Reads a text file and creates a Magnitude model file.
+        :param corpus_fname: name (path) of the corpus
         :param save_fname: name (path) of the model
-        :return: the name of the model
+        :return: the model name
         """
 
-        if info is True:
-            logger.info(f'Computing file {corpus_fname}')
+        logger.info(f'{module_path}: Computing file {corpus_fname}')
 
         if save_fname is None:
             save_fname = corpus_fname + '.magnitude'
 
         gensim_model_fname = corpus_fname + '.bin'
 
-        FileConverter.corpus_to_gensim_model(corpus_fname, gensim_model_fname, info=info)
+        FileConverter.corpus_to_gensim_model(corpus_fname, gensim_model_fname)
 
         converter.convert(gensim_model_fname,
                           output_file_path=save_fname,
@@ -84,7 +73,6 @@ class FileConverter:
                           approx_trees=None,
                           vocab_path=None)
 
-        if info is True:
-            logger.info('Saved [' + save_fname + '].')
+        logger.info(f'{module_path}: Saved {save_fname}')
 
         return save_fname

@@ -53,7 +53,7 @@ def task(seed: [(str, str)], k: int, options: dict):
         centroid = mean(v_differenza)
 
         # Ottieni una espansione del set di primi elementi
-        f_espansione = [res[0] for res in set_expansion_algorithm.task(f_lista, set_expansion_k-len(expansion), set_expansion_options)]
+        f_espansione = set_expansion_algorithm.task(f_lista, set_expansion_k-len(expansion), set_expansion_options)
         print('Espansione primi elementi:', f_espansione)
         print('Espansione:', f_espansione)
 

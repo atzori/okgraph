@@ -3,13 +3,16 @@ import okgraph
 from okgraph.sliding_windows import SlidingWindows
 import os
 from pymagnitude import Magnitude
+from okgraph.logger import logger
 
 cwd = os.getcwd()
-print( cwd )
+logger.info(f'Current working directory is {cwd}')
+
+module_path = str.upper(__name__).replace('OKGRAPH.', '')
 corpus_file_path = cwd + '/tests/data/text8'
 embeddings_file_path = cwd + '/tests/data/text8.magnitude'
 indexing_folder = cwd + '/tests/data/indexdir/text8'
-dict_total= cwd + '/tests/data/dictTotal.npy'
+dict_total = cwd + '/tests/data/dictTotal.npy'
 #embeddings_file_path = cwd + '/tests/data/GoogleNews-vectors-negative300.magnitude'
 
 
@@ -21,7 +24,7 @@ class OKGraphTest(unittest.TestCase):
         if os.path.exists(magnitude_file):
             os.remove(magnitude_file)
         self.assertFalse(os.path.exists(magnitude_file))
-        okg = okgraph.OKgraph(corpus=corpus_file_path, dictionary_path=dict_total, index_path=indexing_folder, create_index=True)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, dictionary=dict_total, index=indexing_folder)
         self.assertTrue(os.path.exists(magnitude_file))
         self.assertIsInstance(okg.embeddings, Magnitude)
         self.assertIsInstance(okg.corpus, str)
@@ -33,7 +36,7 @@ class OKGraphTest(unittest.TestCase):
         magnitude_file = corpus_file + '.magnitude'
         self.assertTrue(os.path.exists(magnitude_file))
         modificationTime = os.path.getmtime(magnitude_file)
-        okg = okgraph.OKgraph(corpus=corpus_file_path, dictionary_path=dict_total, index_path=indexing_folder, create_index=True)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, dictionary=dict_total, index=indexing_folder)
         self.assertTrue(os.path.exists(magnitude_file))
         self.assertEqual(modificationTime, os.path.getmtime(magnitude_file))
         self.assertIsInstance(okg.embeddings, Magnitude)
@@ -44,7 +47,7 @@ class OKGraphTest(unittest.TestCase):
     def test_03_init_with_text_and_model(self):
         """ check passing magnitude file as argument """
 
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary=dict_total, index=indexing_folder)
 
         self.assertIsInstance(okg.embeddings, Magnitude)
         self.assertIsInstance(okg.corpus, str)
@@ -57,10 +60,10 @@ class OKGraphTest(unittest.TestCase):
             okgraph.OKgraph(corpus='anotherNone', embeddings='http://not.available.org/path')
 
     def test_04_relation_expansion(self):
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary=dict_total, index=indexing_folder)
         seed = [('rome', 'italy'), ('berlin', 'germany')]
         k = 3
-        """
+
         options = {'relation_labeling_algo': 'intersection',
                    'relation_labeling_options': {'dictionary': okg.dictionary, 'index': okg.index},
                    'relation_labeling_k': 15,
@@ -77,13 +80,14 @@ class OKGraphTest(unittest.TestCase):
                    'set_expansion_options': {'embeddings': okg.embeddings},
                    'set_expansion_k': 15
                    }
+        """
 
-        expansion = okg.relation_expansion(seed, k, 'centroid', options)
+        expansion = okg.relation_expansion(seed, k, 'intersection', options)
 
         print('Expansion of {seed} is {expansion}'.format(seed=seed, expansion=expansion))
 
     def test_05_relation_labeling(self):
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary=dict_total, index=indexing_folder)
         seed = [('rome', 'italy'), ('berlin', 'germany')]
         k = 15
         options = {'dictionary': okg.dictionary,
@@ -91,7 +95,7 @@ class OKGraphTest(unittest.TestCase):
 
         sliding_windows = []
         for pair in seed:
-            sliding_windows.append(SlidingWindows(target_words=[pair[0], pair[1]], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
+            sliding_windows.append(SlidingWindows(target_words=[pair[0], pair[1]], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index))
             result = list(sliding_windows[-1].results_dict.keys())[:k]
             print('Pair {pair} produced result {result}'.format(pair=pair, result=result))
             self.assertTrue(len(sliding_windows[0].results_dict) > 0,
@@ -104,7 +108,7 @@ class OKGraphTest(unittest.TestCase):
         self.assertTrue(len(intersection) != 0)
 
     def test_06_set_expansion(self):
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary=dict_total, index=indexing_folder)
 
         """
         Test set expansion algorithm "centroid"
@@ -131,7 +135,7 @@ class OKGraphTest(unittest.TestCase):
                         msg="the expansion can't contain more than 'k' elements")
 
     def test_07_set_labeling(self):
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary=dict_total, index=indexing_folder)
         seed = ['milan', 'rome', 'turin']
         k = 15
         options = {'dictionary': okg.dictionary,
@@ -139,7 +143,7 @@ class OKGraphTest(unittest.TestCase):
         sliding_windows = []
 
         for word in seed:
-            sliding_windows.append(SlidingWindows(target_words=[word], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
+            sliding_windows.append(SlidingWindows(target_words=[word], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index))
             result = list(sliding_windows[-1].results_dict.keys())[:k]
             print('Word {word} produced result {result}'.format(word=word, result=result))
 
@@ -150,12 +154,12 @@ class OKGraphTest(unittest.TestCase):
         self.assertTrue(len(intersection) != 0)
 
     def test_08_sliding_windows(self):
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary_path=dict_total, index_path=indexing_folder)
+        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary=dict_total, index=indexing_folder)
         seed = [('rome', 'italy'), ('berlin', 'germany')]
         sliding_windows = []
 
         for pair in seed:
-            sliding_windows.append(SlidingWindows(target_words=[pair[0], pair[1]], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index, info=False))
+            sliding_windows.append(SlidingWindows(target_words=[pair[0], pair[1]], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index))
             result = list(sliding_windows[-1].results_dict.keys())
             print('Pair {pair} produced result {result}'.format(pair=pair, result=result))
             self.assertTrue(len(sliding_windows[0].results_dict) > 0,

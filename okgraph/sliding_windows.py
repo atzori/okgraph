@@ -1,19 +1,12 @@
 import operator
 import re
 import numpy
-import logging
-from os import path
-from logging.config import fileConfig
 from whoosh import index
 from whoosh.qparser import QueryParser
 import numpy as np
+from okgraph.logger import logger
 
-# Create a logger using the specified configuration
-LOG_CONFIG_FILE = path.dirname(path.realpath(__file__)) + '/logging.ini'
-if not path.isfile(LOG_CONFIG_FILE):
-    LOG_CONFIG_FILE = path.dirname(path.dirname(LOG_CONFIG_FILE)) + '/logging.ini'
-fileConfig(LOG_CONFIG_FILE)
-logger = logging.getLogger()
+module_path = str.upper(__name__).replace('OKGRAPH.', '')
 
 
 class SlidingWindows:
@@ -40,7 +33,6 @@ class SlidingWindows:
         noise_dict: dictionary {word: log(1 + word window frequency / word corpus frequency)}
         tf_idf_dict: dictionary {word in window: TF-IDF}
         results_dict: dictionary {significant word: TF-IDF}
-        info: to print or not messages in the log
     """
 
     def __init__(self,
@@ -51,7 +43,6 @@ class SlidingWindows:
                  window_offset_size: int = 2,
                  noise_threshold: float = 0.70,
                  tf_idf_threshold: float = 0.02,
-                 info: bool = True
                  ):
         """
         Creates a SlidingWindows object.
@@ -78,27 +69,20 @@ class SlidingWindows:
         if not isinstance(window_offset_size, int):
             raise TypeError('window_offset_size must be an int')
 
-        self.info = info
-
-        if self.info is True:
-            logger.info('SLIDING_WINDOWS: Start windowing of target words: {target}'.format(target=target_words))  # LOG INFO
         self.target_words = target_words
+        logger.info(f'{module_path} {self.target_words}: Start windowing of target words')
 
         # Get the corpus data
         self.corpus_index_path = corpus_index_path
-        if self.info is True:
-            logger.info('SLIDING_WINDOWS: Loading corpus data')  # LOG INFO
+        logger.info(f'{module_path} {self.target_words}: Loading corpus data')
         self.corpus_dictionary = np.load(corpus_dictionary_path, allow_pickle=True).item()
 
         # Processing the corpus data
-        if self.info is True:
-            logger.info('SLIDING_WINDOWS: Processing corpus data')  # LOG INFO
-            logger.info('SLIDING_WINDOWS: Total unique corpus words: {n}'.format(n=len(self.corpus_dictionary)))  # LOG INFO
+        logger.info(f'{module_path} {self.target_words}: Processing corpus data')
+        logger.debug(f'{module_path} {self.target_words}: Total unique corpus words: {len(self.corpus_dictionary)}')
         self.corpus_total_occurrences = self.total_occurrences(self.corpus_dictionary)
-        if self.info is True:
-            logger.info('SLIDING_WINDOWS: Total corpus occurrences: {n}'.format(n=self.corpus_total_occurrences))  # LOG INFO
-        if self.info is True:
-            logger.info('SLIDING_WINDOWS: Building corpus inverse frequency dictionary')  # LOG INFO
+        logger.debug(f'{module_path} {self.target_words}: Total corpus occurrences: {self.corpus_total_occurrences}')
+        logger.debug(f'{module_path} {self.target_words}: Building corpus inverse frequency dictionary')
         self.corpus_inverse_frequency_dictionary = self.inverse_frequency_dictionary(
             self.corpus_dictionary,
             self.corpus_total_occurrences
@@ -109,43 +93,30 @@ class SlidingWindows:
         self.window_offset_size = window_offset_size
 
         # Create the windows
-        if self.info is True:
-            logger.info('SLIDING_WINDOWS: Creating windows')  # LOG INFO
+        logger.info(f'{module_path} {self.target_words}: Creating windows')
         (self.windows_list, self.windows_dictionary) = self.create_windows()
 
         # Processing windows data
-        if self.info is True:
-            logger.info('SLIDING_WINDOWS: Processing windows data')  # LOG INFO
-            logger.info('SLIDING_WINDOWS: Number of windows: {n}'.format(n=len(self.windows_list)))  # LOG INFO
+        logger.info(f'{module_path} {self.target_words}: Processing windows data')
+        logger.debug(f'{module_path} {self.target_words}: Number of windows: {len(self.windows_list)}')
         if len(self.windows_list) > 0:
-            if self.info is True:
-                logger.info('SLIDING_WINDOWS: Removing target words from windows dictionary')  # LOG INFO
+            logger.debug(f'{module_path} {self.target_words}: Removing target words from windows dictionary')
             for word in self.target_words:
                 self.windows_dictionary.pop(word)
-            if self.info is True:
-                logger.info('SLIDING_WINDOWS: Total unique windows words: {n}'.format(
-                    n=len(self.windows_dictionary)))  # LOG INFO
+            logger.debug(f'{module_path} {self.target_words}: Total unique windows words: {len(self.windows_dictionary)}')
             self.windows_total_occurrences = self.total_occurrences(self.windows_dictionary)
-            if self.info is True:
-                logger.info('SLIDING_WINDOWS: Total windows occurrences: {n}'.format(
-                    n=self.windows_total_occurrences))  # LOG INFO
-            if self.info is True:
-                logger.info('SLIDING_WINDOWS: Building windows occurrence dictionary')  # LOG INFO
+            logger.debug(f'{module_path} {self.target_words}: Total windows occurrences: {self.windows_total_occurrences}')
+            logger.debug(f'{module_path} {self.target_words}: Building windows occurrence dictionary')
             self.windows_occurrence_dict = self.windows_occurrence_dictionary(self.windows_dictionary, self.windows_list)
-            if self.info is True:
-                logger.info('SLIDING_WINDOWS: Building windows frequency dictionary')  # LOG INFO
+            logger.debug(f'{module_path} {self.target_words}: Building windows frequency dictionary')
             self.windows_frequency_dict = self.frequency_dictionary(self.windows_dictionary, self.windows_total_occurrences)
-            if self.info is True:
-                logger.info('SLIDING_WINDOWS: Building windows noise dictionary')  # LOG INFO
+            logger.debug(f'{module_path} {self.target_words}: Building windows noise dictionary')
             self.noise_dict = self.noise_dictionary(self.windows_dictionary, self.corpus_dictionary)
-            if self.info is True:
-                logger.info('SLIDING_WINDOWS: Building windows TF-IDF dictionary')  # LOG INFO
+            logger.debug(f'{module_path} {self.target_words}: Building windows TF-IDF dictionary')
             self.tf_idf_dict = self.tf_idf_dictionary(self.windows_occurrence_dict, self.windows_frequency_dict, self.corpus_inverse_frequency_dictionary, self.windows_list)
-            if self.info is True:
-                logger.info('SLIDING_WINDOWS: Cleaning windows TF-IDF dictionary')  # LOG INFO
+            logger.debug(f'{module_path} {self.target_words}: Cleaning windows TF-IDF dictionary')
             cleaned_tf_idf_dict = self.clean_results(self.windows_dictionary, self.tf_idf_dict, self.noise_dict, noise_threshold, tf_idf_threshold)
-            if self.info is True:
-                logger.info('SLIDING_WINDOWS: Sorting cleaned TF-IDF dictionary to obtain labels')  # LOG INFO
+            logger.debug(f'{module_path} {self.target_words}: Sorting cleaned TF-IDF dictionary to obtain labels')
             self.results_dict = dict(sorted(cleaned_tf_idf_dict.items(), key=operator.itemgetter(1), reverse=True))
         else:
             self.windows_total_occurrences = 0
@@ -361,7 +332,7 @@ class SlidingWindows:
             #  been extracted from the corpus. We are scrolling through the windows, so none of the conditions in the if
             #  statement will always be True, right?
             if word not in windows_frequency_dictionary or word not in windows_occurrence_dictionary or word not in corpus_inverse_frequency_dictionary:
-                # QSTN: probably unreachable
+                # QSTN: possibly unreachable
                 tf_idf_dict[word] = 0
             else:
                 tf_idf_dict[word] = (windows_occurrence_dictionary.get(word) / len(windows_list)) * corpus_inverse_frequency_dictionary.get(word)
@@ -382,68 +353,55 @@ class SlidingWindows:
         clean_dictionary = dict(tf_idf_dictionary)
 
         # Remove the words whose occurrences are higher than the total amount of unique words
-        if self.info is True:
-            count = 0
-            logger.info('SLIDING_WINDOWS: Removing words whose occurrences are higher than the total amount of unique words')  # LOG INFO
+        count_removed_words = 0
+        logger.debug(f'{module_path} {self.target_words}: Removing words whose occurrences are higher than the total amount of unique words')
         windows_dictionary_keys = list(windows_dictionary.keys())
         for key in windows_dictionary_keys:
             if windows_dictionary.get(key) >= len(clean_dictionary):
-                if self.info is True:
-                    count += 1
-                    logger.info('SLIDING_WINDOWS: Removing \'{w}\': {occurences} < {unique}'.format(w=key, occurences=windows_dictionary.get(key), unique=len(clean_dictionary)))  # LOG INFO
+                count_removed_words += 1
+                logger.debug(f'{module_path} {self.target_words}: Removing \'{key}\': {windows_dictionary.get(key)} < {len(clean_dictionary)}')
                 clean_dictionary.pop(key)
-        if self.info is True:
-            logger.info('SLIDING_WINDOWS: Removed {n} words'.format(n=count))  # LOG INFO
+        logger.debug(f'{module_path} {self.target_words}: Removed {count_removed_words} words')
 
         # Remove words shorter than 3 characters
-        if self.info is True:
-            count = 0
-            logger.info('SLIDING_WINDOWS: Removing words shorter than 3 characters')  # LOG INFO
+        count_removed_words = 0
+        logger.debug(f'{module_path} {self.target_words}: Removing words shorter than 3 characters')
         clean_dictionary_keys = list(clean_dictionary.keys())
         for key in clean_dictionary_keys:
             if len(key) < 3:
-                if self.info is True:
-                    count += 1
-                    logger.info('SLIDING_WINDOWS: Removing \'{w}\': len={len} < 3'.format(w=key, len=len(key)))  # LOG INFO
+                count_removed_words += 1
+                logger.debug(f'{module_path} {self.target_words}: Removing \'{key}\': len={len(key)} < 3')
                 clean_dictionary.pop(key)
-        if self.info is True:
-            logger.info('SLIDING_WINDOWS: Removed {n} words'.format(n=count))  # LOG INFO
+        logger.debug(f'{module_path} {self.target_words}: Removed {count_removed_words} words')
 
         # Remove words with a noise or TF-IDF lower than the specified threshold
-        if self.info is True:
-            count = 0
-            logger.info('SLIDING_WINDOWS: Removing words with a noise or TF-IDF lower than the specified threshold')  # LOG INFO
+        count_removed_words = 0
+        logger.debug(f'{module_path} {self.target_words}: Removing words with a noise or TF-IDF lower than the specified threshold')
         clean_dictionary_keys = list(clean_dictionary.keys())
         for key in clean_dictionary_keys:
             if noise_dictionary.get(key) < noise_threshold:
-                if self.info is True:
-                    count += 1
-                    logger.info('SLIDING_WINDOWS: Removing \'{w}\': noise={noise:.4f} < {threshold:.2f}'.format(w=key, noise=noise_dictionary.get(key), threshold=noise_threshold))  # LOG INFO
+                count_removed_words += 1
+                logger.debug(f'{module_path} {self.target_words}: Removing \'{key}\': noise={noise_dictionary.get(key):.4f} < {noise_threshold:.2f}')
                 clean_dictionary.pop(key)
             elif tf_idf_dictionary.get(key) < tf_idf_threshold:
-                if self.info is True:
-                    count += 1
-                    logger.info('SLIDING_WINDOWS: Removing \'{w}\': TF-IDF={tf_idf} < {threshold}'.format(w=key, tf_idf=tf_idf_dictionary.get(key), threshold=tf_idf_threshold))  # LOG INFO
+                count_removed_words += 1
+                logger.debug(f'{module_path} {self.target_words}: Removing \'{key}\': TF-IDF={tf_idf_dictionary.get(key)} < {tf_idf_threshold}')
                 clean_dictionary.pop(key)
-        if self.info is True:
-            logger.info('SLIDING_WINDOWS: Removed {n} words'.format(n=count))  # LOG INFO
+        logger.debug(f'{module_path} {self.target_words}: Removed {count_removed_words} words')
 
         # Remove digits
-        if self.info is True:
-            count = 0
-            logger.info('SLIDING_WINDOWS: Removing digits')  # LOG INFO
+        count_removed_words = 0
+        logger.debug(f'{module_path} {self.target_words}: Removing digits')
         clean_dictionary_keys = list(clean_dictionary.keys())
         for key in clean_dictionary_keys:
             if str.isnumeric(key):
-                if self.info is True:
-                    count += 1
-                    logger.info('SLIDING_WINDOWS: Removing \'{w}\''.format(w=key))  # LOG INFO
+                count_removed_words += 1
+                logger.debug(f'{module_path} {self.target_words}: Removing \'{key}\'')
                 clean_dictionary.pop(key)
-        if self.info is True:
-            logger.info('SLIDING_WINDOWS: Removed {n} words'.format(n=count))  # LOG INFO
+        logger.debug(f'{module_path} {self.target_words}: Removed {count_removed_words} words')
 
-        if self.info is True:
-            logger.info('SLIDING_WINDOWS: Cleaned dictionary counts {n1} words, againts the {n2} words of the starting dictionary'.format(n1=len(clean_dictionary), n2=len(tf_idf_dictionary)))  # LOG INFO
+        logger.debug(f'{module_path} {self.target_words}: Cleaned dictionary counts {len(clean_dictionary)} words, against the {len(tf_idf_dictionary)} words of the starting dictionary')
+        logger.debug(f'{module_path} {self.target_words}: Final cleaned dictionary keys: {list(clean_dictionary.keys())}')
 
         # Returns the cleaned dictionary
         return clean_dictionary

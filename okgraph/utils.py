@@ -1,19 +1,10 @@
-import logging
 import numpy as np
 import operator
 import re
 import string
-from os import path
-from logging.config import fileConfig
+from okgraph.logger import logger
 
-
-LOG_CONFIG_FILE = path.dirname(path.realpath(__file__)) + '/logging.ini'
-if not path.isfile(LOG_CONFIG_FILE):
-    LOG_CONFIG_FILE = path.dirname(path.dirname(LOG_CONFIG_FILE)) + '/logging.ini'
-
-fileConfig(LOG_CONFIG_FILE)
-logger = logging.getLogger()
-logger.info(f'Log config file is: {LOG_CONFIG_FILE}')
+module_path = str.upper(__name__).replace('OKGRAPH.', '')
 
 
 def get_words(file_path: str):
@@ -35,18 +26,18 @@ def get_words(file_path: str):
                 yield w
 
 
-def create_dictionary(file_path: str, dictionary_path: str = 'dictTotal.npy', dictionary_save: bool = True):
+def create_dictionary(corpus: str, dictionary_name: str = 'dictTotal.npy', dictionary_save: bool = True):
     """
     Creates a dictionary of the words in the file using the structure {word in file: occurrences of word in file}
-    :param file_path: path (with name) of the file
-    :param dictionary_path: path (with name) of the dictionary file
+    :param corpus: path of the corpus
+    :param dictionary_name: path of the dictionary
     :param dictionary_save: save or not the created dictionary into a file whose name is specified by "dictionary_path"
     :return: the created dictionary
     """
     # Get all the words from the file
-    words = get_words(file_path)
+    words = get_words(corpus)
 
-    logger.info('Start dictionary\'s creation')  # LOG INFO
+    logger.info(f'{module_path}: Started dictionary creation')
 
     # Create a dictionary of the type {word in file: occurrences of word in file}
     dictionary = {}
@@ -58,9 +49,9 @@ def create_dictionary(file_path: str, dictionary_path: str = 'dictTotal.npy', di
 
     # If wanted, save the dictionary into a file with the specified path
     if dictionary_save is True:
-        np.save(dictionary_path, dictionary)
+        np.save(dictionary_name, dictionary)
 
-    logger.info('End of dictionary\'s creation')  # LOG INFO
+    logger.info(f'{module_path}: Ended dictionary creation')
 
     # Return the created dictionary
     return dictionary

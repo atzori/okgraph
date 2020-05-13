@@ -1,17 +1,11 @@
-import logging
 import os
 from os import path
-from logging.config import fileConfig
 from okgraph.utils import get_words
 from whoosh import index
 from whoosh.fields import Schema, TEXT
+from okgraph.logger import logger
 
-# Create a logger using the specified configuration
-LOG_CONFIG_FILE = path.dirname(path.realpath(__file__)) + '/logging.ini'
-if not path.isfile(LOG_CONFIG_FILE):
-    LOG_CONFIG_FILE = path.dirname(path.dirname(LOG_CONFIG_FILE)) + '/logging.ini'
-fileConfig(LOG_CONFIG_FILE)
-logger = logging.getLogger()
+module_path = str.upper(__name__).replace('OKGRAPH.', '')
 
 
 class Indexing:
@@ -23,14 +17,13 @@ class Indexing:
     Attributes:
         corpus_path: path of the file (text corpus)
         schema: schema (whoosh Schema) used to represent a document: (title (text ID): content (text))
-        info: to print or not messages in the log
     """
 
     # Schema fields
     FIELD_TITLE = 'title'
     FIELD_CONTENT = 'content'
 
-    def __init__(self, corpus_path: str, info: bool = True):
+    def __init__(self, corpus_path: str):
         """
         Define an "Indexing" object with a reference to the corpus and the documents storing schema.
         :param corpus_path: path (with name) of the text corpus
@@ -41,7 +34,6 @@ class Indexing:
             title=TEXT(stored=True),   # TEXT field for corpus title (indexed and stored)
             content=TEXT(stored=True)  # TEXT field for corpus content (indexed and stored)
         )
-        self.info = info
 
     def __str__(self) -> str:
         """
@@ -54,8 +46,7 @@ class Indexing:
         Starts the indexing process.
         :param index_path: path in which the documents will be stored
         """
-        if self.info is True:
-            logger.info('INDEXING: Start documents\' indexing in corpus')  # LOG INFO
+        logger.info(f'{module_path}: Start documents indexing in corpus')
 
         # Indexing parameters
         document_overlay = 20  # Number of words shared between two documents
@@ -67,7 +58,7 @@ class Indexing:
         #  (first document has no left overlay: let the counter start like it had and it has been already processed)
         document_index = 0  # ID of the document being indexed and saved
         document_count = 0  # Counter for found documents
-        document_count_limit = 500000  # Max number of indexable and savable documents
+        document_count_limit = 500000  # Max number of indexable and savable documents without committing
 
         log_count = 0  # Log counter for the found documents
         log_frequency = 10000  # Frequency of log messages in term of found documents
@@ -98,11 +89,10 @@ class Indexing:
                     document_count += 1
                     log_count += 1
 
-                    if self.info is True:
-                        if log_count == 1:
-                            logger.info('INDEXING: Indexing document number: {0}'.format(document_count))  # LOG INFO
-                        if log_count == log_frequency:
-                            log_count = 0
+                    if log_count == 1:
+                        logger.info(f'{module_path}: Indexing document number: {document_count}')
+                    if log_count == log_frequency:
+                        log_count = 0
 
                     # Convert the temporary list of words, representing the document, into plain text
                     document_content = ' '.join(map(str, document_list))
@@ -113,22 +103,17 @@ class Indexing:
                     del document_list[:-document_overlay]
                     document_list_count = document_overlay
 
-                    # If the limit has been reached, commit the changes and reset the index
-                    #  (start overwriting the old documents)
+                    # If the limit has been reached, commit the changes and start saving the next documents into a new file
                     if document_index == document_count_limit:
-                        if self.info is True:
-                            logger.info('INDEXING: Limit of {0} document reached: '
-                                        'committing changes'.format(document_count_limit))  # LOG INFO
+                        logger.info(f'{module_path}: Limit of {document_count_limit} document reached: committing changes')
                         writer.commit()
                         ix = index.open_dir(index_path)
                         writer = ix.writer()
                         document_index = 0
 
             if document_count != 0:
-                if self.info is True:
-                    logger.info('INDEXING: Indexed last document with number: {0}'.format(document_count))  # LOG INFO
-                    logger.info('INDEXING: Committing')  # LOG INFO
+                logger.info(f'{module_path}: Indexed last document with number: {document_count}')
+                logger.info(f'{module_path}: Committing')
                 writer.commit()
 
-            if self.info is True:
-                logger.info('INDEXING: Ended documents\' indexing in corpus')  # LOG INFO
+            logger.info(f'{module_path}: Ended documents indexing in corpus')

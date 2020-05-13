@@ -2,22 +2,12 @@ from pymagnitude import Magnitude
 from nltk.probability import FreqDist
 from okgraph.file_converter import FileConverter
 from os import path
-import logging
-from logging.config import fileConfig
 from okgraph.indexing import Indexing
 from okgraph.utils import create_dictionary
+from okgraph.logger import logger
 
-# Specify the task path
-algorithms_package = "okgraph.task"
-
-# Create a logger using the specified configuration
-LOG_CONFIG_FILE = path.dirname(path.realpath(__file__)) + '/logging.ini'
-if not path.isfile(LOG_CONFIG_FILE):
-    LOG_CONFIG_FILE = path.dirname(path.dirname(LOG_CONFIG_FILE)) + '/logging.ini'
-fileConfig(LOG_CONFIG_FILE)
-logger = logging.getLogger()
-# Print a first message in the logger
-logger.info(f'Log config file is: {LOG_CONFIG_FILE}')
+module_path = str.upper(__name__).replace('OKGRAPH.', '')
+algorithms_package = 'okgraph.task'
 
 
 class OKgraph:
@@ -36,8 +26,8 @@ class OKgraph:
         embeddings: words vector model
         f_distribution: ???
         corpus: path of the corpus file
-        index_path: path of the indexed corpus files
-        dictionary_path: path of the corpus dictionary
+        index: path of the indexed corpus files
+        dictionary: path of the corpus dictionary
         occurrence_corpus: ???
     """
 
@@ -47,17 +37,16 @@ class OKgraph:
                  k: int = 5,
                  stream: bool = False,
                  lazy_loading: int = 0,
-                 index_path: str = 'indexdir/',
-                 dictionary_path: str = None,
+                 index: str = None,
+                 dictionary: str = None,
                  occurrence_corpus: str = None,
-                 create_index: bool = False
                  ):
         """
         Creates an OKgraph object.
 
         It loads a text corpus, and optionally a word-embedding model
         - via a local resource,
-        - or streaming a file on a server.
+        - or streaming a file on a server
 
         The supported embeddings files are: ".magnitude".
         In the future will support .bin, .txt, .vec, .hdf5 by automatically converting them to a
@@ -91,43 +80,71 @@ class OKgraph:
         :param lazy_loading: -1 = pre-load into memory,
                               0 = lazy loads with unbounded in-memory cache,
                              >0 = lazy loads with an LRU cache of that size
-        :param index_path: path of the indexed corpus files
-        :param dictionary_path: path of the corpus dictionary
+        :param index: path of the indexed corpus files
+        :param dictionary: path of the corpus dictionary
         :param occurrence_corpus: ???
-        :param create_index: forces the indexation of the corpus
 
         QSTN: OKgraph should performs unsupervised natural-language understanding, but it uses Magnitude, that could
                be not unsupervised
         TODO: check the accepted extension for text corpus. Magnitude can take .gz, .bz2, .txt and no extension..
         """
 
-        if embeddings is None:
-            default_magnitude_file = corpus + '.magnitude'
-            if path.exists(default_magnitude_file):
-                embeddings = default_magnitude_file
-                logger.info(f'File model for {corpus} not specified but using model file named {embeddings} in the same directory')
+        if embeddings is None or not path.exists(embeddings):
+            if embeddings is None:
+                logger.info(f'{module_path}: Embedding file for {corpus} not specified. Using default values')
             else:
-                logger.info(f'File model for {corpus} not found. Generating model with default options')
-                embeddings = FileConverter.corpus_to_magnitude_model(corpus_fname=corpus)
-                logger.info(f'Model {embeddings} generated.')
+                logger.warning(f'{module_path}: Specified embedding file {embeddings} for {corpus} not found. Using default values')
 
-        if not path.exists(index_path) or create_index is True:
-            if dictionary_path is None:
-                dictionary_path = 'dictTotal.npy'
-            logger.info(f'Folder indexing for {corpus} not found. Generating index with default options')
-            tmp = Indexing(corpus_path=corpus)
-            tmp.indexing(index_path=index_path)
-            logger.info(f'Model index generated.')
-            logger.info(f'File dictTotal.npy for {corpus} not found. Generating dictTotal.npy')
-            create_dictionary(corpus, dictionary_path=dictionary_path, dictionary_save=True)
-            logger.info(f'dictTotal generated.')
-            del tmp
+            embeddings = corpus + '.magnitude'
+            if path.exists(embeddings):
+                logger.info(f'{module_path}: Embedding file with default name found. Using embedding file {embeddings}')
+            else:
+                logger.info(f'{module_path}: No embedding file with default name found. Generating embedding file with default settings')
+                embeddings = FileConverter.corpus_to_magnitude_model(corpus_fname=corpus, save_fname=embeddings)
+                logger.info(f'{module_path}: Embedding file {embeddings} generated')
+        else:
+            logger.info(f'{module_path}: Specified embedding file {embeddings} for {corpus} found')
+
+        # QSTN: should we check for index_path to not be empty?
+        if index is None or not path.exists(index):
+            if index is None:
+                logger.info(f'{module_path}: Indexing directory for {corpus} not specified. Using default values')
+            else:
+                logger.warning(f'{module_path}: Specified indexing directory {index} for {corpus} not found. Using default values')
+
+            index = '/indexdir'
+            if path.exists(index):
+                logger.info(f'{module_path}: Default indexing directory found. Using index in directory {index}')
+            else:
+                logger.info(f'{module_path}: No default indexing directory found. Generating index with default settings')
+                ix = Indexing(corpus_path=corpus)
+                ix.indexing(index_path=index)
+                del ix
+                logger.info(f'{module_path}: Index {index} generated')
+        else:
+            logger.info(f'{module_path}: Specified indexing directory {index} for {corpus} found')
+
+        if dictionary is None or not path.exists(dictionary):
+            if dictionary is None:
+                logger.info(f'{module_path}: Dictionary file for {corpus} not specified. Using default values')
+            else:
+                logger.warning(f'{module_path}: Specified dictionary file {dictionary} for {corpus} not found. Using default values')
+
+            dictionary = 'dictTotal.npy'
+            if path.exists(dictionary):
+                logger.info(f'{module_path}: Dictionary file with default name found. Using dictionary file {dictionary}')
+            else:
+                logger.info(f'{module_path}: No dictionary file with default value found. Generating dictionary with default settings')
+                create_dictionary(corpus, dictionary_name=dictionary, dictionary_save=True)
+                logger.info(f'{module_path}: Dictionary file {dictionary} generated')
+        else:
+            logger.info(f'{module_path}: Specified dictionary {dictionary} for {corpus} found')
 
         self.embeddings = Magnitude(embeddings, _number_of_values=k, stream=stream, lazy_loading=lazy_loading)
         self.f_distribution = FreqDist()
         self.corpus = corpus
-        self.index = index_path
-        self.dictionary = dictionary_path
+        self.index = index
+        self.dictionary = dictionary
         self.occurrence_corpus = occurrence_corpus
 
     def relation_expansion(self,

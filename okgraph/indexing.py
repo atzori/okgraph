@@ -5,7 +5,7 @@ from whoosh import index
 from whoosh.fields import Schema, TEXT
 from okgraph.logger import logger
 
-module_path = str.upper(__name__).replace('OKGRAPH.', '')
+module_path = str.upper(__name__).replace("OKGRAPH.", "")
 
 
 class Indexing:
@@ -20,12 +20,12 @@ class Indexing:
     """
 
     # Schema fields
-    FIELD_TITLE = 'title'
-    FIELD_CONTENT = 'content'
+    FIELD_TITLE = "title"
+    FIELD_CONTENT = "content"
 
     def __init__(self, corpus_path: str):
         """
-        Define an "Indexing" object with a reference to the corpus and the documents storing schema.
+        Define an 'Indexing' object with a reference to the corpus and the documents storing schema.
         :param corpus_path: path (with name) of the text corpus
         QSTN: index_path could be a valid attribute of the object, not a parameter of indexing
         """
@@ -41,12 +41,12 @@ class Indexing:
         """
         return self.corpus_path.__str__()
 
-    def indexing(self, index_path: str = 'indexdir') -> None:
+    def indexing(self, index_path: str = "indexdir") -> None:
         """
         Starts the indexing process.
         :param index_path: path in which the documents will be stored
         """
-        logger.info(f'{module_path}: Start documents indexing in corpus')
+        logger.info(f"{module_path}: Start documents indexing in corpus")
 
         # Indexing parameters
         document_overlay = 20  # Number of words shared between two documents
@@ -90,12 +90,12 @@ class Indexing:
                     log_count += 1
 
                     if log_count == 1:
-                        logger.info(f'{module_path}: Indexing document number: {document_count}')
+                        logger.info(f"{module_path}: Indexing document number: {document_count}")
                     if log_count == log_frequency:
                         log_count = 0
 
                     # Convert the temporary list of words, representing the document, into plain text
-                    document_content = ' '.join(map(str, document_list))
+                    document_content = " ".join(map(str, document_list))
                     # Index the document content using the document index as its title
                     writer.add_document(title=str(hex(document_index)), content=document_content)
 
@@ -105,15 +105,15 @@ class Indexing:
 
                     # If the limit has been reached, commit the changes and start saving the next documents into a new file
                     if document_index == document_count_limit:
-                        logger.info(f'{module_path}: Limit of {document_count_limit} document reached: committing changes')
+                        logger.info(f"{module_path}: Limit of {document_count_limit} document reached: committing changes")
                         writer.commit()
                         ix = index.open_dir(index_path)
                         writer = ix.writer()
                         document_index = 0
 
             if document_count != 0:
-                logger.info(f'{module_path}: Indexed last document with number: {document_count}')
-                logger.info(f'{module_path}: Committing')
+                logger.info(f"{module_path}: Indexed last document with number: {document_count}")
+                logger.info(f"{module_path}: Committing")
                 writer.commit()
 
-            logger.info(f'{module_path}: Ended documents indexing in corpus')
+            logger.info(f"{module_path}: Ended documents indexing in corpus")

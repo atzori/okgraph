@@ -4,7 +4,7 @@ import re
 import string
 from okgraph.logger import logger
 
-module_path = str.upper(__name__).replace('OKGRAPH.', '')
+module_path = str.upper(__name__).replace("OKGRAPH.", "")
 
 
 def get_words(file_path: str):
@@ -17,7 +17,7 @@ def get_words(file_path: str):
     regex = re.compile('[%s]' % re.escape(string.punctuation))
 
     # Read the file line by line and extract all the words
-    with open(file_path) as file_path:
+    with open(file_path, encoding="utf-8") as file_path:
         for line in file_path:
             line = regex.sub(' ', line)
             words = line.lower().split()
@@ -26,7 +26,7 @@ def get_words(file_path: str):
                 yield w
 
 
-def create_dictionary(corpus: str, dictionary_name: str = 'dictTotal.npy', dictionary_save: bool = True):
+def create_dictionary(corpus: str, dictionary_name: str = "dictTotal.npy", dictionary_save: bool = True):
     """
     Creates a dictionary of the words in the file using the structure {word in file: occurrences of word in file}
     :param corpus: path of the corpus
@@ -37,7 +37,7 @@ def create_dictionary(corpus: str, dictionary_name: str = 'dictTotal.npy', dicti
     # Get all the words from the file
     words = get_words(corpus)
 
-    logger.info(f'{module_path}: Started dictionary creation')
+    logger.info(f"{module_path}: Started dictionary creation")
 
     # Create a dictionary of the type {word in file: occurrences of word in file}
     dictionary = {}
@@ -51,7 +51,7 @@ def create_dictionary(corpus: str, dictionary_name: str = 'dictTotal.npy', dicti
     if dictionary_save is True:
         np.save(dictionary_name, dictionary)
 
-    logger.info(f'{module_path}: Ended dictionary creation')
+    logger.info(f"{module_path}: Ended dictionary creation")
 
     # Return the created dictionary
     return dictionary

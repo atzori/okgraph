@@ -21,18 +21,18 @@ def task(seed: [(str, str)], k: int, options: dict):
     :return: the new pairs of words
     """
     # Get the task parameters
-    embeddings: Magnitude = options.get('embeddings')
-    relation_labeling_algo: str = options.get('relation_labeling_algo')
-    relation_labeling_options: dict = options.get('relation_labeling_options')
-    relation_labeling_k: int = options.get('relation_labeling_k')
-    set_expansion_algo: str = options.get('set_expansion_algo')
-    set_expansion_options: dict = options.get('set_expansion_options')
-    set_expansion_k: int = options.get('set_expansion_k')
+    embeddings: Magnitude = options.get("embeddings")
+    relation_labeling_algo: str = options.get("relation_labeling_algo")
+    relation_labeling_options: dict = options.get("relation_labeling_options")
+    relation_labeling_k: int = options.get("relation_labeling_k")
+    set_expansion_algo: str = options.get("set_expansion_algo")
+    set_expansion_options: dict = options.get("set_expansion_options")
+    set_expansion_k: int = options.get("set_expansion_k")
 
     # Import the algorithms for set expansion and relation labeling
-    relation_labeling_package = algorithms_package + '.relation_labeling.' + relation_labeling_algo
+    relation_labeling_package = algorithms_package + ".relation_labeling." + relation_labeling_algo
     relation_labeling_algorithm = getattr(__import__(relation_labeling_package, fromlist=[relation_labeling_algo]), relation_labeling_algo)
-    set_expansion_package = algorithms_package + '.set_expansion.' + set_expansion_algo
+    set_expansion_package = algorithms_package + ".set_expansion." + set_expansion_algo
     set_expansion_algorithm = getattr(__import__(set_expansion_package, fromlist=[set_expansion_algo]), set_expansion_algo)
 
     # Get the seed labels

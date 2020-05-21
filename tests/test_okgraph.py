@@ -5,171 +5,309 @@ import os
 from pymagnitude import Magnitude
 from okgraph.logger import logger
 
+module_path = str.upper(__name__).replace("OKGRAPH.", "")
 cwd = os.getcwd()
-logger.info(f'Current working directory is {cwd}')
 
-module_path = str.upper(__name__).replace('OKGRAPH.', '')
-corpus_file_path = cwd + '/tests/data/text8'
-embeddings_file_path = cwd + '/tests/data/text8.magnitude'
-indexing_folder = cwd + '/tests/data/indexdir/text8'
-dict_total = cwd + '/tests/data/dictTotal.npy'
-#embeddings_file_path = cwd + '/tests/data/GoogleNews-vectors-negative300.magnitude'
+logger.info(f"{module_path}: Current working directory is {cwd}")
+
+corpus_file = "text8"
+(corpus_name, corpus_extension) = os.path.splitext(corpus_file)
+data_path = os.path.join(cwd, "data", corpus_name)
+test_corpus_file = os.path.join(data_path, corpus_file)
+test_embeddings_file = os.path.join(data_path, corpus_name + "_vmodel.magnitude")
+test_default_embeddings_file = os.path.join(data_path, corpus_name + ".magnitude")
+test_indexing_folder = os.path.join(data_path, corpus_name + "_indexdir")
+test_default_indexing_folder = os.path.join(data_path, "indexdir")
+test_dictionary_file = os.path.join(data_path, corpus_name + "_dict.npy")
+test_default_dictionary_file = os.path.join(data_path, "dictTotal.npy")
 
 
 class OKGraphTest(unittest.TestCase):
 
-    def test_01_init_with_textgz(self):
-        """ create a magnitude file if not exists and not passed as argument"""
-        magnitude_file = corpus_file_path + '.magnitude'
-        if os.path.exists(magnitude_file):
-            os.remove(magnitude_file)
-        self.assertFalse(os.path.exists(magnitude_file))
-        okg = okgraph.OKgraph(corpus=corpus_file_path, dictionary=dict_total, index=indexing_folder)
-        self.assertTrue(os.path.exists(magnitude_file))
-        self.assertIsInstance(okg.embeddings, Magnitude)
-        self.assertIsInstance(okg.corpus, str)
+    def test_core_init_from_scratch_with_default(self):
+        """
+        Tests the initialization of an OKgraph object from a given corpus using default parameters. Tests the corpus
+         processing routines setting force_init to True if any of the embeddings, index or dictionary already exists.
+        """
+        # Check the existence of the corpus
+        self.assertTrue(os.path.exists(test_corpus_file),
+                        msg=f"The corpus file {test_corpus_file} should exists")
+
+        # Force the data processing
+        if os.path.exists(test_embeddings_file)\
+                or os.path.exists(test_indexing_folder)\
+                or os.path.exists(test_dictionary_file):
+            force_init = True
+        else:
+            force_init = False
+
+        # Creates the OKgraph object along with the embeddings, indexes and dictionary
+        okg = okgraph.OKgraph(corpus=test_corpus_file,
+                              force_init=force_init)
+
+        # Check the existence of the files
+        self.assertTrue(os.path.exists(test_default_embeddings_file),
+                        msg=f"The embeddings file {test_default_embeddings_file} should exists")
+        self.assertTrue(os.path.exists(test_default_indexing_folder),
+                        msg=f"The indexing folder {test_default_indexing_folder} should exists")
+        self.assertTrue(os.path.exists(test_default_dictionary_file),
+                        msg=f"The dictionary file {test_default_dictionary_file} should exists")
+        # Check the types of the OKgraph object attributes
+        self.assertIsInstance(okg.corpus, str,
+                              msg=f"The corpus should be a string indicating the name of the corpus file")
+        self.assertIsInstance(okg.embeddings, Magnitude,
+                              msg=f"The embeddings should be a Magnitude object")
         self.assertGreater(len(okg.embeddings), 0)
+        self.assertIsInstance(okg.index, str,
+                              msg=f"The index should be a string indicating the name of the index directory")
+        self.assertIsInstance(okg.dictionary, str,
+                              msg=f"The dictionary should be a string indicating the name of the dictionary file")
 
-    def test_02_init_model_exists_and_implicitly_passed(self):
-        """ uses an existing magnitude file if it is named <corpus>.magnitude even if not passed as argument"""
-        corpus_file = 'tests/data/text8'
-        magnitude_file = corpus_file + '.magnitude'
-        self.assertTrue(os.path.exists(magnitude_file))
-        modificationTime = os.path.getmtime(magnitude_file)
-        okg = okgraph.OKgraph(corpus=corpus_file_path, dictionary=dict_total, index=indexing_folder)
-        self.assertTrue(os.path.exists(magnitude_file))
-        self.assertEqual(modificationTime, os.path.getmtime(magnitude_file))
-        self.assertIsInstance(okg.embeddings, Magnitude)
-        self.assertIsInstance(okg.corpus, str)
+    def test_core_init_from_scratch_with_parameters(self):
+        """
+        Tests the initialization of an OKgraph object from a given corpus using specific parameters for the embeddings,
+         index and dictionary. Tests the corpus processing routines setting force_init to True if any of the embeddings,
+         index or dictionary already exists.
+        """
+        # Check the existence of the corpus
+        self.assertTrue(os.path.exists(test_corpus_file),
+                        msg=f"The corpus file {test_corpus_file} should exists")
+
+        # Force the data processing
+        if os.path.exists(test_embeddings_file)\
+                or os.path.exists(test_indexing_folder)\
+                or os.path.exists(test_dictionary_file):
+            force_init = True
+        else:
+            force_init = False
+
+        # Creates the OKgraph object along with the embeddings, indexes and dictionary
+        okg = okgraph.OKgraph(corpus=test_corpus_file,
+                              embeddings=test_embeddings_file,
+                              index=test_indexing_folder,
+                              dictionary=test_dictionary_file,
+                              force_init=force_init)
+
+        # Check the existence of the files
+        self.assertTrue(os.path.exists(test_embeddings_file),
+                        msg=f"The embeddings file {test_embeddings_file} should exists")
+        self.assertTrue(os.path.exists(test_indexing_folder),
+                        msg=f"The indexing folder {test_indexing_folder} should exists")
+        self.assertTrue(os.path.exists(test_dictionary_file),
+                        msg=f"The dictionary file {test_dictionary_file} should exists")
+        # Check the types of the OKgraph object attributes
+        self.assertIsInstance(okg.corpus, str,
+                              msg=f"The corpus should be a string indicating the name of the corpus file")
+        self.assertIsInstance(okg.embeddings, Magnitude,
+                              msg=f"The embeddings should be a Magnitude object")
         self.assertGreater(len(okg.embeddings), 0)
+        self.assertIsInstance(okg.index, str,
+                              msg=f"The index should be a string indicating the name of the index directory")
+        self.assertIsInstance(okg.dictionary, str,
+                              msg=f"The dictionary should be a string indicating the name of the dictionary file")
 
+    def test_core_init_with_existent_processed_data(self):
+        """
+        Tests the initialization of an OKgraph object from a given corpus using specific parameters for the embeddings,
+         index and dictionary indicating existing processed data. Tests the possible errors with non existing corpus.
+        """
+        # Check the existence of the corpus
+        self.assertTrue(os.path.exists(test_corpus_file),
+                        msg=f"The corpus file {test_corpus_file} should exists")
 
-    def test_03_init_with_text_and_model(self):
-        """ check passing magnitude file as argument """
+        # Check the existence of the processed data
+        self.assertTrue(os.path.exists(test_embeddings_file),
+                        msg=f"The embeddings file {test_embeddings_file} should exists")
+        self.assertTrue(os.path.exists(test_indexing_folder),
+                        msg=f"The indexing folder {test_indexing_folder} should exists")
+        self.assertTrue(os.path.exists(test_dictionary_file),
+                        msg=f"The dictionary file {test_dictionary_file} should exists")
 
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary=dict_total, index=indexing_folder)
-
-        self.assertIsInstance(okg.embeddings, Magnitude)
-        self.assertIsInstance(okg.corpus, str)
-
+        # Test non existing file/url
         with self.assertRaises(RuntimeError):
-            # test not existing file/url
-            okgraph.OKgraph(corpus='none', embeddings='fake/path')
-
+            okgraph.OKgraph(corpus="none", embeddings="fake/path")
         with self.assertRaises(RuntimeError):
-            okgraph.OKgraph(corpus='anotherNone', embeddings='http://not.available.org/path')
+            okgraph.OKgraph(corpus="another_none", embeddings="http://not.available.org/path")
 
-    def test_04_relation_expansion(self):
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary=dict_total, index=indexing_folder)
-        seed = [('rome', 'italy'), ('berlin', 'germany')]
-        k = 3
+        # Get the modification time of the data
+        embeddings_modification_time = os.path.getmtime(test_embeddings_file)
+        indexing_modification_time = os.path.getmtime(test_indexing_folder)
+        dictionary_modification_time = os.path.getmtime(test_dictionary_file)
 
-        options = {'relation_labeling_algo': 'intersection',
-                   'relation_labeling_options': {'dictionary': okg.dictionary, 'index': okg.index},
-                   'relation_labeling_k': 15,
-                   'set_expansion_algo': 'centroid',
-                   'set_expansion_options': {'embeddings': okg.embeddings},
-                   'set_expansion_k': 15
+        # Creates the OKgraph object along with the embeddings, indexes and dictionary
+        okg = okgraph.OKgraph(corpus=test_corpus_file,
+                              embeddings=test_embeddings_file,
+                              index=test_indexing_folder,
+                              dictionary=test_dictionary_file)
+
+        # Check the modification time of the data: it should not be changed
+        self.assertEqual(embeddings_modification_time, os.path.getmtime(test_embeddings_file),
+                         msg=f"The embeddings has been modified")
+        self.assertEqual(indexing_modification_time, os.path.getmtime(test_indexing_folder),
+                         msg=f"The indexing folder has been modified")
+        self.assertEqual(dictionary_modification_time, os.path.getmtime(test_dictionary_file),
+                         msg=f"The dictionary file has been modified")
+        # Check the types of the OKgraph object attributes
+        self.assertIsInstance(okg.corpus, str,
+                              msg=f"The corpus should be a string indicating the name of the corpus file")
+        self.assertIsInstance(okg.embeddings, Magnitude,
+                              msg=f"The embeddings should be a Magnitude object")
+        self.assertGreater(len(okg.embeddings), 0)
+        self.assertIsInstance(okg.index, str,
+                              msg=f"The index should be a string indicating the name of the index directory")
+        self.assertIsInstance(okg.dictionary, str,
+                              msg=f"The dictionary should be a string indicating the name of the dictionary file")
+
+    def test_task_relation_expansion_intersection(self):
+        """
+        Tests the relation expansion task using the intersection algorithm.
+        Uses an OKgraph object with default values.
+        """
+        okg = okgraph.OKgraph(corpus=test_corpus_file)
+        seed = [("rome", "italy"), ("berlin", "germany")]
+        k = 15
+        options = {"relation_labeling_algo": "intersection",
+                   "relation_labeling_options": {"dictionary": okg.dictionary, "index": okg.index},
+                   "relation_labeling_k": 15,
+                   "set_expansion_algo": "centroid",
+                   "set_expansion_options": {"embeddings": okg.embeddings},
+                   "set_expansion_k": 15
                    }
+        results = okg.relation_expansion(seed, k, "intersection", options)
+
+        self.assertIsInstance(results, list,
+                              msg=f"The return value of the task should be a list")
+        self.assertGreater(len(results), 0,
+                           msg=f"No results obtained from the algorithm")
+        self.assertLessEqual(len(results), k,
+                           msg=f"The limit of {k} results has been passed")
+        for r_tuple in results:
+            self.assertIsInstance(r_tuple, tuple,
+                                  msg=f"The return value of the task should be a list of tuples")
+            for r_elements in r_tuple:
+                self.assertIsInstance(r_elements, str,
+                                      msg=f"The return value of the task should be a list of tuples of strings")
+
+        logger.info(f"{module_path}: Expansion of {seed} is {results}")
+
+
+    def test_task_relation_expansion_centroid(self):
         """
-        options = {'embeddings': okg.embeddings,
-                   'relation_labeling_algo': 'intersection',
-                   'relation_labeling_options': {'dictionary': okg.dictionary, 'index': okg.index},
-                   'relation_labeling_k': 15,
-                   'set_expansion_algo': 'centroid',
-                   'set_expansion_options': {'embeddings': okg.embeddings},
-                   'set_expansion_k': 15
+        Tests the relation expansion task using the centroid algorithm.
+        Uses an OKgraph object with default values.
+        """
+        okg = okgraph.OKgraph(corpus=test_corpus_file)
+        seed = [("rome", "italy"), ("berlin", "germany")]
+        k = 15
+        options = {"embeddings": okg.embeddings,
+                   "relation_labeling_algo": "intersection",
+                   "relation_labeling_options": {"dictionary": okg.dictionary, "index": okg.index},
+                   "relation_labeling_k": 15,
+                   "set_expansion_algo": "centroid",
+                   "set_expansion_options": {"embeddings": okg.embeddings},
+                   "set_expansion_k": 15
                    }
+        results = okg.relation_expansion(seed, k, "centroid", options)
+
+        self.assertIsInstance(results, list,
+                              msg=f"The return value of the task should be a list")
+        self.assertGreater(len(results), 0,
+                           msg=f"No results obtained from the algorithm")
+        self.assertLessEqual(len(results), k,
+                           msg=f"The limit of {k} results has been passed")
+        for r_tuple in results:
+            self.assertIsInstance(r_tuple, tuple,
+                                  msg=f"The return value of the task should be a list of tuples")
+            for r_elements in r_tuple:
+                self.assertIsInstance(r_elements, str,
+                                      msg=f"The return value of the task should be a list of tuples of strings")
+
+        logger.info(f"{module_path}: Expansion of {seed} is {results}")
+
+    def test_task_relation_labeling_intersection(self):
         """
-
-        expansion = okg.relation_expansion(seed, k, 'intersection', options)
-
-        print('Expansion of {seed} is {expansion}'.format(seed=seed, expansion=expansion))
-
-    def test_05_relation_labeling(self):
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary=dict_total, index=indexing_folder)
-        seed = [('rome', 'italy'), ('berlin', 'germany')]
-        k = 15
-        options = {'dictionary': okg.dictionary,
-                   'index': okg.index}
-
-        sliding_windows = []
-        for pair in seed:
-            sliding_windows.append(SlidingWindows(target_words=[pair[0], pair[1]], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index))
-            result = list(sliding_windows[-1].results_dict.keys())[:k]
-            print('Pair {pair} produced result {result}'.format(pair=pair, result=result))
-            self.assertTrue(len(sliding_windows[0].results_dict) > 0,
-                            msg='windows one between {f} and {s} is not empty'.format(f=pair[0], s=pair[1]))
-
-        intersection = okg.relation_labeling(seed, k, 'intersection', options)
-
-        print('Labels describing the pairs of words: {labels}'.format(labels=intersection))
-
-        self.assertTrue(len(intersection) != 0)
-
-    def test_06_set_expansion(self):
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary=dict_total, index=indexing_folder)
-
+        Tests the relation labeling task using the intersection algorithm.
+        Uses an OKgraph object with default values.
         """
-        Test set expansion algorithm "centroid"
+        okg = okgraph.OKgraph(corpus=test_corpus_file)
+        seed = [("rome", "italy"), ("berlin", "germany")]
+        k = 15
+        options = {"dictionary": okg.dictionary,
+                   "index": okg.index}
+        results = okg.relation_labeling(seed, k, "intersection", options)
+
+        self.assertIsInstance(results, list,
+                              msg=f"The return value of the task should be a list")
+        self.assertGreater(len(results), 0,
+                           msg=f"No results obtained from the algorithm")
+        self.assertLessEqual(len(results), k,
+                           msg=f"The limit of {k} results has been passed")
+        for r_label in results:
+            self.assertIsInstance(r_label, str,
+                                  msg=f"The return value of the task should be a list strings")
+
+        logger.info(f"{module_path}: Labels of {seed} are {results}")
+
+    def test_task_set_expansion_centroid(self):
         """
-
-        seed_1 = ['milan', 'rome', 'turin']
-        seed_2 = ['home', 'house', 'apartment']
+        Tests the set expansion task using the centroid algorithm.
+        Uses an OKgraph object with default values.
+        """
+        okg = okgraph.OKgraph(corpus=test_corpus_file)
+        seed_1 = ["milan", "rome", "turin"]
+        seed_2 = ["home", "house", "apartment"]
         k = 15
-        options = {'embeddings': okg.embeddings}
+        options = {"embeddings": okg.embeddings}
 
-        result_1 = okg.set_expansion(seed_1, k, 'centroid', options)
+        results_1 = okg.set_expansion(seed_1, k, "centroid", options)
+        results_2 = okg.set_expansion(seed_2, k, "centroid", options)
 
-        result_2 = okg.set_expansion(seed_2, k, 'centroid', options)
+        self.assertIsInstance(results_1, list,
+                              msg=f"The return value of the task should be a list")
+        self.assertIsInstance(results_2, list,
+                              msg=f"The return value of the task should be a list")
+        self.assertGreater(len(results_1), 0,
+                           msg=f"No results obtained from the algorithm for the seed {seed_1}")
+        self.assertGreater(len(results_2), 0,
+                           msg=f"No results obtained from the algorithm for the seed {seed_2}")
+        self.assertLessEqual(len(results_1), k,
+                           msg=f"The limit of {k} results has been passed for the seed {seed_1}")
+        self.assertLessEqual(len(results_2), k,
+                           msg=f"The limit of {k} results has been passed for the seed {seed_2}")
+        for r_word in results_1+results_2:
+            self.assertIsInstance(r_word, str,
+                                  msg=f"The return value of the task should be a list of strings")
 
-        intersection = set(result_1) & set(result_2)
+        logger.info(f"{module_path}: Expansion of {seed_1} is {results_1}")
+        logger.info(f"{module_path}: Expansion of {seed_2} is {results_2}")
 
-        print(result_1)
-        print(result_2)
-
-        self.assertTrue(len(intersection) == 0,
-                        msg="intersection of different seeds must be empty")
-
-        self.assertTrue(len(result_1) <= k,
-                        msg="the expansion can't contain more than 'k' elements")
-
-    def test_07_set_labeling(self):
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary=dict_total, index=indexing_folder)
-        seed = ['milan', 'rome', 'turin']
+    def test_task_set_labeling_intersection(self):
+        """
+        Tests the set labeling task using the intersection algorithm.
+        Uses an OKgraph object with default values.
+        """
+        okg = okgraph.OKgraph(corpus=test_corpus_file)
+        seed = ["milan", "rome", "turin"]
         k = 15
-        options = {'dictionary': okg.dictionary,
-                   'index': okg.index}
-        sliding_windows = []
+        options = {"dictionary": okg.dictionary,
+                   "index": okg.index}
+        results = okg.set_labeling(seed, k, "intersection", options)
 
-        for word in seed:
-            sliding_windows.append(SlidingWindows(target_words=[word], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index))
-            result = list(sliding_windows[-1].results_dict.keys())[:k]
-            print('Word {word} produced result {result}'.format(word=word, result=result))
+        self.assertIsInstance(results, list,
+                              msg=f"The return value of the task should be a list")
+        self.assertGreater(len(results), 0,
+                           msg=f"No results obtained from the algorithm")
+        self.assertLessEqual(len(results), k,
+                           msg=f"The limit of {k} results has been passed")
+        for r_label in results:
+            self.assertIsInstance(r_label, str,
+                                  msg=f"The return value of the task should be a list strings")
 
-        intersection = okg.set_labeling(seed, k, 'intersection', options)
+        logger.info(f"{module_path}: Labels of {seed} are {results}")
 
-        print('Labels describing the words: {labels}'.format(labels=intersection))
-
-        self.assertTrue(len(intersection) != 0)
-
-    def test_08_sliding_windows(self):
-        okg = okgraph.OKgraph(corpus=corpus_file_path, embeddings=embeddings_file_path, dictionary=dict_total, index=indexing_folder)
-        seed = [('rome', 'italy'), ('berlin', 'germany')]
-        sliding_windows = []
-
-        for pair in seed:
-            sliding_windows.append(SlidingWindows(target_words=[pair[0], pair[1]], corpus_dictionary_path=okg.dictionary, corpus_index_path=okg.index))
-            result = list(sliding_windows[-1].results_dict.keys())
-            print('Pair {pair} produced result {result}'.format(pair=pair, result=result))
-            self.assertTrue(len(sliding_windows[0].results_dict) > 0,
-                            msg='windows one between {f} and {s} is not empty'.format(f=pair[0], s=pair[1]))
-
-        for sliding_window in sliding_windows:
-            print('Sliding window of target {target}'.format(target=sliding_window.target_words))
-            for key in sliding_window.results_dict:
-                print('{w:20s} TF-IDF={tf_idf:2.8f}, noise={noise:2.8f}'.format(w=key, tf_idf=sliding_window.tf_idf_dict.get(key), noise=sliding_window.noise_dict.get(key)))
+    def test_sliding_windows(self):
+        pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

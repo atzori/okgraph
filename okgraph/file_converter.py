@@ -4,7 +4,7 @@ from gensim.models.phrases import Phraser, Phrases
 from pymagnitude import converter
 from okgraph.logger import logger
 
-module_path = str.upper(__name__).replace('OKGRAPH.', '')
+module_path = str.upper(__name__).replace("OKGRAPH.", "")
 
 # Default parameters from pymagnitude converter
 DEFAULT_PRECISION = 7
@@ -24,25 +24,25 @@ class FileConverter:
 
         model = Word2Vec()
 
-        logger.info(f'{module_path}: Computing phrases')
+        logger.info(f"{module_path}: Computing phrases")
         phrases = Phrases(LineSentence(corpus_fname))
 
-        logger.info(f'{module_path}: Generating bigram')
+        logger.info(f"{module_path}: Generating bigram")
         bigram = Phraser(phrases)
 
-        logger.info(f'{module_path}: Building vocabulary')
+        logger.info(f"{module_path}: Building vocabulary")
         model.build_vocab(bigram[LineSentence(corpus_fname)])
 
-        logger.info(f'{module_path}: Training model with total_examples={model.corpus_count} and epochs={model.epochs}')
+        logger.info(f"{module_path}: Training model with total_examples={model.corpus_count} and epochs={model.epochs}")
         model.train(bigram[LineSentence(corpus_fname)], total_examples=model.corpus_count, epochs=model.epochs)
 
         if save_fname is None:
-            save_fname = corpus_fname + '.bin'
-            logger.info(f'{module_path}: Save file name not specified. Using default save file named {save_fname}')
+            save_fname = corpus_fname + ".bin"
+            logger.info(f"{module_path}: Save file name not specified. Using default save file named {save_fname}")
 
-        logger.info(f'{module_path}: Saving... {save_fname}')
+        logger.info(f"{module_path}: Saving... {save_fname}")
         model.wv.save_word2vec_format(save_fname, binary=True)
-        logger.info(f'{module_path}: Saved {save_fname}')
+        logger.info(f"{module_path}: Saved {save_fname}")
 
         return save_fname
 
@@ -54,12 +54,12 @@ class FileConverter:
         :return: the model name
         """
 
-        logger.info(f'{module_path}: Computing file {corpus_fname}')
+        logger.info(f"{module_path}: Computing file {corpus_fname}")
 
         if save_fname is None:
-            save_fname = corpus_fname + '.magnitude'
+            save_fname = corpus_fname + ".magnitude"
 
-        gensim_model_fname = corpus_fname + '.bin'
+        gensim_model_fname = corpus_fname + ".bin"
 
         FileConverter.corpus_to_gensim_model(corpus_fname, gensim_model_fname)
 
@@ -73,6 +73,6 @@ class FileConverter:
                           approx_trees=None,
                           vocab_path=None)
 
-        logger.info(f'{module_path}: Saved {save_fname}')
+        logger.info(f"{module_path}: Saved {save_fname}")
 
         return save_fname

@@ -1,25 +1,25 @@
 import unittest
 import okgraph
-from okgraph.sliding_windows import SlidingWindows
 import os
+from os import path
 from pymagnitude import Magnitude
 from okgraph.logger import logger
 
 module_path = str.upper(__name__).replace("OKGRAPH.", "")
-cwd = os.getcwd()
+cwd = path.normpath(os.getcwd())
 
 logger.info(f"{module_path}: Current working directory is {cwd}")
 
-corpus_file = "text8"
-(corpus_name, corpus_extension) = os.path.splitext(corpus_file)
-data_path = os.path.join(cwd, "data", corpus_name)
-test_corpus_file = os.path.join(data_path, corpus_file)
-test_embeddings_file = os.path.join(data_path, corpus_name + "_vmodel.magnitude")
-test_default_embeddings_file = os.path.join(data_path, corpus_name + ".magnitude")
-test_indexing_folder = os.path.join(data_path, corpus_name + "_indexdir")
-test_default_indexing_folder = os.path.join(data_path, "indexdir")
-test_dictionary_file = os.path.join(data_path, corpus_name + "_dict.npy")
-test_default_dictionary_file = os.path.join(data_path, "dictTotal.npy")
+corpus_file = "text9"
+(corpus_name, corpus_extension) = path.splitext(corpus_file)
+data_path = path.join(cwd, "data", corpus_name)
+test_corpus_file = path.join(data_path, corpus_file)
+test_embeddings_file = path.join(data_path, corpus_name + "_vmodel.magnitude")
+test_default_embeddings_file = path.join(data_path, corpus_name + ".magnitude")
+test_indexing_folder = path.join(data_path, corpus_name + "_indexdir")
+test_default_indexing_folder = path.join(data_path, "indexdir")
+test_dictionary_file = path.join(data_path, corpus_name + "_dict.npy")
+test_default_dictionary_file = path.join(data_path, "dictTotal.npy")
 
 
 class OKGraphTest(unittest.TestCase):
@@ -30,13 +30,13 @@ class OKGraphTest(unittest.TestCase):
          processing routines setting force_init to True if any of the embeddings, index or dictionary already exists.
         """
         # Check the existence of the corpus
-        self.assertTrue(os.path.exists(test_corpus_file),
+        self.assertTrue(path.exists(test_corpus_file),
                         msg=f"The corpus file {test_corpus_file} should exists")
 
         # Force the data processing
-        if os.path.exists(test_embeddings_file)\
-                or os.path.exists(test_indexing_folder)\
-                or os.path.exists(test_dictionary_file):
+        if path.exists(test_default_embeddings_file)\
+                or path.exists(test_default_indexing_folder)\
+                or path.exists(test_default_dictionary_file):
             force_init = True
         else:
             force_init = False
@@ -46,11 +46,11 @@ class OKGraphTest(unittest.TestCase):
                               force_init=force_init)
 
         # Check the existence of the files
-        self.assertTrue(os.path.exists(test_default_embeddings_file),
+        self.assertTrue(path.exists(test_default_embeddings_file),
                         msg=f"The embeddings file {test_default_embeddings_file} should exists")
-        self.assertTrue(os.path.exists(test_default_indexing_folder),
+        self.assertTrue(path.exists(test_default_indexing_folder),
                         msg=f"The indexing folder {test_default_indexing_folder} should exists")
-        self.assertTrue(os.path.exists(test_default_dictionary_file),
+        self.assertTrue(path.exists(test_default_dictionary_file),
                         msg=f"The dictionary file {test_default_dictionary_file} should exists")
         # Check the types of the OKgraph object attributes
         self.assertIsInstance(okg.corpus, str,
@@ -70,13 +70,13 @@ class OKGraphTest(unittest.TestCase):
          index or dictionary already exists.
         """
         # Check the existence of the corpus
-        self.assertTrue(os.path.exists(test_corpus_file),
+        self.assertTrue(path.exists(test_corpus_file),
                         msg=f"The corpus file {test_corpus_file} should exists")
 
         # Force the data processing
-        if os.path.exists(test_embeddings_file)\
-                or os.path.exists(test_indexing_folder)\
-                or os.path.exists(test_dictionary_file):
+        if path.exists(test_embeddings_file)\
+                or path.exists(test_indexing_folder)\
+                or path.exists(test_dictionary_file):
             force_init = True
         else:
             force_init = False
@@ -89,11 +89,11 @@ class OKGraphTest(unittest.TestCase):
                               force_init=force_init)
 
         # Check the existence of the files
-        self.assertTrue(os.path.exists(test_embeddings_file),
+        self.assertTrue(path.exists(test_embeddings_file),
                         msg=f"The embeddings file {test_embeddings_file} should exists")
-        self.assertTrue(os.path.exists(test_indexing_folder),
+        self.assertTrue(path.exists(test_indexing_folder),
                         msg=f"The indexing folder {test_indexing_folder} should exists")
-        self.assertTrue(os.path.exists(test_dictionary_file),
+        self.assertTrue(path.exists(test_dictionary_file),
                         msg=f"The dictionary file {test_dictionary_file} should exists")
         # Check the types of the OKgraph object attributes
         self.assertIsInstance(okg.corpus, str,
@@ -112,15 +112,15 @@ class OKGraphTest(unittest.TestCase):
          index and dictionary indicating existing processed data. Tests the possible errors with non existing corpus.
         """
         # Check the existence of the corpus
-        self.assertTrue(os.path.exists(test_corpus_file),
+        self.assertTrue(path.exists(test_corpus_file),
                         msg=f"The corpus file {test_corpus_file} should exists")
 
         # Check the existence of the processed data
-        self.assertTrue(os.path.exists(test_embeddings_file),
+        self.assertTrue(path.exists(test_embeddings_file),
                         msg=f"The embeddings file {test_embeddings_file} should exists")
-        self.assertTrue(os.path.exists(test_indexing_folder),
+        self.assertTrue(path.exists(test_indexing_folder),
                         msg=f"The indexing folder {test_indexing_folder} should exists")
-        self.assertTrue(os.path.exists(test_dictionary_file),
+        self.assertTrue(path.exists(test_dictionary_file),
                         msg=f"The dictionary file {test_dictionary_file} should exists")
 
         # Test non existing file/url
@@ -130,9 +130,9 @@ class OKGraphTest(unittest.TestCase):
             okgraph.OKgraph(corpus="another_none", embeddings="http://not.available.org/path")
 
         # Get the modification time of the data
-        embeddings_modification_time = os.path.getmtime(test_embeddings_file)
-        indexing_modification_time = os.path.getmtime(test_indexing_folder)
-        dictionary_modification_time = os.path.getmtime(test_dictionary_file)
+        embeddings_modification_time = path.getmtime(test_embeddings_file)
+        indexing_modification_time = path.getmtime(test_indexing_folder)
+        dictionary_modification_time = path.getmtime(test_dictionary_file)
 
         # Creates the OKgraph object along with the embeddings, indexes and dictionary
         okg = okgraph.OKgraph(corpus=test_corpus_file,
@@ -141,11 +141,11 @@ class OKGraphTest(unittest.TestCase):
                               dictionary=test_dictionary_file)
 
         # Check the modification time of the data: it should not be changed
-        self.assertEqual(embeddings_modification_time, os.path.getmtime(test_embeddings_file),
+        self.assertEqual(embeddings_modification_time, path.getmtime(test_embeddings_file),
                          msg=f"The embeddings has been modified")
-        self.assertEqual(indexing_modification_time, os.path.getmtime(test_indexing_folder),
+        self.assertEqual(indexing_modification_time, path.getmtime(test_indexing_folder),
                          msg=f"The indexing folder has been modified")
-        self.assertEqual(dictionary_modification_time, os.path.getmtime(test_dictionary_file),
+        self.assertEqual(dictionary_modification_time, path.getmtime(test_dictionary_file),
                          msg=f"The dictionary file has been modified")
         # Check the types of the OKgraph object attributes
         self.assertIsInstance(okg.corpus, str,
@@ -230,23 +230,26 @@ class OKGraphTest(unittest.TestCase):
         Uses an OKgraph object with default values.
         """
         okg = okgraph.OKgraph(corpus=test_corpus_file)
-        seed = [("rome", "italy"), ("berlin", "germany")]
+        b_seed = [("rome", "italy"), ("berlin", "germany")]
+        t_seed = [("rome", "berlin", "tokyo")]
         k = 15
         options = {"dictionary": okg.dictionary,
                    "index": okg.index}
-        results = okg.relation_labeling(seed, k, "intersection", options)
+        b_results = okg.relation_labeling(b_seed, k, "intersection", options)
+        t_results = okg.relation_labeling(t_seed, k, "intersection", options)
 
-        self.assertIsInstance(results, list,
+        self.assertIsInstance(b_results, list,
                               msg=f"The return value of the task should be a list")
-        self.assertGreater(len(results), 0,
+        self.assertGreater(len(b_results), 0,
                            msg=f"No results obtained from the algorithm")
-        self.assertLessEqual(len(results), k,
+        self.assertLessEqual(len(b_results), k,
                            msg=f"The limit of {k} results has been passed")
-        for r_label in results:
+        for r_label in b_results:
             self.assertIsInstance(r_label, str,
                                   msg=f"The return value of the task should be a list strings")
 
-        logger.info(f"{module_path}: Labels of {seed} are {results}")
+        logger.info(f"{module_path}: Labels of {b_seed} are {b_results}")
+        logger.info(f"{module_path}: Labels of {t_seed} are {t_results}")
 
     def test_task_set_expansion_centroid(self):
         """

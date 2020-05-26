@@ -22,10 +22,10 @@ def task(seed: [str], k: int, options: dict):
     dictionary: str = options.get("dictionary")
     index: str = options.get("index")
 
-    # Get the SlidingWindow of every pair of words
+    # Get the SlidingWindows of every word
     logger.debug(f"{module_path}: Start windowing of every word in the seed")
     sliding_windows = \
-        [SlidingWindows([word], corpus_dictionary_path=dictionary, corpus_index_path=index) for word in seed]
+        [SlidingWindows((word,), corpus_dictionary_path=dictionary, corpus_index_path=index) for word in seed]
 
     # Get the labels of every pair of words from the related SlidingWindows objects
     logger.debug(f"{module_path}: Get the labels from every window")

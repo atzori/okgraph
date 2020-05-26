@@ -7,6 +7,10 @@ from okgraph.logger import logger
 
 module_path = str.upper(__name__).replace("OKGRAPH.", "")
 
+# Schema fields
+FIELD_TITLE = "title"
+FIELD_CONTENT = "content"
+
 
 class Indexing:
     """
@@ -18,10 +22,6 @@ class Indexing:
         corpus_path: path of the file (text corpus)
         schema: schema (whoosh Schema) used to represent a document: (title (text ID): content (text))
     """
-
-    # Schema fields
-    FIELD_TITLE = "title"
-    FIELD_CONTENT = "content"
 
     def __init__(self, corpus_path: str):
         """
@@ -41,16 +41,26 @@ class Indexing:
         """
         return self.corpus_path.__str__()
 
-    def indexing(self, index_path: str = "indexdir") -> None:
+    def indexing(self,
+                 index_path: str = "indexdir",
+                 document_overlay: int = 20,
+                 document_center: int = 40
+                 ) -> None:
         """
         Starts the indexing process.
         :param index_path: path in which the documents will be stored
+        :param document_overlay: number of words shared between two documents. This value should be greater than the
+                                 expected maximum size of the windows created trough the SlidingWindows objects
+        :param document_center: number of words at the center of the document, not shared
         """
+        if document_overlay <= 0:
+            raise ValueError(f"document_overlay can't be negative or zero")
+        if document_center <= 0:
+            raise ValueError(f"document_center can't be negative or zero")
+
         logger.info(f"{module_path}: Start documents indexing in corpus")
 
         # Indexing parameters
-        document_overlay = 20  # Number of words shared between two documents
-        document_center = 40  # Number of words at the center of the document, not shared
         document_size = document_center + 2 * document_overlay  # Total size of a document
 
         document_list = []  # List of words that defines a document
@@ -58,14 +68,13 @@ class Indexing:
         #  (first document has no left overlay: let the counter start like it had and it has been already processed)
         document_index = 0  # ID of the document being indexed and saved
         document_count = 0  # Counter for found documents
-        document_count_limit = 500000  # Max number of indexable and savable documents without committing
+        document_count_limit = 500000  # Max number of indexable documents without saving and committing
 
         log_count = 0  # Log counter for the found documents
         log_frequency = 10000  # Frequency of log messages in term of found documents
 
         # Create a new schema
-        # QSTN: A new Schema is created but never assigned to self.schema? Why doesn't it use the Schema in the object?
-        schema = Schema(title=TEXT(stored=True), content=TEXT(stored=True))
+        schema = self.schema
 
         # Index the corpus if there is no trace of an index in the specified path
         if not path.exists(index_path):

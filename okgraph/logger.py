@@ -1,3 +1,6 @@
+"""
+logger module documentation.
+"""
 import logging
 from logging.config import fileConfig
 from os import path

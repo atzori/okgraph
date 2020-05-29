@@ -16,8 +16,8 @@ class Indexing:
     """
     A class used to organize a corpus in sub-documents and allow faster searches of word occurrences into it.
     Every sub-document (or document) is a text window extracted from the corpus. All of the documents have the same
-     specified dimension and adjoining documents are partially overlaid. Every document has an unique title (ID) and a
-     content (the text contained in the window). All of the documents are stored and indexed.
+    specified dimension and adjoining documents are partially overlaid. Every document has an unique title (ID) and a
+    content (the text contained in the window). All of the documents are stored and indexed.
     Attributes:
         corpus_path: path of the file (text corpus)
         schema: schema (whoosh Schema) used to represent a document: (title (text ID): content (text))

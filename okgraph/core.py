@@ -1,3 +1,6 @@
+"""
+TRYDOC: The core module contains the library main functionalities.
+"""
 from pymagnitude import Magnitude
 from okgraph.file_converter import FileConverter
 import os

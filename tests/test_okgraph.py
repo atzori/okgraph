@@ -1,14 +1,14 @@
 import unittest
-import okgraph
+from okgraph.core import OKgraph
 import os
 from os import path
 from pymagnitude import Magnitude
-from okgraph.logger import logger
+from okgraph.utils import logger
 
-module_path = str.upper(__name__).replace("OKGRAPH.", "")
+
 cwd = path.normpath(os.getcwd())
 
-logger.info(f"{module_path}: Current working directory is {cwd}")
+logger.info(f"Current working directory is {cwd}")
 
 corpus_file = "text9"
 (corpus_name, corpus_extension) = path.splitext(corpus_file)
@@ -42,7 +42,7 @@ class OKGraphTest(unittest.TestCase):
             force_init = False
 
         # Creates the OKgraph object along with the embeddings, indexes and dictionary
-        okg = okgraph.OKgraph(corpus=test_corpus_file,
+        okg = OKgraph(corpus=test_corpus_file,
                               force_init=force_init)
 
         # Check the existence of the files
@@ -82,7 +82,7 @@ class OKGraphTest(unittest.TestCase):
             force_init = False
 
         # Creates the OKgraph object along with the embeddings, indexes and dictionary
-        okg = okgraph.OKgraph(corpus=test_corpus_file,
+        okg = OKgraph(corpus=test_corpus_file,
                               embeddings=test_embeddings_file,
                               index=test_indexing_folder,
                               dictionary=test_dictionary_file,
@@ -125,9 +125,9 @@ class OKGraphTest(unittest.TestCase):
 
         # Test non existing file/url
         with self.assertRaises(RuntimeError):
-            okgraph.OKgraph(corpus="none", embeddings="fake/path")
+            OKgraph(corpus="none", embeddings="fake/path")
         with self.assertRaises(RuntimeError):
-            okgraph.OKgraph(corpus="another_none", embeddings="http://not.available.org/path")
+            OKgraph(corpus="another_none", embeddings="http://not.available.org/path")
 
         # Get the modification time of the data
         embeddings_modification_time = path.getmtime(test_embeddings_file)
@@ -135,7 +135,7 @@ class OKGraphTest(unittest.TestCase):
         dictionary_modification_time = path.getmtime(test_dictionary_file)
 
         # Creates the OKgraph object along with the embeddings, indexes and dictionary
-        okg = okgraph.OKgraph(corpus=test_corpus_file,
+        okg = OKgraph(corpus=test_corpus_file,
                               embeddings=test_embeddings_file,
                               index=test_indexing_folder,
                               dictionary=test_dictionary_file)
@@ -163,7 +163,7 @@ class OKGraphTest(unittest.TestCase):
         Tests the relation expansion task using the intersection algorithm.
         Uses an OKgraph object with default values.
         """
-        okg = okgraph.OKgraph(corpus=test_corpus_file)
+        okg = OKgraph(corpus=test_corpus_file)
         seed = [("rome", "italy"), ("berlin", "germany")]
         k = 15
         options = {"relation_labeling_algo": "intersection",
@@ -188,7 +188,7 @@ class OKGraphTest(unittest.TestCase):
                 self.assertIsInstance(r_elements, str,
                                       msg=f"The return value of the task should be a list of tuples of strings")
 
-        logger.info(f"{module_path}: Expansion of {seed} is {results}")
+        logger.info(f"Expansion of {seed} is {results}")
 
 
     def test_task_relation_expansion_centroid(self):
@@ -196,7 +196,7 @@ class OKGraphTest(unittest.TestCase):
         Tests the relation expansion task using the centroid algorithm.
         Uses an OKgraph object with default values.
         """
-        okg = okgraph.OKgraph(corpus=test_corpus_file)
+        okg = OKgraph(corpus=test_corpus_file)
         seed = [("rome", "italy"), ("berlin", "germany")]
         k = 15
         options = {"embeddings": okg.embeddings,
@@ -222,14 +222,14 @@ class OKGraphTest(unittest.TestCase):
                 self.assertIsInstance(r_elements, str,
                                       msg=f"The return value of the task should be a list of tuples of strings")
 
-        logger.info(f"{module_path}: Expansion of {seed} is {results}")
+        logger.info(f"Expansion of {seed} is {results}")
 
     def test_task_relation_labeling_intersection(self):
         """
         Tests the relation labeling task using the intersection algorithm.
         Uses an OKgraph object with default values.
         """
-        okg = okgraph.OKgraph(corpus=test_corpus_file)
+        okg = OKgraph(corpus=test_corpus_file)
         b_seed = [("rome", "italy"), ("berlin", "germany")]
         t_seed = [("rome", "berlin", "tokyo")]
         k = 15
@@ -248,15 +248,15 @@ class OKGraphTest(unittest.TestCase):
             self.assertIsInstance(r_label, str,
                                   msg=f"The return value of the task should be a list strings")
 
-        logger.info(f"{module_path}: Labels of {b_seed} are {b_results}")
-        logger.info(f"{module_path}: Labels of {t_seed} are {t_results}")
+        logger.info(f"Labels of {b_seed} are {b_results}")
+        logger.info(f"Labels of {t_seed} are {t_results}")
 
     def test_task_set_expansion_centroid(self):
         """
         Tests the set expansion task using the centroid algorithm.
         Uses an OKgraph object with default values.
         """
-        okg = okgraph.OKgraph(corpus=test_corpus_file)
+        okg = OKgraph(corpus=test_corpus_file)
         seed_1 = ["milan", "rome", "turin"]
         seed_2 = ["home", "house", "apartment"]
         k = 15
@@ -281,15 +281,87 @@ class OKGraphTest(unittest.TestCase):
             self.assertIsInstance(r_word, str,
                                   msg=f"The return value of the task should be a list of strings")
 
-        logger.info(f"{module_path}: Expansion of {seed_1} is {results_1}")
-        logger.info(f"{module_path}: Expansion of {seed_2} is {results_2}")
+        logger.info(f"Expansion of {seed_1} is {results_1}")
+        logger.info(f"Expansion of {seed_2} is {results_2}")
+
+    def test_task_set_expansion_centroid_boost(self):
+        """
+        Tests the set expansion task using the centroid algorithm.
+        Uses an OKgraph object with default values.
+        """
+        okg = OKgraph(corpus=test_corpus_file)
+        seed_1 = ["milan", "rome", "turin"]
+        seed_2 = ["home", "house", "apartment"]
+        k = 15
+        options = {"embeddings": okg.embeddings,
+                   "step": 2,
+                   "fast": False,
+                   "verbose": True}
+
+        results_1 = okg.set_expansion(seed_1, k, "centroid_boost", options)
+        results_2 = okg.set_expansion(seed_2, k, "centroid_boost", options)
+
+        self.assertIsInstance(results_1, list,
+                              msg=f"The return value of the task should be a list")
+        self.assertIsInstance(results_2, list,
+                              msg=f"The return value of the task should be a list")
+        self.assertGreater(len(results_1), 0,
+                           msg=f"No results obtained from the algorithm for the seed {seed_1}")
+        self.assertGreater(len(results_2), 0,
+                           msg=f"No results obtained from the algorithm for the seed {seed_2}")
+        self.assertLessEqual(len(results_1), k,
+                           msg=f"The limit of {k} results has been passed for the seed {seed_1}")
+        self.assertLessEqual(len(results_2), k,
+                           msg=f"The limit of {k} results has been passed for the seed {seed_2}")
+        for r_word in results_1+results_2:
+            self.assertIsInstance(r_word, str,
+                                  msg=f"The return value of the task should be a list of strings")
+
+        logger.info(f"Expansion of {seed_1} is {results_1}")
+        logger.info(f"Expansion of {seed_2} is {results_2}")
+
+    def test_task_set_expansion_depth(self):
+        """
+        Tests the set expansion task using the centroid algorithm.
+        Uses an OKgraph object with default values.
+        """
+        okg = OKgraph(corpus=test_corpus_file)
+        seed_1 = ["milan", "rome", "turin"]
+        seed_2 = ["home", "house", "apartment"]
+        k = 15
+        options = {"embeddings": okg.embeddings,
+                   "width": 10,
+                   "depth": 2,
+                   "verbose": True}
+
+        results_1 = okg.set_expansion(seed_1, k, "depth", options)
+        results_2 = okg.set_expansion(seed_2, k, "depth", options)
+
+        self.assertIsInstance(results_1, list,
+                              msg=f"The return value of the task should be a list")
+        self.assertIsInstance(results_2, list,
+                              msg=f"The return value of the task should be a list")
+        self.assertGreater(len(results_1), 0,
+                           msg=f"No results obtained from the algorithm for the seed {seed_1}")
+        self.assertGreater(len(results_2), 0,
+                           msg=f"No results obtained from the algorithm for the seed {seed_2}")
+        self.assertLessEqual(len(results_1), k,
+                           msg=f"The limit of {k} results has been passed for the seed {seed_1}")
+        self.assertLessEqual(len(results_2), k,
+                           msg=f"The limit of {k} results has been passed for the seed {seed_2}")
+        for r_word in results_1+results_2:
+            self.assertIsInstance(r_word, str,
+                                  msg=f"The return value of the task should be a list of strings")
+
+        logger.info(f"Expansion of {seed_1} is {results_1}")
+        logger.info(f"Expansion of {seed_2} is {results_2}")
 
     def test_task_set_labeling_intersection(self):
         """
         Tests the set labeling task using the intersection algorithm.
         Uses an OKgraph object with default values.
         """
-        okg = okgraph.OKgraph(corpus=test_corpus_file)
+        okg = OKgraph(corpus=test_corpus_file)
         seed = ["milan", "rome", "turin"]
         k = 15
         options = {"dictionary": okg.dictionary,
@@ -306,7 +378,7 @@ class OKGraphTest(unittest.TestCase):
             self.assertIsInstance(r_label, str,
                                   msg=f"The return value of the task should be a list strings")
 
-        logger.info(f"{module_path}: Labels of {seed} are {results}")
+        logger.info(f"Labels of {seed} are {results}")
 
     def test_sliding_windows(self):
         pass

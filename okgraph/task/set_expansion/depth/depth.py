@@ -26,9 +26,8 @@ def task(seed: [str], k: int, options: dict):
         logger.debug(f"current depth: {i+1}, words to expand: {len(to_expand)}")
         current = []
         for c in to_expand:
-            logger.debug(f"c: {c}")
             v_c = embeddings.query(c)
-            similar_to_c = embeddings.most_similar(v_c, topn=width)
+            similar_to_c = [w for w,p in embeddings.most_similar(v_c, topn=width)]
             current.append(similar_to_c)
         current = list_flatten(current)
         for word in current:
@@ -36,12 +35,12 @@ def task(seed: [str], k: int, options: dict):
 
         to_expand = current
 
-    co_hyponyms = [(key, counts[key]) for key in sorted(counts, key=counts.get, reverse=True)][:k]
+    co_hyponyms = [key for key in sorted(counts, key=counts.get, reverse=True)][:k]
     logger.info(f"Expansion is {co_hyponyms}")
     return co_hyponyms
 
 
-def normalized(v):
+def normalized(v):  # Unused
     return v/norm(v)
 
 
@@ -49,13 +48,13 @@ def d1(e, w1, w2):
     return 1
 
 
-def d2(e, w1, w2):
+def d2(e, w1, w2):  # Unused
     return dist_cos(e.query(w1), e.query(w2))
 
 
-def d3(e, w1, w2):
+def d3(e, w1, w2):  # Unused
     return dist_euclidean(normalized(e.query(w1)), normalized(e.query(w2)))
 
 
-def list_flatten(l):
+def list_flatten(l):  # Unused
     return list(chain.from_iterable(l))

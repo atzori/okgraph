@@ -1,22 +1,46 @@
+"""
+The 'utils' module contains generic utilities that support the other modules of
+the library.
+"""
+import logging
+from logging.config import fileConfig
 import numpy as np
 import operator
+from os import path
 import re
 import string
-from okgraph.logger import logger
+from typing import Dict, Iterator
 
-module_path = str.upper(__name__).replace("OKGRAPH.", "")
+LOG_CONFIG_FILE = path.join(
+    path.dirname(path.realpath(__file__)),
+    "logging.ini")
+if not path.isfile(LOG_CONFIG_FILE):
+    LOG_CONFIG_FILE = path.join(
+        path.dirname(path.dirname(LOG_CONFIG_FILE)),
+        "logging.ini")
+fileConfig(LOG_CONFIG_FILE)
+logger = logging.getLogger()
+"""RootLogger: Logger for run time documentation.
+
+Check the 'logging.ini' file for the logger configuration.
+"""
+
+logger.info(f"Logger configuration file is: {LOG_CONFIG_FILE}")
 
 
-def get_words(file_path: str):
+def get_words(file_path: str) -> Iterator[str]:
     """
-    Reads a text file and convert it to a list of its words in lowercase format.
-    :param file_path: path (with name) of the file
-    :return: a list of words (strings)
+    Reads a text file and allows to scroll over it word by word. The text is
+    formatted so that the words are lowercase and the punctuation is removed.
+
+    Args:
+        file_path (str): path of the corpus file.
+
+    Returns:
+        Iterator[str]: an iterator of words.
     """
-    # Regular expression that identifies the punctuation
     regex = re.compile('[%s]' % re.escape(string.punctuation))
 
-    # Read the file line by line and extract all the words
     with open(file_path, encoding="utf-8") as file_path:
         for line in file_path:
             line = regex.sub(' ', line)
@@ -26,39 +50,52 @@ def get_words(file_path: str):
                 yield w
 
 
-def create_dictionary(corpus: str, dictionary_name: str = "dictTotal.npy", dictionary_save: bool = True):
+def create_dictionary(corpus: str, dictionary: str = "dictTotal.npy",
+                      save_dictionary: bool = True) -> Dict[str, int]:
     """
-    Creates a dictionary of the words in the file using the structure {word in file: occurrences of word in file}
-    :param corpus: path of the corpus
-    :param dictionary_name: path of the dictionary
-    :param dictionary_save: save or not the created dictionary into a file whose name is specified by "dictionary_path"
-    :return: the created dictionary
+    Creates a dictionary to summarize the distribution of the words in the
+    corpus.
+
+    Args:
+        corpus (str): path of the corpus file.
+        dictionary (str): path of the dictionary file in which store the created
+            dictionary.
+        save_dictionary (bool): True to store the created dictionary in a file,
+            False otherwise.
+
+    Returns:
+        Dict[str, int]: the corpus dictionary structured as {word: occurrences}.
     """
-    # Get all the words from the file
     words = get_words(corpus)
 
-    logger.info(f"{module_path}: Started dictionary creation")
+    logger.info(f"Started dictionary creation")
 
-    # Create a dictionary of the type {word in file: occurrences of word in file}
-    dictionary = {}
+    occurrence_dict = {}
     for word in words:
-        dictionary[word] = dictionary.get(word, 0) + 1
+        occurrence_dict[word] = occurrence_dict.get(word, 0) + 1
 
-    # Order the dictionary by the words occurrences (from greater to smaller)
-    dictionary = dict(sorted(dictionary.items(), key=operator.itemgetter(1), reverse=True))
+    occurrence_dict = dict(sorted(occurrence_dict.items(), key=operator.itemgetter(1), reverse=True))
 
-    # If wanted, save the dictionary into a file with the specified path
-    if dictionary_save is True:
-        np.save(dictionary_name, dictionary)
+    if save_dictionary is True:
+        np.save(dictionary, occurrence_dict)
 
-    logger.info(f"{module_path}: Ended dictionary creation")
+    logger.info(f"Ended dictionary creation")
 
-    # Return the created dictionary
-    return dictionary
+    return occurrence_dict
 
 
 def head(path, n=0, file=None, gzip=False):
-    # TODO: add documentation
+    """
+    TODO: add documentation
+    Args:
+        path:
+        n:
+        file:
+        gzip:
+
+    Returns:
+
+    """
     from os import system
     system('head -c ' + str(n) + ' ' + path + ' > ' + file)
     if gzip is True:
@@ -66,7 +103,17 @@ def head(path, n=0, file=None, gzip=False):
 
 
 def tail(path, n=0, file=None, gzip=False):
-    # TODO: add documentation
+    """
+    TODO: add documentation
+    Args:
+        path:
+        n:
+        file:
+        gzip:
+
+    Returns:
+
+    """
     from os import system
     system('tail -c ' + str(n) + ' ' + path + ' > ' + file)
     if gzip is True:
@@ -74,7 +121,16 @@ def tail(path, n=0, file=None, gzip=False):
 
 
 def download(url, path_name='text8.zip', name='Text8 Dataset'):
-    # TODO: add documentation
+    """
+    TODO: add documentation
+    Args:
+        url:
+        path_name:
+        name:
+
+    Returns:
+
+    """
     from urllib.request import urlretrieve
     from tqdm import tqdm
 

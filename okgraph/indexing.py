@@ -3,9 +3,7 @@ from os import path
 from okgraph.utils import get_words
 from whoosh import index
 from whoosh.fields import Schema, TEXT
-from okgraph.logger import logger
-
-module_path = str.upper(__name__).replace("OKGRAPH.", "")
+from okgraph.utils import logger
 
 # Schema fields
 FIELD_TITLE = "title"
@@ -44,7 +42,10 @@ class Indexing:
     def indexing(self,
                  index_path: str = "indexdir",
                  document_overlay: int = 20,
-                 document_center: int = 40
+                 document_center: int = 40,
+                 multiprocessing: bool = False, # info at https://whoosh.readthedocs.io/en/latest/batch.html
+                 num_processes: int = 1,
+                 memory_limit: int = 128  # Memoria usata in megabyte (memoria per processo, memoria totale = num_processes * memory_limit
                  ) -> None:
         """
         Starts the indexing process.
@@ -57,8 +58,12 @@ class Indexing:
             raise ValueError(f"document_overlay can't be negative or zero")
         if document_center <= 0:
             raise ValueError(f"document_center can't be negative or zero")
+        if num_processes <= 0:
+            raise ValueError(f"num_processes can't be negative or zero")
+        if memory_limit <= 0:
+            raise ValueError(f"memory_limit can't be negative or zero")
 
-        logger.info(f"{module_path}: Start documents indexing in corpus")
+        logger.info(f"Start documents indexing in corpus")
 
         # Indexing parameters
         document_size = document_center + 2 * document_overlay  # Total size of a document
@@ -81,7 +86,12 @@ class Indexing:
             # Create the path and the index for the specified schema
             os.makedirs(index_path, exist_ok=True)
             ix = index.create_in(index_path, schema)
-            writer = ix.writer()
+            if multiprocessing:
+                writer = ix.writer(limitmb=memory_limit)
+            else:
+                writer = ix.writer(procs=num_processes,
+                                   multisegment=True,
+                                   limitmb=memory_limit)
 
             # Scroll through the corpus word by word
             #  Divide the corpus in partially overlaid documents
@@ -99,7 +109,7 @@ class Indexing:
                     log_count += 1
 
                     if log_count == 1:
-                        logger.info(f"{module_path}: Indexing document number: {document_count}")
+                        logger.info(f"Indexing document number: {document_count}")
                     if log_count == log_frequency:
                         log_count = 0
 
@@ -114,15 +124,15 @@ class Indexing:
 
                     # If the limit has been reached, commit the changes and start saving the next documents into a new file
                     if document_index == document_count_limit:
-                        logger.info(f"{module_path}: Limit of {document_count_limit} document reached: committing changes")
+                        logger.info(f"Limit of {document_count_limit} document reached: committing changes")
                         writer.commit()
                         ix = index.open_dir(index_path)
                         writer = ix.writer()
                         document_index = 0
 
             if document_count != 0:
-                logger.info(f"{module_path}: Indexed last document with number: {document_count}")
-                logger.info(f"{module_path}: Committing")
+                logger.info(f"Indexed last document with number: {document_count}")
+                logger.info(f"Committing")
                 writer.commit()
 
-            logger.info(f"{module_path}: Ended documents indexing in corpus")
+            logger.info(f"Ended documents indexing in corpus")

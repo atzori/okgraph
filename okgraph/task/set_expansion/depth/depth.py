@@ -1,7 +1,7 @@
 from itertools import chain
 from numpy.linalg import norm
 from okgraph.utils import logger
-from pymagnitude import Magnitude
+from okgraph.file_converter import WordEmbedding
 from scipy.spatial.distance import cosine as dist_cos,\
                                    euclidean as dist_euclidean
 
@@ -13,7 +13,7 @@ def task(seed: [str], k: int, options: dict):
     """
     # Get the task parameters
     logger.info(f"Getting the parameters for the set expansion of {seed}")
-    embeddings: Magnitude = options.get("embeddings")
+    embeddings: WordEmbedding = options.get("embeddings")
     width: int = options.get("width", 10)
     depth: int = options.get("depth", 2)
     verbose: bool = options.get("verbose", False)
@@ -26,8 +26,7 @@ def task(seed: [str], k: int, options: dict):
         logger.debug(f"current depth: {i+1}, words to expand: {len(to_expand)}")
         current = []
         for c in to_expand:
-            v_c = embeddings.query(c)
-            similar_to_c = [w for w,p in embeddings.most_similar(v_c, topn=width)]
+            similar_to_c = embeddings.w2w(c, width)
             current.append(similar_to_c)
         current = list_flatten(current)
         for word in current:

@@ -2,16 +2,15 @@
 TRYDOC: The core module contains the library main functionalities.
 """
 from pymagnitude import Magnitude
-from okgraph.file_converter import FileConverter
+from okgraph.file_converter import WordEmbedding, MagnitudeWordEmbedding, FileConverter
 import os
 from os import path
 import shutil
 from okgraph.indexing import Indexing
 from okgraph.utils import create_dictionary
-from okgraph.logger import logger
+from okgraph.utils import logger
 
 algorithms_package = "okgraph.task"
-module_path = str.upper(__name__).replace("OKGRAPH.", "")
 
 
 class OKgraph:
@@ -28,18 +27,18 @@ class OKgraph:
 
     Attributes:
         corpus: path of the corpus file
-        embeddings: words vector model
+        embedding: words vector model
         index: path of the indexed corpus files
         dictionary: path of the corpus dictionary
     """
     corpus: str
-    embeddings: Magnitude
+    embeddings: WordEmbedding
     index: str
     dictionary: str
 
     def __init__(self,
                  corpus: str,
-                 embeddings: str = None,
+                 embedding: str = None,
                  k: int = 5,
                  stream: bool = False,
                  lazy_loading: int = 0,
@@ -77,7 +76,7 @@ class OKgraph:
 
         Parameters:
         :param corpus: path of the corpus file
-        :param embeddings: the file path or URL to the vector model (.magnitude file). If not specified, the default
+        :param embedding: the file path or URL to the vector model (.magnitude file). If not specified, the default
                            path points a '.magnitude' file with the same name and parent directory of the corpus.
                            If the file exists it is used as it is; if the path points to a non existent file it is then
                            created
@@ -107,65 +106,65 @@ class OKgraph:
         (corpus_name, corpus_extension) = os.path.splitext(corpus)
 
         # Creates the embeddings
-        if embeddings is None:
-            embeddings = corpus_name + ".magnitude"
-            logger.info(f"{module_path}: Embedding file for corpus {corpus} not specified."
-                        f" Using default value {embeddings} for generation")
-        if force_init is True and os.path.exists(embeddings):
-            logger.info(f"{module_path}: Removing existing embedding file {embeddings}")
-            os.remove(embeddings)
-        if not path.exists(embeddings):
+        if embedding is None:
+            embedding = corpus_name + ".magnitude"
+            logger.info(f"Embedding file for corpus {corpus} not specified."
+                        f" Referencing to default value {embedding}")
+        if force_init is True and os.path.exists(embedding):
+            logger.info(f"Removing existing embedding file {embedding}")
+            os.remove(embedding)
+        if not path.exists(embedding):
             if force_init is False:
-                logger.info(f"{module_path}: Specified embedding file {embeddings} for corpus {corpus} doesn't exist:"
+                logger.info(f"Specified embedding file {embedding} for corpus {corpus} doesn't exist:"
                             f" generating a new one")
-            logger.info(f"{module_path}: Starting embedding generation")
-            embeddings = FileConverter.corpus_to_magnitude_model(corpus_fname=corpus, save_fname=embeddings)
-            logger.info(f"{module_path}: Embedding file {embeddings} generated")
+            logger.info(f"Starting embedding generation")
+            embedding = FileConverter.corpus_to_magnitude_model(corpus, embedding)
+            logger.info(f"Embedding file {embedding} generated")
         else:
-            logger.info(f"{module_path}: Specified embedding file {embeddings} for corpus {corpus} found")
+            logger.info(f"Specified embedding file {embedding} for corpus {corpus} found")
 
         # Creates the index
         # QSTN: should we check for index_path to not be empty?
         if index is None:
             index = path.join(path.dirname(corpus), "indexdir")
-            logger.info(f"{module_path}: Indexing directoy for corpus {corpus} not specified."
-                        f" Using default value {index} for generation")
+            logger.info(f"Indexing directoy for corpus {corpus} not specified."
+                        f" Referencing to default value {index}")
         if force_init is True and os.path.exists(index):
-            logger.info(f"{module_path}: Removing existing indexing directory {index}")
+            logger.info(f"Removing existing indexing directory {index}")
             shutil.rmtree(index)
         if not path.exists(index):
             if force_init is False:
-                logger.info(f"{module_path}: Specified indexing directory {index} for corpus {corpus} doesn't exist:"
+                logger.info(f"Specified indexing directory {index} for corpus {corpus} doesn't exist:"
                             f" generating a new one")
-            logger.info(f"{module_path}: Starting index generation")
+            logger.info(f"Starting index generation")
             ix = Indexing(corpus_path=corpus)
             ix.indexing(index_path=index)
             del ix
-            logger.info(f"{module_path}: Index {index} generated")
+            logger.info(f"Index {index} generated")
         else:
-            logger.info(f"{module_path}: Specified index directory {index} for corpus {corpus} found")
+            logger.info(f"Specified index directory {index} for corpus {corpus} found")
 
         # Creates the dictionary
         if dictionary is None:
             dictionary = path.join(path.dirname(corpus), "dictTotal.npy")
-            logger.info(f"{module_path}: Dictionary file for corpus {corpus} not specified."
-                        f" Using default value {dictionary} for generation")
+            logger.info(f"Dictionary file for corpus {corpus} not specified."
+                        f" Referencing to default value {dictionary}")
         if force_init is True and os.path.exists(dictionary):
-            logger.info(f"{module_path}: Removing existing dictionary file {dictionary}")
+            logger.info(f"Removing existing dictionary file {dictionary}")
             os.remove(dictionary)
         if not path.exists(dictionary):
             if force_init is False:
-                logger.info(f"{module_path}: Specified dictionary file {dictionary} for corpus {corpus} doesn't exist:"
+                logger.info(f"Specified dictionary file {dictionary} for corpus {corpus} doesn't exist:"
                             f" generating a new one")
-            logger.info(f"{module_path}: Starting dictionary generation")
-            create_dictionary(corpus, dictionary_name=dictionary, dictionary_save=True)
-            logger.info(f"{module_path}: Dictionary {dictionary} generated")
+            logger.info(f"Starting dictionary generation")
+            create_dictionary(corpus, dictionary=dictionary, save_dictionary=True)
+            logger.info(f"Dictionary {dictionary} generated")
         else:
-            logger.info(f"{module_path}: Specified dictionary file {dictionary} for corpus {corpus} found")
+            logger.info(f"Specified dictionary file {dictionary} for corpus {corpus} found")
 
         # Initialize the attributes
+        self.embeddings = MagnitudeWordEmbedding(embedding, k, stream, lazy_loading)
         self.corpus = corpus
-        self.embeddings = Magnitude(embeddings, _number_of_values=k, stream=stream, lazy_loading=lazy_loading)
         self.index = index
         self.dictionary = dictionary
 

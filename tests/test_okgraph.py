@@ -1,9 +1,10 @@
 import unittest
+import numpy
 from okgraph.core import OKgraph
 import os
 from os import path
-from pymagnitude import Magnitude
 from okgraph.utils import logger
+from okgraph.file_converter import WordEmbedding
 
 
 cwd = path.normpath(os.getcwd())
@@ -55,9 +56,8 @@ class OKGraphTest(unittest.TestCase):
         # Check the types of the OKgraph object attributes
         self.assertIsInstance(okg.corpus, str,
                               msg=f"The corpus should be a string indicating the name of the corpus file")
-        self.assertIsInstance(okg.embeddings, Magnitude,
-                              msg=f"The embeddings should be a Magnitude object")
-        self.assertGreater(len(okg.embeddings), 0)
+        self.assertIsInstance(okg.embeddings, WordEmbedding,
+                              msg=f"The embeddings should be a WordEmbedding object")
         self.assertIsInstance(okg.index, str,
                               msg=f"The index should be a string indicating the name of the index directory")
         self.assertIsInstance(okg.dictionary, str,
@@ -83,10 +83,10 @@ class OKGraphTest(unittest.TestCase):
 
         # Creates the OKgraph object along with the embeddings, indexes and dictionary
         okg = OKgraph(corpus=test_corpus_file,
-                              embeddings=test_embeddings_file,
-                              index=test_indexing_folder,
-                              dictionary=test_dictionary_file,
-                              force_init=force_init)
+                      embedding=test_embeddings_file,
+                      index=test_indexing_folder,
+                      dictionary=test_dictionary_file,
+                      force_init=force_init)
 
         # Check the existence of the files
         self.assertTrue(path.exists(test_embeddings_file),
@@ -98,9 +98,8 @@ class OKGraphTest(unittest.TestCase):
         # Check the types of the OKgraph object attributes
         self.assertIsInstance(okg.corpus, str,
                               msg=f"The corpus should be a string indicating the name of the corpus file")
-        self.assertIsInstance(okg.embeddings, Magnitude,
-                              msg=f"The embeddings should be a Magnitude object")
-        self.assertGreater(len(okg.embeddings), 0)
+        self.assertIsInstance(okg.embeddings, WordEmbedding,
+                              msg=f"The embeddings should be a WordEmbedding object")
         self.assertIsInstance(okg.index, str,
                               msg=f"The index should be a string indicating the name of the index directory")
         self.assertIsInstance(okg.dictionary, str,
@@ -125,9 +124,9 @@ class OKGraphTest(unittest.TestCase):
 
         # Test non existing file/url
         with self.assertRaises(RuntimeError):
-            OKgraph(corpus="none", embeddings="fake/path")
+            OKgraph(corpus="none", embedding="fake/path")
         with self.assertRaises(RuntimeError):
-            OKgraph(corpus="another_none", embeddings="http://not.available.org/path")
+            OKgraph(corpus="another_none", embedding="http://not.available.org/path")
 
         # Get the modification time of the data
         embeddings_modification_time = path.getmtime(test_embeddings_file)
@@ -136,9 +135,9 @@ class OKGraphTest(unittest.TestCase):
 
         # Creates the OKgraph object along with the embeddings, indexes and dictionary
         okg = OKgraph(corpus=test_corpus_file,
-                              embeddings=test_embeddings_file,
-                              index=test_indexing_folder,
-                              dictionary=test_dictionary_file)
+                      embedding=test_embeddings_file,
+                      index=test_indexing_folder,
+                      dictionary=test_dictionary_file)
 
         # Check the modification time of the data: it should not be changed
         self.assertEqual(embeddings_modification_time, path.getmtime(test_embeddings_file),
@@ -150,9 +149,8 @@ class OKGraphTest(unittest.TestCase):
         # Check the types of the OKgraph object attributes
         self.assertIsInstance(okg.corpus, str,
                               msg=f"The corpus should be a string indicating the name of the corpus file")
-        self.assertIsInstance(okg.embeddings, Magnitude,
-                              msg=f"The embeddings should be a Magnitude object")
-        self.assertGreater(len(okg.embeddings), 0)
+        self.assertIsInstance(okg.embeddings, WordEmbedding,
+                              msg=f"The embeddings should be a WordEmbedding object")
         self.assertIsInstance(okg.index, str,
                               msg=f"The index should be a string indicating the name of the index directory")
         self.assertIsInstance(okg.dictionary, str,
@@ -190,7 +188,6 @@ class OKGraphTest(unittest.TestCase):
 
         logger.info(f"Expansion of {seed} is {results}")
 
-
     def test_task_relation_expansion_centroid(self):
         """
         Tests the relation expansion task using the centroid algorithm.
@@ -208,6 +205,32 @@ class OKGraphTest(unittest.TestCase):
                    "set_expansion_k": 15
                    }
         results = okg.relation_expansion(seed, k, "centroid", options)
+
+        self.assertIsInstance(results, list,
+                              msg=f"The return value of the task should be a list")
+        self.assertGreater(len(results), 0,
+                           msg=f"No results obtained from the algorithm")
+        self.assertLessEqual(len(results), k,
+                           msg=f"The limit of {k} results has been passed")
+        for r_tuple in results:
+            self.assertIsInstance(r_tuple, tuple,
+                                  msg=f"The return value of the task should be a list of tuples")
+            for r_elements in r_tuple:
+                self.assertIsInstance(r_elements, str,
+                                      msg=f"The return value of the task should be a list of tuples of strings")
+
+        logger.info(f"Expansion of {seed} is {results}")
+
+    def test_task_relation_expansion_atzori(self):
+        """
+        Tests the relation expansion task using the intersection algorithm.
+        Uses an OKgraph object with default values.
+        """
+        okg = OKgraph(corpus=test_corpus_file)
+        seed = [("rome", "italy"), ("berlin", "germany")]
+        k = 15
+        options = {"embeddings": okg.embeddings}
+        results = okg.relation_expansion(seed, k, "atzori", options)
 
         self.assertIsInstance(results, list,
                               msg=f"The return value of the task should be a list")
@@ -380,8 +403,62 @@ class OKGraphTest(unittest.TestCase):
 
         logger.info(f"Labels of {seed} are {results}")
 
-    def test_sliding_windows(self):
-        pass
+    def test_embeddings(self):
+        okg = OKgraph(corpus=test_corpus_file)
+        e = okg.embeddings
+        n = 15
+
+        w = 'town'
+        v = e.w2v(w)
+
+        r_w2v = e.w2v(w)
+        self.assertIsInstance(r_w2v, numpy.ndarray,
+                              msg=f"The w2v function must return a vector (numpy.array)")
+        self.assertIsInstance(r_w2v[0], numpy.floating,
+                              msg=f"The w2v function must return a vector of floats")
+        r_v2w = e.v2w(w)
+        self.assertIsInstance(r_v2w, list,
+                              msg=f"The v2w function must return a list")
+        self.assertIsInstance(r_v2w[0], str,
+                              msg=f"The v2w function must return a list of words (strings)")
+        r_w2w = e.w2w(w)
+        self.assertIsInstance(r_w2w, list,
+                              msg=f"The w2w function must return a list")
+        self.assertIsInstance(r_w2w[0], str,
+                              msg=f"The w2w function must return a list of words (strings)")
+        r_v2v = e.v2v(w)
+        self.assertIsInstance(r_v2v, list,
+                              msg=f"The v2v function must return a list")
+        self.assertIsInstance(r_v2v[0], numpy.ndarray,
+                              msg=f"The v2v function must return a list of vectors (numpy.array)")
+        self.assertIsInstance(r_v2v[0][0], numpy.floating,
+                              msg=f"The v2v function must return a list of vectors of floats")
+
+        vs1 = e.v2v(v, n)
+        vs2 = list(map(lambda x: e.w2v(x), e.w2w(e.v2w(v, 1)[0], n)))
+        self.assertEqual(vs1, vs2,
+                         msg=f"The vector expansions of the same vector must be equal")
+
+        ws1 = e.w2w(w, n)
+        ws2 = list(map(lambda x: e.v2w(x, 1)[0], e.v2v(e.w2v(w), n)))
+        self.assertEqual(ws1, ws2,
+                         msg=f"The word expansions of the same word must be equal")
+
+        r_w4th = e.get4th("man", "king", "woman")
+        self.assertIsInstance(r_w4th, list,
+                              msg=f"The get4th function must return a list")
+        self.assertIsInstance(r_w4th[0], str,
+                              msg=f"The get4th function must return a list of words (strings)")
+
+        r_v4th = e.get4thv(e.w2v("man"), e.w2v("king"), e.w2v("woman"))
+        self.assertIsInstance(r_v4th, list,
+                              msg=f"The get4th function must return a list")
+        self.assertIsInstance(r_v4th[0], str,
+                              msg=f"The get4th function must return a list of words (strings)")
+
+        centroid = e.centroid(["milan", "rome", "turin"])
+        self.assertIsInstance(r_v2v[0], numpy.ndarray,
+                              msg=f"The centroid function must return a vector (numpy.array)")
 
 
 if __name__ == "__main__":

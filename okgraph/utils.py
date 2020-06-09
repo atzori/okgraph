@@ -1,5 +1,4 @@
-"""
-The 'utils' module contains generic utilities that support the other modules of
+"""The 'utils' module contains generic utilities supporting the other modules of
 the library.
 """
 import logging
@@ -19,6 +18,7 @@ if not path.isfile(LOG_CONFIG_FILE):
         path.dirname(path.dirname(LOG_CONFIG_FILE)),
         "logging.ini")
 fileConfig(LOG_CONFIG_FILE)
+
 logger = logging.getLogger()
 """RootLogger: Logger for run time documentation.
 
@@ -29,15 +29,15 @@ logger.info(f"Logger configuration file is: {LOG_CONFIG_FILE}")
 
 
 def get_words(file_path: str) -> Iterator[str]:
-    """
-    Reads a text file and allows to scroll over it word by word. The text is
+    """Reads a text file and allows to scroll over it word by word. The text is
     formatted so that the words are lowercase and the punctuation is removed.
 
     Args:
         file_path (str): path of the corpus file.
 
-    Returns:
-        Iterator[str]: an iterator of words.
+    Yields:
+        str: the next word in the file.
+
     """
     regex = re.compile('[%s]' % re.escape(string.punctuation))
 
@@ -52,19 +52,18 @@ def get_words(file_path: str) -> Iterator[str]:
 
 def create_dictionary(corpus: str, dictionary: str = "dictTotal.npy",
                       save_dictionary: bool = True) -> Dict[str, int]:
-    """
-    Creates a dictionary to summarize the distribution of the words in the
+    """Creates a dictionary representing the distribution of the words in the
     corpus.
 
     Args:
         corpus (str): path of the corpus file.
-        dictionary (str): path of the dictionary file in which store the created
-            dictionary.
-        save_dictionary (bool): True to store the created dictionary in a file,
+        dictionary (str): path of the file where the dictionary is saved.
+        save_dictionary (bool): True to save the created dictionary in a file,
             False otherwise.
 
     Returns:
         Dict[str, int]: the corpus dictionary structured as {word: occurrences}.
+
     """
     words = get_words(corpus)
 
@@ -74,14 +73,19 @@ def create_dictionary(corpus: str, dictionary: str = "dictTotal.npy",
     for word in words:
         occurrence_dict[word] = occurrence_dict.get(word, 0) + 1
 
-    occurrence_dict = dict(sorted(occurrence_dict.items(), key=operator.itemgetter(1), reverse=True))
+    sorted_occurrence_dict = \
+        {k: v for k, v in
+         sorted(occurrence_dict.items(),
+                key=operator.itemgetter(1),
+                reverse=True)
+         }
 
     if save_dictionary is True:
-        np.save(dictionary, occurrence_dict)
+        np.save(dictionary, sorted_occurrence_dict)
 
     logger.info(f"Ended dictionary creation")
 
-    return occurrence_dict
+    return sorted_occurrence_dict
 
 
 def head(path, n=0, file=None, gzip=False):

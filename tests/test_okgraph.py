@@ -1,25 +1,25 @@
-import unittest
-import numpy
+from numpy import floating, ndarray
 from okgraph.core import OKgraph
+from okgraph.embeddings import WordEmbeddings
+from okgraph.utils import logger
 import os
 from os import path
-from okgraph.utils import logger
-from okgraph.file_converter import WordEmbedding
+import unittest
 
 
 cwd = path.normpath(os.getcwd())
 
 logger.info(f"Current working directory is {cwd}")
 
-corpus_file = "text9"
+corpus_file = "text7.txt"
 (corpus_name, corpus_extension) = path.splitext(corpus_file)
-data_path = path.join(cwd, "data", corpus_name)
+data_path = path.join(cwd, "data", corpus_name)  # "tests",
 test_corpus_file = path.join(data_path, corpus_file)
-test_embeddings_file = path.join(data_path, corpus_name + "_vmodel.magnitude")
+test_embeddings_file = path.join(data_path, "new_dir", corpus_name + "_vmodel")
 test_default_embeddings_file = path.join(data_path, corpus_name + ".magnitude")
-test_indexing_folder = path.join(data_path, corpus_name + "_indexdir")
+test_indexing_folder = path.join(data_path, "new_dir", corpus_name + "_indexdir")
 test_default_indexing_folder = path.join(data_path, "indexdir")
-test_dictionary_file = path.join(data_path, corpus_name + "_dict.npy")
+test_dictionary_file = path.join(data_path, "new_dir", corpus_name + "_dict")
 test_default_dictionary_file = path.join(data_path, "dictTotal.npy")
 
 
@@ -43,8 +43,8 @@ class OKGraphTest(unittest.TestCase):
             force_init = False
 
         # Creates the OKgraph object along with the embeddings, indexes and dictionary
-        okg = OKgraph(corpus=test_corpus_file,
-                              force_init=force_init)
+        okg = OKgraph(corpus_file=test_corpus_file,
+                      force_init=force_init)
 
         # Check the existence of the files
         self.assertTrue(path.exists(test_default_embeddings_file),
@@ -56,7 +56,7 @@ class OKGraphTest(unittest.TestCase):
         # Check the types of the OKgraph object attributes
         self.assertIsInstance(okg.corpus, str,
                               msg=f"The corpus should be a string indicating the name of the corpus file")
-        self.assertIsInstance(okg.embeddings, WordEmbedding,
+        self.assertIsInstance(okg.embeddings, WordEmbeddings,
                               msg=f"The embeddings should be a WordEmbedding object")
         self.assertIsInstance(okg.index, str,
                               msg=f"The index should be a string indicating the name of the index directory")
@@ -82,10 +82,10 @@ class OKGraphTest(unittest.TestCase):
             force_init = False
 
         # Creates the OKgraph object along with the embeddings, indexes and dictionary
-        okg = OKgraph(corpus=test_corpus_file,
-                      embedding=test_embeddings_file,
-                      index=test_indexing_folder,
-                      dictionary=test_dictionary_file,
+        okg = OKgraph(corpus_file=test_corpus_file,
+                      embeddings_file=test_embeddings_file,
+                      index_dir=test_indexing_folder,
+                      dictionary_file=test_dictionary_file,
                       force_init=force_init)
 
         # Check the existence of the files
@@ -98,7 +98,7 @@ class OKGraphTest(unittest.TestCase):
         # Check the types of the OKgraph object attributes
         self.assertIsInstance(okg.corpus, str,
                               msg=f"The corpus should be a string indicating the name of the corpus file")
-        self.assertIsInstance(okg.embeddings, WordEmbedding,
+        self.assertIsInstance(okg.embeddings, WordEmbeddings,
                               msg=f"The embeddings should be a WordEmbedding object")
         self.assertIsInstance(okg.index, str,
                               msg=f"The index should be a string indicating the name of the index directory")
@@ -124,9 +124,9 @@ class OKGraphTest(unittest.TestCase):
 
         # Test non existing file/url
         with self.assertRaises(RuntimeError):
-            OKgraph(corpus="none", embedding="fake/path")
+            OKgraph(corpus_file="none", embeddings_file="fake/path")
         with self.assertRaises(RuntimeError):
-            OKgraph(corpus="another_none", embedding="http://not.available.org/path")
+            OKgraph(corpus_file="another_none", embeddings_file="http://not.available.org/path")
 
         # Get the modification time of the data
         embeddings_modification_time = path.getmtime(test_embeddings_file)
@@ -134,10 +134,10 @@ class OKGraphTest(unittest.TestCase):
         dictionary_modification_time = path.getmtime(test_dictionary_file)
 
         # Creates the OKgraph object along with the embeddings, indexes and dictionary
-        okg = OKgraph(corpus=test_corpus_file,
-                      embedding=test_embeddings_file,
-                      index=test_indexing_folder,
-                      dictionary=test_dictionary_file)
+        okg = OKgraph(corpus_file=test_corpus_file,
+                      embeddings_file=test_embeddings_file,
+                      index_dir=test_indexing_folder,
+                      dictionary_file=test_dictionary_file)
 
         # Check the modification time of the data: it should not be changed
         self.assertEqual(embeddings_modification_time, path.getmtime(test_embeddings_file),
@@ -149,7 +149,7 @@ class OKGraphTest(unittest.TestCase):
         # Check the types of the OKgraph object attributes
         self.assertIsInstance(okg.corpus, str,
                               msg=f"The corpus should be a string indicating the name of the corpus file")
-        self.assertIsInstance(okg.embeddings, WordEmbedding,
+        self.assertIsInstance(okg.embeddings, WordEmbeddings,
                               msg=f"The embeddings should be a WordEmbedding object")
         self.assertIsInstance(okg.index, str,
                               msg=f"The index should be a string indicating the name of the index directory")
@@ -161,7 +161,7 @@ class OKGraphTest(unittest.TestCase):
         Tests the relation expansion task using the intersection algorithm.
         Uses an OKgraph object with default values.
         """
-        okg = OKgraph(corpus=test_corpus_file)
+        okg = OKgraph(corpus_file=test_corpus_file)
         seed = [("rome", "italy"), ("berlin", "germany")]
         k = 15
         options = {"relation_labeling_algo": "intersection",
@@ -193,7 +193,7 @@ class OKGraphTest(unittest.TestCase):
         Tests the relation expansion task using the centroid algorithm.
         Uses an OKgraph object with default values.
         """
-        okg = OKgraph(corpus=test_corpus_file)
+        okg = OKgraph(corpus_file=test_corpus_file)
         seed = [("rome", "italy"), ("berlin", "germany")]
         k = 15
         options = {"embeddings": okg.embeddings,
@@ -226,7 +226,7 @@ class OKGraphTest(unittest.TestCase):
         Tests the relation expansion task using the intersection algorithm.
         Uses an OKgraph object with default values.
         """
-        okg = OKgraph(corpus=test_corpus_file)
+        okg = OKgraph(corpus_file=test_corpus_file)
         seed = [("rome", "italy"), ("berlin", "germany")]
         k = 15
         options = {"embeddings": okg.embeddings}
@@ -252,7 +252,7 @@ class OKGraphTest(unittest.TestCase):
         Tests the relation labeling task using the intersection algorithm.
         Uses an OKgraph object with default values.
         """
-        okg = OKgraph(corpus=test_corpus_file)
+        okg = OKgraph(corpus_file=test_corpus_file)
         b_seed = [("rome", "italy"), ("berlin", "germany")]
         t_seed = [("rome", "berlin", "tokyo")]
         k = 15
@@ -279,8 +279,8 @@ class OKGraphTest(unittest.TestCase):
         Tests the set expansion task using the centroid algorithm.
         Uses an OKgraph object with default values.
         """
-        okg = OKgraph(corpus=test_corpus_file)
-        seed_1 = ["milan", "rome", "turin"]
+        okg = OKgraph(corpus_file=test_corpus_file)
+        seed_1 = ["milan", "rome", "venice"]
         seed_2 = ["home", "house", "apartment"]
         k = 15
         options = {"embeddings": okg.embeddings}
@@ -312,8 +312,8 @@ class OKGraphTest(unittest.TestCase):
         Tests the set expansion task using the centroid algorithm.
         Uses an OKgraph object with default values.
         """
-        okg = OKgraph(corpus=test_corpus_file)
-        seed_1 = ["milan", "rome", "turin"]
+        okg = OKgraph(corpus_file=test_corpus_file)
+        seed_1 = ["milan", "rome", "venice"]
         seed_2 = ["home", "house", "apartment"]
         k = 15
         options = {"embeddings": okg.embeddings,
@@ -348,8 +348,8 @@ class OKGraphTest(unittest.TestCase):
         Tests the set expansion task using the centroid algorithm.
         Uses an OKgraph object with default values.
         """
-        okg = OKgraph(corpus=test_corpus_file)
-        seed_1 = ["milan", "rome", "turin"]
+        okg = OKgraph(corpus_file=test_corpus_file)
+        seed_1 = ["milan", "rome", "venice"]
         seed_2 = ["home", "house", "apartment"]
         k = 15
         options = {"embeddings": okg.embeddings,
@@ -384,8 +384,8 @@ class OKGraphTest(unittest.TestCase):
         Tests the set labeling task using the intersection algorithm.
         Uses an OKgraph object with default values.
         """
-        okg = OKgraph(corpus=test_corpus_file)
-        seed = ["milan", "rome", "turin"]
+        okg = OKgraph(corpus_file=test_corpus_file)
+        seed = ["milan", "rome", "venice"]
         k = 15
         options = {"dictionary": okg.dictionary,
                    "index": okg.index}
@@ -404,7 +404,7 @@ class OKGraphTest(unittest.TestCase):
         logger.info(f"Labels of {seed} are {results}")
 
     def test_embeddings(self):
-        okg = OKgraph(corpus=test_corpus_file)
+        okg = OKgraph(corpus_file=test_corpus_file)
         e = okg.embeddings
         n = 15
 
@@ -412,11 +412,11 @@ class OKGraphTest(unittest.TestCase):
         v = e.w2v(w)
 
         r_w2v = e.w2v(w)
-        self.assertIsInstance(r_w2v, numpy.ndarray,
+        self.assertIsInstance(r_w2v, ndarray,
                               msg=f"The w2v function must return a vector (numpy.array)")
-        self.assertIsInstance(r_w2v[0], numpy.floating,
+        self.assertIsInstance(r_w2v[0], floating,
                               msg=f"The w2v function must return a vector of floats")
-        r_v2w = e.v2w(w)
+        r_v2w = e.v2w(v)
         self.assertIsInstance(r_v2w, list,
                               msg=f"The v2w function must return a list")
         self.assertIsInstance(r_v2w[0], str,
@@ -426,12 +426,12 @@ class OKGraphTest(unittest.TestCase):
                               msg=f"The w2w function must return a list")
         self.assertIsInstance(r_w2w[0], str,
                               msg=f"The w2w function must return a list of words (strings)")
-        r_v2v = e.v2v(w)
+        r_v2v = e.v2v(v)
         self.assertIsInstance(r_v2v, list,
                               msg=f"The v2v function must return a list")
-        self.assertIsInstance(r_v2v[0], numpy.ndarray,
+        self.assertIsInstance(r_v2v[0], ndarray,
                               msg=f"The v2v function must return a list of vectors (numpy.array)")
-        self.assertIsInstance(r_v2v[0][0], numpy.floating,
+        self.assertIsInstance(r_v2v[0][0], floating,
                               msg=f"The v2v function must return a list of vectors of floats")
 
         vs1 = e.v2v(v, n)
@@ -456,10 +456,14 @@ class OKGraphTest(unittest.TestCase):
         self.assertIsInstance(r_v4th[0], str,
                               msg=f"The get4th function must return a list of words (strings)")
 
-        centroid = e.centroid(["milan", "rome", "turin"])
-        self.assertIsInstance(r_v2v[0], numpy.ndarray,
+        centroid = e.centroid(["milan", "rome", "venice"])
+        self.assertIsInstance(centroid, ndarray,
                               msg=f"The centroid function must return a vector (numpy.array)")
 
+        not_existing_word = "iononsonounaparolachepuòesisterenelmodello"
+        existence = e.exists(not_existing_word)
+        self.assertFalse(existence,
+                         msg=f"{not_existing_word} cannot be in the model")
 
 if __name__ == "__main__":
     unittest.main()

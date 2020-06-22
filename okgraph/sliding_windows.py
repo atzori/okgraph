@@ -28,7 +28,7 @@ class SlidingWindows:
     """
 
     def __init__(self,
-                 target_words: Tuple[str],
+                 target_words: Tuple[str, ...],
                  corpus_index_path: str = DEFAULT_INDEX_DIR,
                  corpus_dictionary_path: str = DEFAULT_DICTIONARY_DIR,
                  window_size: int = 14,
@@ -42,7 +42,7 @@ class SlidingWindows:
         the TF-IDF statistic, are the most valuable labels.
 
         Args:
-            target_words (Tuple[str]): tuple of word/words whose context
+            target_words (Tuple[str, ...]): tuple of word/words whose context
                 has/have to be inspected.
             corpus_index_path (str): path of the indexed corpus.
             corpus_dictionary_path (str): path of the corpus dictionary.

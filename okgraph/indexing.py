@@ -43,7 +43,7 @@ class Indexing:
         """
         self.corpus_path = corpus_path
         self.schema = Schema(
-            title=TEXT(stored=True),
+            id=TEXT(stored=True),
             content=TEXT(stored=True)
         )
 
@@ -147,7 +147,7 @@ class Indexing:
                     # Index the document content using the document index as
                     # its ID
                     writer.add_document(
-                        title=str(hex(document_index)),
+                        id=str(hex(document_index)),
                         content=document_content)
 
                     # Get rid of the words that do not overlay with the next

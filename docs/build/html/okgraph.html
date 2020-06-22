@@ -14,6 +14,7 @@
     <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="okgraph.task package" href="okgraph.task.html" />
     <link rel="prev" title="okgraph" href="modules.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -33,62 +34,230 @@
             
   <div class="section" id="okgraph-package">
 <h1>okgraph package<a class="headerlink" href="#okgraph-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="okgraph.task.html">okgraph.task package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="okgraph.task.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="okgraph.task.relation_expansion.html">okgraph.task.relation_expansion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="okgraph.task.relation_expansion.html#module-okgraph.task.relation_expansion">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="okgraph.task.relation_labeling.html">okgraph.task.relation_labeling package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="okgraph.task.relation_labeling.html#module-okgraph.task.relation_labeling">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="okgraph.task.set_expansion.html">okgraph.task.set_expansion package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="okgraph.task.set_expansion.html#module-okgraph.task.set_expansion">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="okgraph.task.html#module-okgraph.task">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-okgraph.core">
 <span id="okgraph-core-module"></span><h2>okgraph.core module<a class="headerlink" href="#module-okgraph.core" title="Permalink to this headline">¶</a></h2>
-<p>TRYDOC: The core module contains the library main functionalities.</p>
+<p>The core module contains the library main functionalities to performs
+unsupervised natural-language understanding.</p>
 <dl class="py class">
 <dt id="okgraph.core.OKgraph">
-<em class="property">class </em><code class="sig-prename descclassname">okgraph.core.</code><code class="sig-name descname">OKgraph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">corpus</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">embeddings</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">5</span></em>, <em class="sig-param"><span class="n">stream</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lazy_loading</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">index</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dictionary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force_init</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#okgraph.core.OKgraph" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">okgraph.core.</code><code class="sig-name descname">OKgraph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">corpus_file</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">embeddings_file</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">5</span></em>, <em class="sig-param"><span class="n">stream</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lazy_loading</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">index_dir</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dictionary_file</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force_init</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#okgraph.core.OKgraph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>OKgraph currently focuses on the following tasks:
-- “set expansion”: given one or a short set of words, continues this set with a list of other “same-type” words</p>
-<blockquote>
-<div><p>(co-hyponyms)</p>
-</div></blockquote>
-<ul class="simple">
-<li><dl class="simple">
-<dt>“relation expansion”: given one or a short set of word pairs, continues this set with a list of pairs having the</dt><dd><p>same implicit relation of the given pairs</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>“set labeling”: given one or a short set of words, returns a list of short strings (labels) describing the given</dt><dd><p>set (its type or hyperonym)</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>“relation labeling”: given one or a short set of word pairs, returns a list of short strings (labels) describing</dt><dd><p>the relation in the given set</p>
-</dd>
-</dl>
-</li>
+<p>A class used to extract knowledge from unstructured text corpus.</p>
+<dl class="simple">
+<dt>This class currently focuses on the following tasks:</dt><dd><ul class="simple">
+<li><p><strong>set expansion</strong>: given one or a short set of words, continues this
+set with a list of other ‘same-type’ words (<a class="reference external" href="https://en.wikipedia.org/wiki/Hyponymy_and_hypernymy#Co-hyponyms">co-hyponyms</a>);</p></li>
+<li><p><strong>relation expansion</strong>: given one or a short set of word pairs,
+continues this set with a list of pairs having the same implicit
+relation of the given pairs;</p></li>
+<li><p><strong>set labeling</strong>: given one or a short set of words, returns a list
+of short strings (labels) describing the given set (its type or
+<a class="reference external" href="https://en.wikipedia.org/wiki/Hyponymy_and_hypernymy">hyperonym</a>);</p></li>
+<li><p><strong>relation labeling</strong>: given one or a short set of word pairs,
+returns a list of short strings (labels) describing the relation in
+the given set;</p></li>
 </ul>
+</dd>
+</dl>
+<p>All the tasks work with plain text corpus (untagged).</p>
 <dl class="py attribute">
 <dt id="okgraph.core.OKgraph.corpus">
 <code class="sig-name descname">corpus</code><a class="headerlink" href="#okgraph.core.OKgraph.corpus" title="Permalink to this definition">¶</a></dt>
-<dd><p>path of the corpus file</p>
+<dd><p>path of the corpus file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="okgraph.core.OKgraph.embeddings">
 <code class="sig-name descname">embeddings</code><a class="headerlink" href="#okgraph.core.OKgraph.embeddings" title="Permalink to this definition">¶</a></dt>
-<dd><p>words vector model</p>
+<dd><p>words embeddings (vector
+model).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#okgraph.embeddings.MagnitudeWordEmbeddings" title="okgraph.embeddings.MagnitudeWordEmbeddings">MagnitudeWordEmbeddings</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="okgraph.core.OKgraph.index">
 <code class="sig-name descname">index</code><a class="headerlink" href="#okgraph.core.OKgraph.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>path of the indexed corpus files</p>
+<dd><p>path of the indexed corpus files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="okgraph.core.OKgraph.dictionary">
 <code class="sig-name descname">dictionary</code><a class="headerlink" href="#okgraph.core.OKgraph.dictionary" title="Permalink to this definition">¶</a></dt>
-<dd><p>path of the corpus dictionary</p>
+<dd><p>path of the corpus dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
+<p>The constructor creates a OKgraph object.</p>
+<p>Loads or generates the word embeddings, corpus index and corpus
+dictionary, whether or not they already exist.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>corpus_file</strong> (<em>str</em>) – path of the corpus file. The corpus file should
+be a cleaned free text file (untagged).</p></li>
+<li><p><strong>embeddings_file</strong> (<a class="reference internal" href="#okgraph.embeddings.MagnitudeWordEmbeddings" title="okgraph.embeddings.MagnitudeWordEmbeddings"><em>MagnitudeWordEmbeddings</em></a>) – path or URL of the
+embeddings file.
+The supported embeddings are <em>.magnitude</em>, <em>.bin</em>, <em>.txt</em>,
+<em>.vec</em> and <em>.hdf5</em>. The <em>.bin</em>, <em>.txt</em>, <em>.vec</em> and <em>.hdf5</em>
+embeddings are supported by automatically converting them to a
+<em>.magnitude</em> file. No extension will be treated as <em>.magnitude</em>.
+If the embeddings file is not specified, the default path
+points to a <em>.magnitude</em> file with the same basename of the
+corpus file.
+If the specified file is found in the path, the embeddings is
+directly loaded.
+If the specified <em>.magnitude</em> file is not found, an embeddings
+Magnitude model is created from the text corpus.
+If the specified <em>.bin</em>, <em>.txt</em>, <em>.vec</em> or <em>.hdf5</em> file is not
+found a ValueError is raised, because these models can be
+loaded but not created.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – embeddings can be queried to know the words whose vector
+representation is similar to a known vector. The OKgraph tasks
+could be using this functionality to extract their results:
+usually, the more results you are expecting from the task, the
+more words you are expecting from the embeddings.
+<em>k</em> should be set to the approximate upper-bound of the number
+of results that will be expected from the embeddings. If the
+exact number is unknown, be conservative picking a large number,
+while keeping in mind the bigger <em>k</em> is, the more memory it
+will consume.</p></li>
+<li><p><strong>stream</strong> (<em>bool</em>) – stream the URL instead of downloading it.</p></li>
+<li><p><strong>lazy_loading</strong> (<em>int</em>) – <p>allows faster cold start when loading:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 91%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>-1</p></td>
+<td><p>preload into memory</p></td>
+</tr>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>lazy loads with unbounded in-memory cache</p></td>
+</tr>
+<tr class="row-odd"><td><p>&gt;0</p></td>
+<td><p>lazy loads with an LRU cache of that size</p></td>
+</tr>
+</tbody>
+</table>
+</p></li>
+<li><p><strong>index_dir</strong> (<em>str</em>) – path of the indexed corpus files directory.
+If the index directory is not specified, the default path
+points to a directory named <em>indexdir</em> with the same parent
+directory of the corpus.
+If the directory exists it is used as it is, otherwise it is
+created.</p></li>
+<li><p><strong>dictionary_file</strong> (<em>str</em>) – path of the corpus dictionary file.
+The supported files are <em>.npy</em>. No extension will be treated as
+<em>.npy</em>.
+If the dictionary file is not specified, the default path
+points to a file named <em>dictTotal.npy</em> with the same parent
+directory of the corpus.
+If the file exists it is used as it is, otherwise it is created.</p></li>
+<li><p><strong>force_init</strong> (<em>bool</em>) – forces the initialization of the embeddings,
+index and dictionary from scratch, overwriting them if already
+existing.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<ul>
+<li><dl>
+<dt>Instantiating an OKgraph object specifing a corpus file:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">okgraph.core</span> <span class="kn">import</span> <span class="n">OKgraph</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">corpus</span> <span class="o">=</span> <span class="s2">&quot;/OKgraph/Example/enwik9.txt&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">okg</span> <span class="o">=</span> <span class="n">OKgraph</span><span class="p">(</span><span class="n">corpus</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>or even</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">okg</span> <span class="o">=</span> <span class="n">OKgraph</span><span class="p">(</span><span class="n">corpus_file</span><span class="o">=</span><span class="n">corpus</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>This code will create an OKgraph object using the <em>enwiki9.txt</em>
+corpus.
+No path have been specified for the embeddings, index directory
+and dictionary, so the default paths
+‘/OKgraph/Example/enwik9.magnitude’,
+‘/OKgraph/Example/indexdir/’, ‘/OKgraph/Example/dictTotal.npy’
+are implicitly used.
+All the resources will be searched in the default paths: if
+found they will be used, otherwise the missing one will be
+created (using the corpus).</p>
+</li>
+<li><dl>
+<dt>Instantiating an OKgraph object specifing the resources paths:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">okgraph.core</span> <span class="kn">import</span> <span class="n">OKgraph</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">corpus</span> <span class="o">=</span> <span class="s2">&quot;/OKgraph/Example/enwik9.txt&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">embeddings</span> <span class="o">=</span> <span class="s2">&quot;/OKgraph/Example/NewDir/enwiki9_embeddings&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">index</span> <span class="o">=</span> <span class="s2">&quot;/OKgraph/Example/NewDir/enwiki9_index&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dictionary</span> <span class="o">=</span> <span class="s2">&quot;/OKgraph/Example/NewDir/enwiki9_dictionary&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">okg</span> <span class="o">=</span> <span class="n">OKgraph</span><span class="p">(</span><span class="s2">&quot;/OKgraph/Example/enwik9.txt&quot;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>              <span class="n">embeddings_file</span><span class="o">=</span><span class="n">embeddings</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>              <span class="n">index_dir</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>              <span class="n">dictionary_file</span><span class="o">=</span><span class="n">dictionary</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>This code will create an OKgraph object using the <em>enwiki9.txt</em>
+corpus.
+No extension has been specified for the embeddings and the
+dictionary, so the <em>.magnitude</em> and <em>.npy</em> exntensions will be
+automatically appended.
+All the resources will be searched in the specified paths: if
+found they will be used, otherwise the missing one will be
+created (using the corpus). In the above example, the resources
+are missing and they will be created in the new directory
+<em>NewDir</em>. <em>NewDir</em> will be automatically created.</p>
+</li>
+</ul>
 <dl class="py attribute">
 <dt id="id0">
 <code class="sig-name descname">corpus</code><em class="property">: str</em><em class="property"> = None</em><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
@@ -101,7 +270,7 @@
 
 <dl class="py attribute">
 <dt id="id2">
-<code class="sig-name descname">embeddings</code><em class="property">: Magnitude</em><em class="property"> = None</em><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">embeddings</code><em class="property">: MagnitudeWordEmbeddings</em><em class="property"> = None</em><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -111,70 +280,458 @@
 
 <dl class="py method">
 <dt id="okgraph.core.OKgraph.relation_expansion">
-<code class="sig-name descname">relation_expansion</code><span class="sig-paren">(</span><em class="sig-param">seed: [(&lt;class 'str'&gt;,)], k: int = 15, algo: str = None, options: dict = None</em><span class="sig-paren">)</span> &#x2192; [(&lt;class ‘str’&gt;,)]<a class="headerlink" href="#okgraph.core.OKgraph.relation_expansion" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds pairs similar to the pairs in the seed.
-:param seed: list of words pairs that has to be expanded
-:param k: limit to the number of results
-:param algo: name of the chosen algorithm
-:param options: task options: check the chosen algorithm interface to check its parameters</p>
+<code class="sig-name descname">relation_expansion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">List[Tuple[str, …]]</span></em>, <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">15</span></em>, <em class="sig-param"><span class="n">algo</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List[Tuple[str, …]]<a class="headerlink" href="#okgraph.core.OKgraph.relation_expansion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds tuples with the same implicit relation of the seed tuples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><em>str</em><em>, </em><em>..</em><em>]</em><em>]</em>) – list of tuples that has to be
+expanded.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – limit to the number of result tuples.</p></li>
+<li><p><strong>algo</strong> (<em>str</em>) – name of the chosen algorithm. The algorithm should be
+found in <em>okgraph.task.relation_expansion</em>.</p></li>
+<li><p><strong>options</strong> (<em>Dict</em>) – dictionary containing the keyword arguments for the
+chosen algorithm.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>the list of tuples related to the seed</dt><dd><p>tuples.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Tuple[str, ..]]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="okgraph.core.OKgraph.relation_labeling">
-<code class="sig-name descname">relation_labeling</code><span class="sig-paren">(</span><em class="sig-param">seed: [(&lt;class 'str'&gt;, &lt;class 'str'&gt;)], k: int = 15, algo: str = None, options: dict = None</em><span class="sig-paren">)</span> &#x2192; [&lt;class ‘str’&gt;]<a class="headerlink" href="#okgraph.core.OKgraph.relation_labeling" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds labels describing the relation between the pairs of words in the seed.
-:param seed: list of words pairs that has to be expanded
-:param k: limit to the number of results
-:param algo: name of the chosen algorithm
-:param options: task options: check the chosen algorithm interface to check its parameters</p>
+<code class="sig-name descname">relation_labeling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">List[Tuple[str, …]]</span></em>, <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">15</span></em>, <em class="sig-param"><span class="n">algo</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.core.OKgraph.relation_labeling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds labels describing the implicit relation between the seed
+tuples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><em>str</em><em>, </em><em>..</em><em>]</em><em>]</em>) – list of tuples that has to be labeled.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – limit to the number of result labels.</p></li>
+<li><p><strong>algo</strong> (<em>str</em>) – name of the chosen algorithm. The algorithm should be
+found in <em>okgraph.task.relation_labeling</em>.</p></li>
+<li><p><strong>options</strong> (<em>Dict</em>) – dictionary containing the keyword arguments for the
+chosen algorithm.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the list of labels related to the seed tuples.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="okgraph.core.OKgraph.set_expansion">
-<code class="sig-name descname">set_expansion</code><span class="sig-paren">(</span><em class="sig-param">seed: [&lt;class 'str'&gt;], k: int = 15, algo: str = None, options: dict = None</em><span class="sig-paren">)</span> &#x2192; [&lt;class ‘str’&gt;]<a class="headerlink" href="#okgraph.core.OKgraph.set_expansion" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds words similar to the words in the seed (co-hyponyms).
-:param seed: list of words pairs that has to be expanded
-:param k: limit to the number of results
-:param algo: name of the chosen algorithm
-:param options: task options: check the chosen algorithm interface to check its parameters</p>
+<code class="sig-name descname">set_expansion</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">15</span></em>, <em class="sig-param"><span class="n">algo</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.core.OKgraph.set_expansion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds words with the same implicit relation of the seed words
+(co-hyponyms).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of words that has to be expanded.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – limit to the number of result words.</p></li>
+<li><p><strong>algo</strong> (<em>str</em>) – name of the chosen algorithm. The algorithm should be
+found in <em>okgraph.task.set_expansion</em>.</p></li>
+<li><p><strong>options</strong> (<em>Dict</em>) – dictionary containing the keyword arguments for the
+chosen algorithm.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the list of words related to the seed words.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="okgraph.core.OKgraph.set_labeling">
-<code class="sig-name descname">set_labeling</code><span class="sig-paren">(</span><em class="sig-param">seed: [&lt;class 'str'&gt;], k: int = 15, algo: str = None, options: dict = None</em><span class="sig-paren">)</span> &#x2192; [&lt;class ‘str’&gt;]<a class="headerlink" href="#okgraph.core.OKgraph.set_labeling" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds labels describing the relation between the words in the seed (hyperonym).
-:param seed: list of words pairs that has to be expanded
-:param k: limit to the number of results
-:param algo: name of the chosen algorithm
-:param options: task options: check the chosen algorithm interface to check its parameters</p>
+<code class="sig-name descname">set_labeling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">15</span></em>, <em class="sig-param"><span class="n">algo</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.core.OKgraph.set_labeling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds labels describing the implicit relation between the seed
+words (hyperonym).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of words that has to be labeled.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – limit to the number of result labels.</p></li>
+<li><p><strong>algo</strong> (<em>str</em>) – name of the chosen algorithm. The algorithm should be
+found in <em>okgraph.task.set_labeling</em>.</p></li>
+<li><p><strong>options</strong> (<em>Dict</em>) – dictionary containing the keyword arguments for the
+chosen algorithm.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the list of labels related to the seed words.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 </div>
-<div class="section" id="module-okgraph.file_converter">
-<span id="okgraph-file-converter-module"></span><h2>okgraph.file_converter module<a class="headerlink" href="#module-okgraph.file_converter" title="Permalink to this headline">¶</a></h2>
-<p>TRYDOC: Creates embeddings</p>
+<div class="section" id="module-okgraph.embeddings">
+<span id="okgraph-embeddings-module"></span><h2>okgraph.embeddings module<a class="headerlink" href="#module-okgraph.embeddings" title="Permalink to this headline">¶</a></h2>
+<p>The ‘embeddings’ module contains the utilities to work with word embeddings.</p>
 <dl class="py class">
-<dt id="okgraph.file_converter.FileConverter">
-<em class="property">class </em><code class="sig-prename descclassname">okgraph.file_converter.</code><code class="sig-name descname">FileConverter</code><a class="headerlink" href="#okgraph.file_converter.FileConverter" title="Permalink to this definition">¶</a></dt>
+<dt id="okgraph.embeddings.FileConverter">
+<em class="property">class </em><code class="sig-prename descclassname">okgraph.embeddings.</code><code class="sig-name descname">FileConverter</code><a class="headerlink" href="#okgraph.embeddings.FileConverter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class used to convert text corpus and embeddings to Magnitude models.
+Text corpus should be plain text without any kind of formatting.</p>
 <dl class="py method">
-<dt id="okgraph.file_converter.FileConverter.corpus_to_gensim_model">
-<code class="sig-name descname">corpus_to_gensim_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_fname</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#okgraph.file_converter.FileConverter.corpus_to_gensim_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads text file and creates a gensim model file.
-:param corpus_fname: name (path) of the corpus
-:param save_fname: name (path) of the model
-:return: the model name</p>
+<dt id="okgraph.embeddings.FileConverter.corpus_to_magnitude_model">
+<em class="property">static </em><code class="sig-name descname">corpus_to_magnitude_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">corpus_file</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">model_file</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#okgraph.embeddings.FileConverter.corpus_to_magnitude_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analyzes the corpus and convert it to Magnitude embeddings using
+a base Word2Vec model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>corpus_file</strong> (<em>str</em>) – path of the corpus text file.</p></li>
+<li><p><strong>model_file</strong> (<em>str</em>) – save path for the Magnitude model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the save path of the Magnitude model.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="okgraph.file_converter.FileConverter.corpus_to_magnitude_model">
-<code class="sig-name descname">corpus_to_magnitude_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">save_fname</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#okgraph.file_converter.FileConverter.corpus_to_magnitude_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads a text file and creates a Magnitude model file.
-:param corpus_fname: name (path) of the corpus
-:param save_fname: name (path) of the model
-:return: the model name</p>
+<dt id="okgraph.embeddings.FileConverter.generic_model_to_magnitude_model">
+<em class="property">static </em><code class="sig-name descname">generic_model_to_magnitude_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_model</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">output_model</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#okgraph.embeddings.FileConverter.generic_model_to_magnitude_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the embeddings in the .txt, .bin, .vec, or .hdf5 formats
+from GloVe, Gensim or ELMo models into a Magnitude model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_model</strong> – path of the input model.</p></li>
+<li><p><strong>output_model</strong> – path of the output Magnitude model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="okgraph.embeddings.MagnitudeWordEmbeddings">
+<em class="property">class </em><code class="sig-prename descclassname">okgraph.embeddings.</code><code class="sig-name descname">MagnitudeWordEmbeddings</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_file</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">5</span></em>, <em class="sig-param"><span class="n">stream</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">lazy_loading</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#okgraph.embeddings.MagnitudeWordEmbeddings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#okgraph.embeddings.WordEmbeddings" title="okgraph.embeddings.WordEmbeddings"><code class="xref py py-class docutils literal notranslate"><span class="pre">okgraph.embeddings.WordEmbeddings</span></code></a></p>
+<p>A class used to represent word embeddings through the <a class="reference external" href="https://github.com/plasticityai/magnitude/blob/master/README.md">Magnitude</a> model.</p>
+<dl class="py attribute">
+<dt id="okgraph.embeddings.MagnitudeWordEmbeddings.model">
+<code class="sig-name descname">model</code><em class="property">: Magnitude</em><em class="property"> = None</em><a class="headerlink" href="#okgraph.embeddings.MagnitudeWordEmbeddings.model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="okgraph.embeddings.MagnitudeWordEmbeddings.v2w">
+<code class="sig-name descname">v2w</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.embeddings.MagnitudeWordEmbeddings.v2w" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a vector, finds the most closest word/words.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v</strong> (<em>ndarray</em>) – a potential vector representation of a word.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – maximum number of results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>a list of word/words whose vector representation is close</dt><dd><p>to the given vector.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="okgraph.embeddings.MagnitudeWordEmbeddings.w2v">
+<code class="sig-name descname">w2v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">w</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#okgraph.embeddings.MagnitudeWordEmbeddings.w2v" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a word, finds its vector representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>w</strong> (<em>str</em>) – word in the embeddings model.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the vector representation of the word.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#okgraph.embeddings.NotExistingWordException" title="okgraph.embeddings.NotExistingWordException"><strong>NotExistingWordException</strong></a> – if the word doesn’t exist in the
+    embeddings and no vector can be related to it.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="okgraph.embeddings.NotExistingWordException">
+<em class="property">exception </em><code class="sig-prename descclassname">okgraph.embeddings.</code><code class="sig-name descname">NotExistingWordException</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">w</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#okgraph.embeddings.NotExistingWordException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>An exception used to represent the error that occur when a word is
+searched in the embeddings but it is not present.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="okgraph.embeddings.WordEmbeddings">
+<em class="property">class </em><code class="sig-prename descclassname">okgraph.embeddings.</code><code class="sig-name descname">WordEmbeddings</code><a class="headerlink" href="#okgraph.embeddings.WordEmbeddings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>An abstract class representing <a class="reference external" href="https://en.wikipedia.org/wiki/Word_embedding">word embeddings</a> and their basic operations.</p>
+<dl class="py method">
+<dt id="okgraph.embeddings.WordEmbeddings.centroid">
+<code class="sig-name descname">centroid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ws</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#okgraph.embeddings.WordEmbeddings.centroid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Computes the average vector from the vector representation of the</dt><dd><p>given words.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ws</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of words.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the average vector, or centroid.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="okgraph.embeddings.WordEmbeddings.centroidv">
+<code class="sig-name descname">centroidv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#okgraph.embeddings.WordEmbeddings.centroidv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the average vector from the given vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vs</strong> (<em>List</em><em>[</em><em>ndarray</em><em>]</em>) – list of numerical vectors.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the average vector, or centroid.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="okgraph.embeddings.WordEmbeddings.exists">
+<code class="sig-name descname">exists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">w</span></em><span class="sig-paren">)</span><a class="headerlink" href="#okgraph.embeddings.WordEmbeddings.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a word exists in the embeddings model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>w</strong> (<em>str</em>) – a potential word in the embeddings model.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if a vector exists for the given word, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="okgraph.embeddings.WordEmbeddings.get4th">
+<code class="sig-name descname">get4th</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">w1</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">w2</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">w3</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.embeddings.WordEmbeddings.get4th" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the fourth element that completes the analogy ‘w1 : w2 =
+w3 : ?4th?’. Input words must be provided in the correct order to
+compute the analogy correctly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>w1</strong> (<em>str</em>) – first word.</p></li>
+<li><p><strong>w2</strong> (<em>str</em>) – second word.</p></li>
+<li><p><strong>w3</strong> (<em>str</em>) – third word.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – maximum number of results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of word/words that complete the analogy.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<dl>
+<dt>An example of analogy that the method completes could be:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="p">:</span> <span class="n">WordEmbeddings</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w1</span> <span class="o">=</span> <span class="s2">&quot;man&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w2</span> <span class="o">=</span> <span class="s2">&quot;king&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w3</span> <span class="o">=</span> <span class="s2">&quot;woman&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w4</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">get4th</span><span class="p">(</span><span class="n">w1</span><span class="p">,</span> <span class="n">w2</span><span class="p">,</span> <span class="n">w3</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>expecting <em>w4</em> to be something such <em>[‘queen’]</em> having <em>n=1</em>. With
+<em>n&gt;1</em> other possible solutions would be added to the list of
+results.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="okgraph.embeddings.WordEmbeddings.get4thv">
+<code class="sig-name descname">get4thv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v1</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">v2</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">v3</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.embeddings.WordEmbeddings.get4thv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the fourth element that completes the analogy ‘v1 : v2 =
+v3 : ?4th?’. Input vectors must be provided in the correct order to
+compute the analogy correctly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v1</strong> (<em>ndarray</em>) – first vector.</p></li>
+<li><p><strong>v2</strong> (<em>ndarray</em>) – second vector.</p></li>
+<li><p><strong>v3</strong> (<em>ndarray</em>) – third vector.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – maximum number of results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>a list of word/words whose vector representation is close</dt><dd><p>to the vector that completes the analogy.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<dl>
+<dt>An example of analogy that the method completes could be:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="p">:</span> <span class="n">WordEmbeddings</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">w2v</span><span class="p">(</span><span class="s2">&quot;man&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">w2v</span><span class="p">(</span><span class="s2">&quot;king&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v3</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">w2v</span><span class="p">(</span><span class="s2">&quot;woman&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w4</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">get4thv</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">v3</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>expecting <em>w4</em> to be something such <em>[‘queen’]</em> having <em>n=1</em>. With
+<em>n&gt;1</em> other possible solutions would be added to the list of
+results.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="okgraph.embeddings.WordEmbeddings.v2v">
+<code class="sig-name descname">v2v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#okgraph.embeddings.WordEmbeddings.v2v" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a vector, finds the most closest vector/vectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v</strong> (<em>ndarray</em>) – a potential vector representation of a word.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – maximum number of results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>a list of vector/vectors that are close to the given</dt><dd><p>vector.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="okgraph.embeddings.WordEmbeddings.v2w">
+<em class="property">abstract </em><code class="sig-name descname">v2w</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.embeddings.WordEmbeddings.v2w" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a vector, finds the most closest word/words.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v</strong> (<em>ndarray</em>) – a potential vector representation of a word.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – maximum number of results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>a list of word/words whose vector representation is close</dt><dd><p>to the given vector.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="okgraph.embeddings.WordEmbeddings.w2v">
+<em class="property">abstract </em><code class="sig-name descname">w2v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">w</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#okgraph.embeddings.WordEmbeddings.w2v" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a word, finds its vector representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>w</strong> (<em>str</em>) – word in the embeddings model.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the vector representation of the word.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#okgraph.embeddings.NotExistingWordException" title="okgraph.embeddings.NotExistingWordException"><strong>NotExistingWordException</strong></a> – if the word doesn’t exist in the
+    embeddings and no vector can be related to it.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="okgraph.embeddings.WordEmbeddings.w2w">
+<code class="sig-name descname">w2w</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">w</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.embeddings.WordEmbeddings.w2w" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a word, finds the most closest word/words.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>w</strong> (<em>str</em>) – word in the embeddings model.</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – maximum number of results.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>a list of word/words whose vector representation is close</dt><dd><p>to the vector representation of the given word.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -182,178 +739,215 @@
 </div>
 <div class="section" id="module-okgraph.indexing">
 <span id="okgraph-indexing-module"></span><h2>okgraph.indexing module<a class="headerlink" href="#module-okgraph.indexing" title="Permalink to this headline">¶</a></h2>
+<p>The ‘indexing’ module contains the utilities used to organize a corpus in
+sub-documents and allow faster searches of word occurrences into it.</p>
+<dl class="py data">
+<dt id="okgraph.indexing.DEFAULT_INDEX_DIR">
+<code class="sig-prename descclassname">okgraph.indexing.</code><code class="sig-name descname">DEFAULT_INDEX_DIR</code><em class="property">: str</em><em class="property"> = 'indexdir'</em><a class="headerlink" href="#okgraph.indexing.DEFAULT_INDEX_DIR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default path for the index directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="okgraph.indexing.FIELD_CONTENT">
+<code class="sig-prename descclassname">okgraph.indexing.</code><code class="sig-name descname">FIELD_CONTENT</code><em class="property">: str</em><em class="property"> = 'content'</em><a class="headerlink" href="#okgraph.indexing.FIELD_CONTENT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Field that stores the content of a document in the Schema</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="okgraph.indexing.FIELD_ID">
+<code class="sig-prename descclassname">okgraph.indexing.</code><code class="sig-name descname">FIELD_ID</code><em class="property">: str</em><em class="property"> = 'id'</em><a class="headerlink" href="#okgraph.indexing.FIELD_ID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Field that stores the ID of a document in the Schema</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py class">
 <dt id="okgraph.indexing.Indexing">
 <em class="property">class </em><code class="sig-prename descclassname">okgraph.indexing.</code><code class="sig-name descname">Indexing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">corpus_path</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#okgraph.indexing.Indexing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class used to organize a corpus in sub-documents and allow faster searches of word occurrences into it.
-Every sub-document (or document) is a text window extracted from the corpus. All of the documents have the same
-specified dimension and adjoining documents are partially overlaid. Every document has an unique title (ID) and a
-content (the text contained in the window). All of the documents are stored and indexed.
-.. attribute:: corpus_path</p>
-<blockquote>
-<div><p>path of the file (text corpus)</p>
-</div></blockquote>
+<p>A class used to create an index of the corpus.</p>
+<p>The corpus is divided in sub-documents with a unique ID to identify their
+content. All the documents are then stored and indexed.
+Every sub-document (or document) is a text window extracted from the corpus.
+All the documents have the same specified dimension and adjoining documents
+are partially overlaid.</p>
+<dl class="py attribute">
+<dt id="okgraph.indexing.Indexing.corpus_path">
+<code class="sig-name descname">corpus_path</code><a class="headerlink" href="#okgraph.indexing.Indexing.corpus_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>path of the text corpus.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt id="okgraph.indexing.Indexing.schema">
 <code class="sig-name descname">schema</code><a class="headerlink" href="#okgraph.indexing.Indexing.schema" title="Permalink to this definition">¶</a></dt>
-<dd><p>schema (whoosh Schema) used to represent a document: (title (text ID): content (text))</p>
+<dd><p>the index structure composed by the following fields:
+“id”: str
+“content”: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Schema</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="okgraph.indexing.Indexing.indexing">
-<code class="sig-name descname">indexing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index_path</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'indexdir'</span></em>, <em class="sig-param"><span class="n">document_overlay</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">20</span></em>, <em class="sig-param"><span class="n">document_center</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">40</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#okgraph.indexing.Indexing.indexing" title="Permalink to this definition">¶</a></dt>
-<dd><p>Starts the indexing process.
-:param index_path: path in which the documents will be stored
-:param document_overlay: number of words shared between two documents. This value should be greater than the</p>
-<blockquote>
-<div><p>expected maximum size of the windows created trough the SlidingWindows objects</p>
-</div></blockquote>
+<p>The constructor creates an Indexing object.</p>
+<p>Saves the reference to the corpus file and defines the structure for
+the index (schema).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>document_center</strong> – number of words at the center of the document, not shared</p>
+<dd class="field-odd"><p><strong>corpus_path</strong> (<em>str</em>) – path of the text corpus.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="okgraph.indexing.Indexing.indexing">
+<code class="sig-name descname">indexing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index_path</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'indexdir'</span></em>, <em class="sig-param"><span class="n">document_overlay</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">20</span></em>, <em class="sig-param"><span class="n">document_center</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">40</span></em>, <em class="sig-param"><span class="n">num_processes</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">memory_limit</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">128</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#okgraph.indexing.Indexing.indexing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the indexing process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index_path</strong> (<em>str</em>) – path in which the index will be stored.</p></li>
+<li><p><strong>document_overlay</strong> (<em>int</em>) – number of words shared between two
+documents. This value should be greater than the expected
+maximum size of the windows created trough the SlidingWindows
+objects.</p></li>
+<li><p><strong>document_center</strong> (<em>int</em>) – number of words at the center of the
+document, not shared.</p></li>
+<li><p><strong>num_processes</strong> (<em>int</em>) – number of processes used by the index writer.</p></li>
+<li><p><strong>memory_limit</strong> (<em>int</em>) – memory (MB) used by every single writer process.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="okgraph-logger-module">
-<h2>okgraph.logger module<a class="headerlink" href="#okgraph-logger-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-okgraph.sliding_windows">
 <span id="okgraph-sliding-windows-module"></span><h2>okgraph.sliding_windows module<a class="headerlink" href="#module-okgraph.sliding_windows" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="okgraph.sliding_windows.SlidingWindows">
-<em class="property">class </em><code class="sig-prename descclassname">okgraph.sliding_windows.</code><code class="sig-name descname">SlidingWindows</code><span class="sig-paren">(</span><em class="sig-param">target_words: (&lt;class 'str'&gt;</em>, <em class="sig-param">)</em>, <em class="sig-param">corpus_index_path: str = 'indexdir'</em>, <em class="sig-param">corpus_dictionary_path: str = 'dictTotal.npy'</em>, <em class="sig-param">windows_max_size: int = 14</em>, <em class="sig-param">noise_threshold: float = 0.1</em><span class="sig-paren">)</span><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class used to inspect the context of one or two target words.
-The words that appear close to the target words inside the corpus are the words with similar meaning to the target</p>
-<blockquote>
-<div><p>words (according to the distributional hypothesis) and are going to be referenced as labels. The labels appear in
-the same context of the target words.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>The context is represented by windows of text with specified size containing the target words. The size of a text</dt><dd><p>window is measured in “words”. The text windows are extracted from the corpus and used to identify the labels.</p>
+<p>The ‘sliding_windows’ module contains the utilities to search for semantic
+similarities between the words in a corpus.</p>
+<dl class="py data">
+<dt id="okgraph.sliding_windows.DEFAULT_DICTIONARY_DIR">
+<code class="sig-prename descclassname">okgraph.sliding_windows.</code><code class="sig-name descname">DEFAULT_DICTIONARY_DIR</code><em class="property">: str</em><em class="property"> = 'dictTotal.npy'</em><a class="headerlink" href="#okgraph.sliding_windows.DEFAULT_DICTIONARY_DIR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default path for the corpus dictionary file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.target_words">
-<code class="sig-name descname">target_words</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.target_words" title="Permalink to this definition">¶</a></dt>
-<dd><p>list of word/words whose context has/have to be inspected</p>
 </dd></dl>
 
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.corpus_index_path">
-<code class="sig-name descname">corpus_index_path</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.corpus_index_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>path of the stored and indexed corpus</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.corpus_dict">
-<code class="sig-name descname">corpus_dict</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.corpus_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>dictionary of the corpus {word in corpus: occurrences in corpus}</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.corpus_total_occurrences">
-<code class="sig-name descname">corpus_total_occurrences</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.corpus_total_occurrences" title="Permalink to this definition">¶</a></dt>
-<dd><p>total number of occurrences in the corpus</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.corpus_inverse_frequency_dict">
-<code class="sig-name descname">corpus_inverse_frequency_dict</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.corpus_inverse_frequency_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>dictionary {word in corpus: inverse frequency}</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.windows_max_size">
-<code class="sig-name descname">windows_max_size</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.windows_max_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>maximum size of the windows (in ‘words’) that can contain the target word/words</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.windows_list">
-<code class="sig-name descname">windows_list</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.windows_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>list of context windows</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.windows_dict">
-<code class="sig-name descname">windows_dict</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.windows_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>dictionary of the windows {word in windows: occurrences in windows}</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.windows_total_occurrences">
-<code class="sig-name descname">windows_total_occurrences</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.windows_total_occurrences" title="Permalink to this definition">¶</a></dt>
-<dd><p>total number of occurrences in all of the windows</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.windows_occurrence_dict">
-<code class="sig-name descname">windows_occurrence_dict</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.windows_occurrence_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>dictionary {word in windows: number of windows containing the word}</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.windows_frequency_dict">
-<code class="sig-name descname">windows_frequency_dict</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.windows_frequency_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>dictionary {word in windows: frequency}</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.noise_dict">
-<code class="sig-name descname">noise_dict</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.noise_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>dictionary {word: log(1 + word window frequency / word corpus frequency)}</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.tf_idf_dict">
-<code class="sig-name descname">tf_idf_dict</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.tf_idf_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>dictionary {word in window: TF-IDF}</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="okgraph.sliding_windows.SlidingWindows.results_dict">
-<code class="sig-name descname">results_dict</code><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.results_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>dictionary {significant word: TF-IDF}</p>
-</dd></dl>
-
+<dl class="py class">
+<dt id="okgraph.sliding_windows.SlidingWindows">
+<em class="property">class </em><code class="sig-prename descclassname">okgraph.sliding_windows.</code><code class="sig-name descname">SlidingWindows</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target_words</span><span class="p">:</span> <span class="n">Tuple[str, …]</span></em>, <em class="sig-param"><span class="n">corpus_index_path</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'indexdir'</span></em>, <em class="sig-param"><span class="n">corpus_dictionary_path</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'dictTotal.npy'</span></em>, <em class="sig-param"><span class="n">window_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">14</span></em>, <em class="sig-param"><span class="n">noise_threshold</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class used to inspect the context of the target words.</p>
+<p>The words that appear close to the target words inside the corpus are the
+words with similar meaning to the target words (according to the
+distributional hypothesis) and are going to be referenced as labels. The
+labels appear in the same context of the target words. The context is
+represented by windows of text with specified size containing the target
+words. The size of a text window is measured in ‘words’. The text windows
+are extracted from the corpus and used to identify the labels.</p>
+<p>The constructor creates a SlidingWindows object.</p>
+<p>Inspects the indexed corpus to build the windows containing the target
+words. The windows are analyzed to calculate numerical statistics of all
+the words in the windows. The most characteristic words, according to
+the TF-IDF statistic, are the most valuable labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_words</strong> (<em>Tuple</em><em>[</em><em>str</em><em>, </em><em>..</em><em>]</em>) – tuple of word/words whose context
+has/have to be inspected.</p></li>
+<li><p><strong>corpus_index_path</strong> (<em>str</em>) – path of the indexed corpus.</p></li>
+<li><p><strong>corpus_dictionary_path</strong> (<em>str</em>) – path of the corpus dictionary.</p></li>
+<li><p><strong>window_size</strong> (<em>int</em>) – size of the windows containing the target
+word/words.</p></li>
+<li><p><strong>noise_threshold</strong> (<em>float</em>) – upper bound of the noise statistic value
+to accept a word as a valid label. The word noise is evaluated
+through the ‘word corpus frequency / word window frequency’
+ratio (a logarithm function is used to scale the ratio). Words
+appearing in the corpus with a higher frequency than the
+windows are high rated and probably not characteristic for the
+windows. The noise and TF-IDF statistics are not bound, so that
+a word can score a high TF-IDF and yet a high noise.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="okgraph.sliding_windows.SlidingWindows.get_results">
-<code class="sig-name descname">get_results</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.get_results" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.sliding_windows.SlidingWindows.get_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of labels related to the target words.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – sets the limit to the number of labels to return. If None,
+no limit is set and all the labels are returned. Must be grater
+than zero.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the list of labels.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-okgraph.utils">
 <span id="okgraph-utils-module"></span><h2>okgraph.utils module<a class="headerlink" href="#module-okgraph.utils" title="Permalink to this headline">¶</a></h2>
-<p>The ‘utils’ module contains generic utilities that support the other modules of
+<p>The ‘utils’ module contains generic utilities supporting the other modules of
 the library.</p>
 <dl class="py function">
-<dt id="okgraph.utils.create_dictionary">
-<code class="sig-prename descclassname">okgraph.utils.</code><code class="sig-name descname">create_dictionary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">corpus</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">dictionary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'dictTotal.npy'</span></em>, <em class="sig-param"><span class="n">save_dictionary</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>int<span class="p">]</span><a class="headerlink" href="#okgraph.utils.create_dictionary" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a dictionary to summarize the distribution of the words in the
-corpus.</p>
+<dt id="okgraph.utils.check_extension">
+<code class="sig-prename descclassname">okgraph.utils.</code><code class="sig-name descname">check_extension</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">default_extension</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">allowed_extensions</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#okgraph.utils.check_extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the validity of a file name.
+If the file has no extension, the default extension is appended to the file
+name. If the file extension is one of the allowed extensions, the file
+name is returned, otherwise a ValueError is raised.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>corpus</strong> (<em>str</em>) – path of the corpus file.</p></li>
-<li><p><strong>dictionary</strong> (<em>str</em>) – path of the dictionary file in which store the created
-dictionary.</p></li>
-<li><p><strong>save_dictionary</strong> (<em>bool</em>) – True to store the created dictionary in a file,
-False otherwise.</p></li>
+<li><p><strong>file</strong> (<em>str</em>) – name of the file.</p></li>
+<li><p><strong>default_extension</strong> (<em>str</em>) – default extension for the file names with no
+specified extension. The starting ‘.’ should be included in the
+extension name.</p></li>
+<li><p><strong>allowed_extensions</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of allowed extensions for the
+file. The starting ‘.’ should be included in the extension name.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the corpus dictionary structured as {word: occurrences}.</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>the name of the file. If the specified name had no extension, the</dt><dd><p>default extension has been added.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Dict[str, int]</p>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -369,6 +963,29 @@ False otherwise.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt id="okgraph.utils.generate_dictionary">
+<code class="sig-prename descclassname">okgraph.utils.</code><code class="sig-name descname">generate_dictionary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">corpus</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">dictionary</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'dictTotal.npy'</span></em>, <em class="sig-param"><span class="n">save_dictionary</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>int<span class="p">]</span><a class="headerlink" href="#okgraph.utils.generate_dictionary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a dictionary representing the distribution of the words in the
+corpus.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>corpus</strong> (<em>str</em>) – path of the corpus file.</p></li>
+<li><p><strong>dictionary</strong> (<em>str</em>) – path of the file where the dictionary is saved.</p></li>
+<li><p><strong>save_dictionary</strong> (<em>bool</em>) – True to save the created dictionary in a file,
+False otherwise.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the corpus dictionary structured as {word: occurrences}.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dict[str, int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="okgraph.utils.get_words">
 <code class="sig-prename descclassname">okgraph.utils.</code><code class="sig-name descname">get_words</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_path</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; Iterator<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.utils.get_words" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads a text file and allows to scroll over it word by word. The text is
@@ -377,11 +994,8 @@ formatted so that the words are lowercase and the punctuation is removed.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – path of the corpus file.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>an iterator of words.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Iterator[str]</p>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><em>str</em> – the next word in the file.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -399,8 +1013,8 @@ formatted so that the words are lowercase and the punctuation is removed.</p>
 
 <dl class="py data">
 <dt id="okgraph.utils.logger">
-<code class="sig-prename descclassname">okgraph.utils.</code><code class="sig-name descname">logger</code><em class="property"> = &lt;RootLogger root (INFO)&gt;</em><a class="headerlink" href="#okgraph.utils.logger" title="Permalink to this definition">¶</a></dt>
-<dd><p>logger for run time documentation.</p>
+<code class="sig-prename descclassname">okgraph.utils.</code><code class="sig-name descname">logger</code><em class="property"> = &lt;RootLogger root (DEBUG)&gt;</em><a class="headerlink" href="#okgraph.utils.logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logger for run time documentation.</p>
 <p>Check the ‘logging.ini’ file for the logger configuration.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -457,6 +1071,7 @@ formatted so that the words are lowercase and the punctuation is removed.</p>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="modules.html">okgraph</a><ul>
       <li>Previous: <a href="modules.html" title="previous chapter">okgraph</a></li>
+      <li>Next: <a href="okgraph.task.html" title="next chapter">okgraph.task package</a></li>
   </ul></li>
   </ul></li>
 </ul>

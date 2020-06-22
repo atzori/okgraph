@@ -3,16 +3,16 @@
 from abc import ABC, abstractmethod
 from gensim.models.word2vec import LineSentence, Word2Vec
 from gensim.models.phrases import Phraser, Phrases
-from numpy import floating, ndarray
+from numpy import ndarray
 from okgraph.utils import logger
-from os.path import splitext
+from os import makedirs, path
 from pymagnitude import converter, Magnitude
 from typing import List
 
 
-class WordEmbedding(ABC):
-    """An abstract class representing a word embedding and their basic
-    operations.
+class WordEmbeddings(ABC):
+    """An abstract class representing `word embeddings
+    <https://en.wikipedia.org/wiki/Word_embedding>`_ and their basic operations.
     """
 
     @abstractmethod
@@ -20,7 +20,7 @@ class WordEmbedding(ABC):
         """Given a word, finds its vector representation.
 
         Args:
-            w (str): word in the embedding model.
+            w (str): word in the embeddings model.
 
         Returns:
             ndarray: the vector representation of the word.
@@ -51,7 +51,7 @@ class WordEmbedding(ABC):
         """Given a word, finds the most closest word/words.
 
         Args:
-            w (str): word in the embedding model.
+            w (str): word in the embeddings model.
             n (int): maximum number of results.
 
         Returns:
@@ -76,10 +76,10 @@ class WordEmbedding(ABC):
         return list(map(self.w2v, self.v2w(v, n)))
 
     def exists(self, w):
-        """Checks if a word exists in the embedding model.
+        """Checks if a word exists in the embeddings model.
 
         Args:
-            w (str): a potential word in the embedding model.
+            w (str): a potential word in the embeddings model.
 
         Returns:
             bool: True if a vector exists for the given word, False otherwise.
@@ -109,7 +109,7 @@ class WordEmbedding(ABC):
 
         Examples:
             An example of analogy that the method completes could be:
-                >>> e : WordEmbedding
+                >>> e : WordEmbeddings
                 >>> ...
                 >>> v1 = e.w2v("man")
                 >>> v2 = e.w2v("king")
@@ -140,7 +140,7 @@ class WordEmbedding(ABC):
 
         Examples:
             An example of analogy that the method completes could be:
-                >>> e : WordEmbedding
+                >>> e : WordEmbeddings
                 >>> ...
                 >>> w1 = "man"
                 >>> w2 = "king"
@@ -179,8 +179,9 @@ class WordEmbedding(ABC):
         return self.centroidv(list(map(self.w2v, ws)))
 
 
-class MagnitudeWordEmbedding(WordEmbedding):
-    """A class used to represent word embeddings through the Magnitude model.
+class MagnitudeWordEmbeddings(WordEmbeddings):
+    """A class used to represent word embeddings through the `Magnitude
+    <https://github.com/plasticityai/magnitude/blob/master/README.md>`_ model.
     """
     model: Magnitude
 
@@ -199,7 +200,7 @@ class MagnitudeWordEmbedding(WordEmbedding):
         """Given a word, finds its vector representation.
 
         Args:
-            w (str): word in the embedding model.
+            w (str): word in the embeddings model.
 
         Returns:
             ndarray: the vector representation of the word.
@@ -230,13 +231,13 @@ class MagnitudeWordEmbedding(WordEmbedding):
 
 
 class FileConverter:
-    """A class used to convert text corpus to different types of embeddings.
+    """A class used to convert text corpus and embeddings to Magnitude models.
     Text corpus should be plain text without any kind of formatting.
     """
 
     @staticmethod
-    def corpus_to_gensim_model(corpus_file: str,
-                               model_file: str = None) -> str:
+    def _corpus_to_gensim_model(corpus_file: str,
+                                model_file: str) -> str:
         """Analyzes the corpus and convert it to Gensim embeddings using
         the Word2Vec implementation.
 
@@ -247,43 +248,36 @@ class FileConverter:
         Returns:
             str: the save path of the Gensim model.
         """
-        logger.info(f"Generating Gensim model from {corpus_file}")
+        logger.info(f"Gensim: generating model from {corpus_file}")
 
         model = Word2Vec()
 
-        logger.info(f"Computing corpus phrases")
+        logger.info(f"Gensim: computing corpus phrases")
         phrases = Phrases(LineSentence(corpus_file))
 
-        logger.info(f"Generating bigram")
+        logger.info(f"Gensim: generating bigram")
         bigram = Phraser(phrases)
 
-        logger.info(f"Building vocabulary")
+        logger.info(f"Gensim: building vocabulary")
         model.build_vocab(bigram[LineSentence(corpus_file)])
 
         logger.info(
-            f"Training model with"
+            f"Gensim: training model with"
             f" total_examples={model.corpus_count} and epochs={model.epochs}")
         model.train(bigram[LineSentence(corpus_file)],
                     total_examples=model.corpus_count,
                     epochs=model.epochs)
 
-        if model_file is None:
-            (corpus_name, corpus_extension) = splitext(corpus_file)
-            model_file = corpus_name + ".bin"
-            logger.info(
-                f"Model file name not specified,"
-                f" using default save file named {model_file}")
-
-        logger.info(f"Saving... {model_file}")
+        logger.info(f"Gensim: saving... {model_file}")
         model.wv.save_word2vec_format(model_file, binary=True)
-        logger.info(f"Saved {model_file}")
+        logger.info(f"Gensim: saved {model_file}")
 
-        logger.info(f"Gensim model generated")
+        logger.info(f"Gensim: model generated")
         return model_file
 
     @staticmethod
     def corpus_to_magnitude_model(corpus_file: str,
-                                  model_file: str = None) -> str:
+                                  model_file: str) -> str:
         """Analyzes the corpus and convert it to Magnitude embeddings using
         a base Word2Vec model.
         
@@ -296,37 +290,50 @@ class FileConverter:
 
         """
 
-        DEFAULT_PRECISION = 7
-        DEFAULT_NGRAM_BEG = 3
-        DEFAULT_NGRAM_END = 6
+        logger.info(f"Magnitude: generating model from {corpus_file}")
 
-        logger.info(f"Generating Magnitude model from {corpus_file}")
+        (model_basename, _) = path.splitext(model_file)
+        gensim_model_file = model_basename + ".bin"
 
-        if model_file is None:
-            (corpus_name, corpus_extension) = splitext(corpus_file)
-            model_file = corpus_name + ".magnitude"
-            logger.info(
-                f"Model file name not specified,"
-                f" using default save file named {model_file}")
-
-        (model_name, model_extension) = splitext(model_file)
-        gensim_model_file = model_name + ".bin"
+        parent_dir = path.dirname(model_file)
+        if not path.exists(parent_dir):
+            makedirs(parent_dir)
         
-        FileConverter.corpus_to_gensim_model(corpus_file, gensim_model_file)
+        FileConverter._corpus_to_gensim_model(corpus_file, gensim_model_file)
         
-        logger.info(f"Converting Gensim model to Magnitude model")
-        converter.convert(gensim_model_file,
-                          output_file_path=model_file,
-                          precision=DEFAULT_PRECISION,
+        logger.info(f"Magnitude: converting Gensim model to Magnitude model")
+        FileConverter.generic_model_to_magnitude_model(gensim_model_file,
+                                                       model_file)
+
+        logger.info(f"Magnitude: model generated")
+        return model_file
+
+    @staticmethod
+    def generic_model_to_magnitude_model(input_model: str,
+                                         output_model: str) -> None:
+        """Converts the embeddings in the .txt, .bin, .vec, or .hdf5 formats
+        from GloVe, Gensim or ELMo models into a Magnitude model.
+
+        Args:
+            input_model: path of the input model.
+            output_model: path of the output Magnitude model.
+
+        Returns:
+            None
+
+        """
+        default_precision = 7
+        default_ngram_beg = 3
+        default_ngram_end = 6
+        converter.convert(input_model,
+                          output_file_path=output_model,
+                          precision=default_precision,
                           subword=False,
-                          subword_start=DEFAULT_NGRAM_BEG,
-                          subword_end=DEFAULT_NGRAM_END,
+                          subword_start=default_ngram_beg,
+                          subword_end=default_ngram_end,
                           approx=False,
                           approx_trees=None,
                           vocab_path=None)
-
-        logger.info(f"Magnitude model generated")
-        return model_file
 
 
 class NotExistingWordException(Exception):

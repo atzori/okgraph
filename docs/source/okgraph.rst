@@ -1,6 +1,14 @@
 okgraph package
 ===============
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   okgraph.task
+
 Submodules
 ----------
 
@@ -12,10 +20,10 @@ okgraph.core module
    :undoc-members:
    :show-inheritance:
 
-okgraph.file\_converter module
-------------------------------
+okgraph.embeddings module
+-------------------------
 
-.. automodule:: okgraph.file_converter
+.. automodule:: okgraph.embeddings
    :members:
    :undoc-members:
    :show-inheritance:
@@ -24,14 +32,6 @@ okgraph.indexing module
 -----------------------
 
 .. automodule:: okgraph.indexing
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-okgraph.logger module
----------------------
-
-.. automodule:: okgraph.logger
    :members:
    :undoc-members:
    :show-inheritance:

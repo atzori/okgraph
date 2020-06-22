@@ -1,59 +1,56 @@
-from itertools import chain
-from numpy.linalg import norm
-from okgraph.utils import logger
-from okgraph.file_converter import WordEmbedding
-from scipy.spatial.distance import cosine as dist_cos,\
-                                   euclidean as dist_euclidean
+from okgraph.utils import list_flatten, logger
+from okgraph.embeddings import WordEmbeddings
+from typing import List
 
 
-def task(seed: [str], k: int, options: dict):
+def task(seed: List[str],
+         k: int,
+         embeddings: WordEmbeddings,
+         width: int = 10,
+         depth: int = 2,
+         ) -> List[str]:
+    """Finds words with the same implicit relation of the seed words
+    (co-hyponyms).
+    Conceptually, this task expands the seed in a way similar to a tree
+    expansion.
+    The root is connected to the seed words, so that every seed word defines a
+    node in the first level of the tree.
+    The tree can be expanded in depth: for every word in a level (node), its
+    similar words can be found from the embeddings and used as its children,
+    making the new level grow in width.
+    A score is assigned to every word in the tree, according to how many nodes
+    are being occupied by that word. The most scored words are the result of
+    the expansion.
+
+    Args:
+        seed (List[str]): list of words that has to be expanded.
+        k (int): limit to the number of result words.
+        embeddings (WordEmbeddings): the word embeddings.
+        width (int): max number of children for every word (node).
+        depth (int): max height of the tree.
+
+    Returns:
+        List[str]: words similar to the words in the seed.
+
     """
-    Finds words similar to the words in the seed (co-hyponyms).
-    TODO: add documentation
-    """
-    # Get the task parameters
-    logger.info(f"Getting the parameters for the set expansion of {seed}")
-    embeddings: WordEmbedding = options.get("embeddings")
-    width: int = options.get("width", 10)
-    depth: int = options.get("depth", 2)
-    verbose: bool = options.get("verbose", False)
+    logger.info(f"Starting the set expansion of {seed}")
 
-    root = seed[0]
+    words_in_level = list(seed)
+    scores = {}
+    for level in range(depth):
+        logger.debug(
+            f"Current level is {level+1},"
+            f" {len(words_in_level)} words to expand")
+        children = []
+        for word in words_in_level:
+            similar_words = embeddings.w2w(word, width)
+            children.append(similar_words)
+        words_in_new_level = list_flatten(children)
+        for word in words_in_new_level:
+            scores[word] = scores.get(word, 0) + 1
+        words_in_level = words_in_new_level
 
-    to_expand = list(seed)
-    counts = {}
-    for i in range(depth):
-        logger.debug(f"current depth: {i+1}, words to expand: {len(to_expand)}")
-        current = []
-        for c in to_expand:
-            similar_to_c = embeddings.w2w(c, width)
-            current.append(similar_to_c)
-        current = list_flatten(current)
-        for word in current:
-            counts[word] = counts.get(word, 0) + d1(embeddings, root, word)
-
-        to_expand = current
-
-    co_hyponyms = [key for key in sorted(counts, key=counts.get, reverse=True)][:k]
+    co_hyponyms = \
+        [key for key in sorted(scores, key=scores.get, reverse=True)][:k]
     logger.info(f"Expansion is {co_hyponyms}")
     return co_hyponyms
-
-
-def normalized(v):  # Unused
-    return v/norm(v)
-
-
-def d1(e, w1, w2):
-    return 1
-
-
-def d2(e, w1, w2):  # Unused
-    return dist_cos(e.query(w1), e.query(w2))
-
-
-def d3(e, w1, w2):  # Unused
-    return dist_euclidean(normalized(e.query(w1)), normalized(e.query(w2)))
-
-
-def list_flatten(l):  # Unused
-    return list(chain.from_iterable(l))

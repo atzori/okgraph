@@ -49,29 +49,26 @@
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
+ | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
 </div>
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="okgraph.html#id0">corpus (okgraph.core.OKgraph attribute)</a>, <a href="okgraph.html#okgraph.core.OKgraph.corpus">[1]</a>
+      <li><a href="okgraph.html#okgraph.embeddings.WordEmbeddings.centroid">centroid() (okgraph.embeddings.WordEmbeddings method)</a>
 </li>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.corpus_dict">corpus_dict (okgraph.sliding_windows.SlidingWindows attribute)</a>
+      <li><a href="okgraph.html#okgraph.embeddings.WordEmbeddings.centroidv">centroidv() (okgraph.embeddings.WordEmbeddings method)</a>
 </li>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.corpus_index_path">corpus_index_path (okgraph.sliding_windows.SlidingWindows attribute)</a>
-</li>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.corpus_inverse_frequency_dict">corpus_inverse_frequency_dict (okgraph.sliding_windows.SlidingWindows attribute)</a>
+      <li><a href="okgraph.html#okgraph.utils.check_extension">check_extension() (in module okgraph.utils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="okgraph.html#okgraph.file_converter.FileConverter.corpus_to_gensim_model">corpus_to_gensim_model() (okgraph.file_converter.FileConverter method)</a>
+      <li><a href="okgraph.html#id0">corpus (okgraph.core.OKgraph attribute)</a>, <a href="okgraph.html#okgraph.core.OKgraph.corpus">[1]</a>
 </li>
-      <li><a href="okgraph.html#okgraph.file_converter.FileConverter.corpus_to_magnitude_model">corpus_to_magnitude_model() (okgraph.file_converter.FileConverter method)</a>
+      <li><a href="okgraph.html#okgraph.indexing.Indexing.corpus_path">corpus_path (okgraph.indexing.Indexing attribute)</a>
 </li>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.corpus_total_occurrences">corpus_total_occurrences (okgraph.sliding_windows.SlidingWindows attribute)</a>
-</li>
-      <li><a href="okgraph.html#okgraph.utils.create_dictionary">create_dictionary() (in module okgraph.utils)</a>
+      <li><a href="okgraph.html#okgraph.embeddings.FileConverter.corpus_to_magnitude_model">corpus_to_magnitude_model() (okgraph.embeddings.FileConverter static method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -79,10 +76,14 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="okgraph.html#id1">dictionary (okgraph.core.OKgraph attribute)</a>, <a href="okgraph.html#okgraph.core.OKgraph.dictionary">[1]</a>
+      <li><a href="okgraph.html#okgraph.sliding_windows.DEFAULT_DICTIONARY_DIR">DEFAULT_DICTIONARY_DIR (in module okgraph.sliding_windows)</a>
+</li>
+      <li><a href="okgraph.html#okgraph.indexing.DEFAULT_INDEX_DIR">DEFAULT_INDEX_DIR (in module okgraph.indexing)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="okgraph.html#id1">dictionary (okgraph.core.OKgraph attribute)</a>, <a href="okgraph.html#okgraph.core.OKgraph.dictionary">[1]</a>
+</li>
       <li><a href="okgraph.html#okgraph.utils.download">download() (in module okgraph.utils)</a>
 </li>
   </ul></td>
@@ -94,12 +95,22 @@
       <li><a href="okgraph.html#id2">embeddings (okgraph.core.OKgraph attribute)</a>, <a href="okgraph.html#okgraph.core.OKgraph.embeddings">[1]</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="okgraph.html#okgraph.embeddings.WordEmbeddings.exists">exists() (okgraph.embeddings.WordEmbeddings method)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="okgraph.html#okgraph.file_converter.FileConverter">FileConverter (class in okgraph.file_converter)</a>
+      <li><a href="okgraph.html#okgraph.indexing.FIELD_CONTENT">FIELD_CONTENT (in module okgraph.indexing)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="okgraph.html#okgraph.indexing.FIELD_ID">FIELD_ID (in module okgraph.indexing)</a>
+</li>
+      <li><a href="okgraph.html#okgraph.embeddings.FileConverter">FileConverter (class in okgraph.embeddings)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -107,10 +118,18 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.get_results">get_results() (okgraph.sliding_windows.SlidingWindows method)</a>
+      <li><a href="okgraph.html#okgraph.utils.generate_dictionary">generate_dictionary() (in module okgraph.utils)</a>
+</li>
+      <li><a href="okgraph.html#okgraph.embeddings.FileConverter.generic_model_to_magnitude_model">generic_model_to_magnitude_model() (okgraph.embeddings.FileConverter static method)</a>
+</li>
+      <li><a href="okgraph.html#okgraph.embeddings.WordEmbeddings.get4th">get4th() (okgraph.embeddings.WordEmbeddings method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="okgraph.html#okgraph.embeddings.WordEmbeddings.get4thv">get4thv() (okgraph.embeddings.WordEmbeddings method)</a>
+</li>
+      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.get_results">get_results() (okgraph.sliding_windows.SlidingWindows method)</a>
+</li>
       <li><a href="okgraph.html#okgraph.utils.get_words">get_words() (in module okgraph.utils)</a>
 </li>
   </ul></td>
@@ -149,12 +168,10 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="okgraph.task.relation_expansion.centroid.html#okgraph.task.relation_expansion.centroid.centroid.mean">mean() (in module okgraph.task.relation_expansion.centroid.centroid)</a>
-
-      <ul>
-        <li><a href="okgraph.task.set_expansion.centroid.html#okgraph.task.set_expansion.centroid.centroid.mean">(in module okgraph.task.set_expansion.centroid.centroid)</a>
+      <li><a href="okgraph.html#okgraph.embeddings.MagnitudeWordEmbeddings">MagnitudeWordEmbeddings (class in okgraph.embeddings)</a>
 </li>
-      </ul></li>
+      <li><a href="okgraph.html#okgraph.embeddings.MagnitudeWordEmbeddings.model">model (okgraph.embeddings.MagnitudeWordEmbeddings attribute)</a>
+</li>
       <li>
     module
 
@@ -163,21 +180,19 @@
 </li>
         <li><a href="okgraph.html#module-okgraph.core">okgraph.core</a>
 </li>
-        <li><a href="okgraph.html#module-okgraph.file_converter">okgraph.file_converter</a>
+        <li><a href="okgraph.html#module-okgraph.embeddings">okgraph.embeddings</a>
 </li>
         <li><a href="okgraph.html#module-okgraph.indexing">okgraph.indexing</a>
 </li>
         <li><a href="okgraph.html#module-okgraph.sliding_windows">okgraph.sliding_windows</a>
 </li>
-        <li><a href="okgraph.task.relation_expansion.centroid.html#module-okgraph.task.relation_expansion.centroid.centroid">okgraph.task.relation_expansion.centroid.centroid</a>
+        <li><a href="okgraph.task.html#module-okgraph.task">okgraph.task</a>
 </li>
-        <li><a href="okgraph.task.relation_expansion.intersection.html#module-okgraph.task.relation_expansion.intersection.intersection">okgraph.task.relation_expansion.intersection.intersection</a>
+        <li><a href="okgraph.task.relation_expansion.html#module-okgraph.task.relation_expansion">okgraph.task.relation_expansion</a>
 </li>
-        <li><a href="okgraph.task.relation_labeling.intersection.html#module-okgraph.task.relation_labeling.intersection.intersection">okgraph.task.relation_labeling.intersection.intersection</a>
+        <li><a href="okgraph.task.relation_labeling.html#module-okgraph.task.relation_labeling">okgraph.task.relation_labeling</a>
 </li>
-        <li><a href="okgraph.task.set_expansion.centroid.html#module-okgraph.task.set_expansion.centroid.centroid">okgraph.task.set_expansion.centroid.centroid</a>
-</li>
-        <li><a href="okgraph.task.set_labeling.intersection.html#module-okgraph.task.set_labeling.intersection.intersection">okgraph.task.set_labeling.intersection.intersection</a>
+        <li><a href="okgraph.task.set_expansion.html#module-okgraph.task.set_expansion">okgraph.task.set_expansion</a>
 </li>
         <li><a href="okgraph.html#module-okgraph.utils">okgraph.utils</a>
 </li>
@@ -188,7 +203,7 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.noise_dict">noise_dict (okgraph.sliding_windows.SlidingWindows attribute)</a>
+      <li><a href="okgraph.html#okgraph.embeddings.NotExistingWordException">NotExistingWordException</a>
 </li>
   </ul></td>
 </tr></table>
@@ -213,10 +228,10 @@
 </li>
       </ul></li>
       <li>
-    okgraph.file_converter
+    okgraph.embeddings
 
       <ul>
-        <li><a href="okgraph.html#module-okgraph.file_converter">module</a>
+        <li><a href="okgraph.html#module-okgraph.embeddings">module</a>
 </li>
       </ul></li>
       <li>
@@ -236,38 +251,31 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    okgraph.task.relation_expansion.centroid.centroid
+    okgraph.task
 
       <ul>
-        <li><a href="okgraph.task.relation_expansion.centroid.html#module-okgraph.task.relation_expansion.centroid.centroid">module</a>
+        <li><a href="okgraph.task.html#module-okgraph.task">module</a>
 </li>
       </ul></li>
       <li>
-    okgraph.task.relation_expansion.intersection.intersection
+    okgraph.task.relation_expansion
 
       <ul>
-        <li><a href="okgraph.task.relation_expansion.intersection.html#module-okgraph.task.relation_expansion.intersection.intersection">module</a>
+        <li><a href="okgraph.task.relation_expansion.html#module-okgraph.task.relation_expansion">module</a>
 </li>
       </ul></li>
       <li>
-    okgraph.task.relation_labeling.intersection.intersection
+    okgraph.task.relation_labeling
 
       <ul>
-        <li><a href="okgraph.task.relation_labeling.intersection.html#module-okgraph.task.relation_labeling.intersection.intersection">module</a>
+        <li><a href="okgraph.task.relation_labeling.html#module-okgraph.task.relation_labeling">module</a>
 </li>
       </ul></li>
       <li>
-    okgraph.task.set_expansion.centroid.centroid
+    okgraph.task.set_expansion
 
       <ul>
-        <li><a href="okgraph.task.set_expansion.centroid.html#module-okgraph.task.set_expansion.centroid.centroid">module</a>
-</li>
-      </ul></li>
-      <li>
-    okgraph.task.set_labeling.intersection.intersection
-
-      <ul>
-        <li><a href="okgraph.task.set_labeling.intersection.html#module-okgraph.task.set_labeling.intersection.intersection">module</a>
+        <li><a href="okgraph.task.set_expansion.html#module-okgraph.task.set_expansion">module</a>
 </li>
       </ul></li>
       <li>
@@ -288,8 +296,6 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="okgraph.html#okgraph.core.OKgraph.relation_labeling">relation_labeling() (okgraph.core.OKgraph method)</a>
-</li>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.results_dict">results_dict (okgraph.sliding_windows.SlidingWindows attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -315,43 +321,39 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="okgraph.html#okgraph.utils.tail">tail() (in module okgraph.utils)</a>
 </li>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.target_words">target_words (okgraph.sliding_windows.SlidingWindows attribute)</a>
-</li>
-      <li><a href="okgraph.task.relation_expansion.centroid.html#okgraph.task.relation_expansion.centroid.centroid.task">task() (in module okgraph.task.relation_expansion.centroid.centroid)</a>
+  </ul></td>
+</tr></table>
 
-      <ul>
-        <li><a href="okgraph.task.relation_expansion.intersection.html#okgraph.task.relation_expansion.intersection.intersection.task">(in module okgraph.task.relation_expansion.intersection.intersection)</a>
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="okgraph.html#okgraph.embeddings.WordEmbeddings.v2v">v2v() (okgraph.embeddings.WordEmbeddings method)</a>
 </li>
-        <li><a href="okgraph.task.relation_labeling.intersection.html#okgraph.task.relation_labeling.intersection.intersection.task">(in module okgraph.task.relation_labeling.intersection.intersection)</a>
-</li>
-        <li><a href="okgraph.task.set_expansion.centroid.html#okgraph.task.set_expansion.centroid.centroid.task">(in module okgraph.task.set_expansion.centroid.centroid)</a>
-</li>
-        <li><a href="okgraph.task.set_labeling.intersection.html#okgraph.task.set_labeling.intersection.intersection.task">(in module okgraph.task.set_labeling.intersection.intersection)</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.tf_idf_dict">tf_idf_dict (okgraph.sliding_windows.SlidingWindows attribute)</a>
+      <li><a href="okgraph.html#okgraph.embeddings.MagnitudeWordEmbeddings.v2w">v2w() (okgraph.embeddings.MagnitudeWordEmbeddings method)</a>
+
+      <ul>
+        <li><a href="okgraph.html#okgraph.embeddings.WordEmbeddings.v2w">(okgraph.embeddings.WordEmbeddings method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.windows_dict">windows_dict (okgraph.sliding_windows.SlidingWindows attribute)</a>
+      <li><a href="okgraph.html#okgraph.embeddings.MagnitudeWordEmbeddings.w2v">w2v() (okgraph.embeddings.MagnitudeWordEmbeddings method)</a>
+
+      <ul>
+        <li><a href="okgraph.html#okgraph.embeddings.WordEmbeddings.w2v">(okgraph.embeddings.WordEmbeddings method)</a>
 </li>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.windows_frequency_dict">windows_frequency_dict (okgraph.sliding_windows.SlidingWindows attribute)</a>
-</li>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.windows_list">windows_list (okgraph.sliding_windows.SlidingWindows attribute)</a>
-</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.windows_max_size">windows_max_size (okgraph.sliding_windows.SlidingWindows attribute)</a>
+      <li><a href="okgraph.html#okgraph.embeddings.WordEmbeddings.w2w">w2w() (okgraph.embeddings.WordEmbeddings method)</a>
 </li>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.windows_occurrence_dict">windows_occurrence_dict (okgraph.sliding_windows.SlidingWindows attribute)</a>
-</li>
-      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.windows_total_occurrences">windows_total_occurrences (okgraph.sliding_windows.SlidingWindows attribute)</a>
+      <li><a href="okgraph.html#okgraph.embeddings.WordEmbeddings">WordEmbeddings (class in okgraph.embeddings)</a>
 </li>
   </ul></td>
 </tr></table>

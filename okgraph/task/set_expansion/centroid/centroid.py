@@ -1,27 +1,36 @@
 from okgraph.utils import logger
-from okgraph.file_converter import WordEmbedding
+from okgraph.embeddings import WordEmbeddings
+from typing import List
 
 
-def task(seed: [str], k: int, options: dict):
+def task(seed: List[str],
+         k: int,
+         embeddings: WordEmbeddings
+         ) -> List[str]:
+    """Finds words with the same implicit relation of the seed words
+    (co-hyponyms).
+    This task uses a 'centroid' based method. The vector representation of
+    the seed words is used to calculate their average vector (centroid).
+    The embeddings are then used to find the words closest to the centroid:
+    these words are the seed expansion.
+
+    Args:
+        seed (List[str]): list of words that has to be expanded.
+        k (int): limit to the number of result words.
+        embeddings (WordEmbeddings): the word embeddings.
+
+    Returns:
+        List[str]: words similar to the words in the seed.
+
     """
-    Finds words similar to the words in the seed (co-hyponyms).
-    This task uses a 'centroid' based method. The vector representation of the seed words are used to calculate their
-     average vector (centroid). The vector model is then used to find the closest words to the centroid.
-    :param seed: list of words that has to be expanded
-    :param k: limit to the number of results in the set expansion
-    :param options: task options:
-                     'embeddings' is the words vector model (Magnitude)
-    :return: the words closest to the centroid vector
-    """
-    # Get the task parameters
-    logger.info(f"Getting the parameters for the set expansion of {seed}")
-    embeddings: WordEmbedding = options.get("embeddings")
+    logger.info(f"Starting the set expansion of {seed}")
 
     # Calculates the centroid vector as the average vector of the seed words
     v_centroid = embeddings.centroid(seed)
 
     # Return the vectors that are the most similar to the centroid
-    # Take the top 'k+len(seed)' results, because the seed can occur in the results and has to be removed
+    # Take the top 'k+len(seed)' results, because the seed can occur in the
+    # results and has to be removed
     co_hyponyms = embeddings.v2w(v_centroid, (k + len(seed)))
 
     # Remove the seed from the results (if eventually present)

@@ -28,8 +28,8 @@ def task(seed: [str], k: int, options: dict):
     logger.debug(f"Get the labels from every window")
     all_labels = []
     for window in sliding_windows:
-        logger.debug(f"{window.target_words} window labels: {list(window.results_dict.keys())}")
-        all_labels.append({k: window.results_dict[k] for k in list(window.results_dict)[:k]})
+        logger.debug(f"{window._target_words} window labels: {list(window._results_dict.keys())}")
+        all_labels.append({k: window._results_dict[k] for k in list(window._results_dict)[:k]})
 
     # Evaluate the intersection of all the sets of labels
     logger.debug(f"Evaluate the intersection of the sets of labels")

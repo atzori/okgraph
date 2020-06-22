@@ -1,11 +1,11 @@
 import os
 import argparse
 
-from okgraph.file_converter import FileConverter
+from okgraph.embeddings import FileConverter
 
 
 def convert(read_fname: str, save_fname: str):
-    FileConverter.corpus_to_gensim_model(corpus_fname=read_fname, save_fname=save_fname)
+    FileConverter._corpus_to_gensim_model(corpus_file=read_fname, model_file=save_fname)
 
 
 if __name__ == "__main__":

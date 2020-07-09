@@ -11,7 +11,7 @@ cwd = path.normpath(os.getcwd())
 
 logger.info(f"Current working directory is {cwd}")
 
-corpus_file = "text7.txt"
+corpus_file = "text9.txt"
 (corpus_name, corpus_extension) = path.splitext(corpus_file)
 data_path = path.join(cwd, "data", corpus_name)  # "tests",
 test_corpus_file = path.join(data_path, corpus_file)
@@ -318,8 +318,7 @@ class OKGraphTest(unittest.TestCase):
         k = 15
         options = {"embeddings": okg.embeddings,
                    "step": 2,
-                   "fast": False,
-                   "verbose": True}
+                   "fast": False}
 
         results_1 = okg.set_expansion(seed_1, k, "centroid_boost", options)
         results_2 = okg.set_expansion(seed_2, k, "centroid_boost", options)
@@ -354,8 +353,7 @@ class OKGraphTest(unittest.TestCase):
         k = 15
         options = {"embeddings": okg.embeddings,
                    "width": 10,
-                   "depth": 2,
-                   "verbose": True}
+                   "depth": 2}
 
         results_1 = okg.set_expansion(seed_1, k, "depth", options)
         results_2 = okg.set_expansion(seed_2, k, "depth", options)
@@ -464,6 +462,7 @@ class OKGraphTest(unittest.TestCase):
         existence = e.exists(not_existing_word)
         self.assertFalse(existence,
                          msg=f"{not_existing_word} cannot be in the model")
+
 
 if __name__ == "__main__":
     unittest.main()

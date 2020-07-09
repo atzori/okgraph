@@ -601,13 +601,20 @@ class SlidingWindows:
 
         return cleaned_dictionary
 
+    def get_target_words(self) -> List[str]:
+        """Returns the list of target words.
+
+        Returns:
+            List[str]: the list of target words.
+        """
+        return self._target_words
+
     def get_results(self, k: int = None) -> List[str]:
         """Returns the list of labels related to the target words.
 
         Args:
             k (int): sets the limit to the number of labels to return. If None,
-                no limit is set and all the labels are returned. Must be grater
-                than zero.
+                no limit is set and all the labels are returned.
 
         Returns:
             List[str]: the list of labels.
@@ -616,7 +623,5 @@ class SlidingWindows:
         if k is not None:
             if not isinstance(k, int):
                 raise TypeError(f"k must be an int")
-            if not k > 0:
-                raise TypeError(f"k must be greater than zero")
 
         return list(self._results_dict)[:k]

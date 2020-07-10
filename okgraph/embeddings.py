@@ -153,7 +153,7 @@ class WordEmbeddings(ABC):
         """
         return self.get4thv(self.w2v(w1), self.w2v(w2), self.w2v(w3), n=n)
 
-    def centroidv(selfself, vs: List[ndarray]) -> ndarray:
+    def centroidv(self, vs: List[ndarray]) -> ndarray:
         """Computes the average vector from the given vectors.
 
         Args:

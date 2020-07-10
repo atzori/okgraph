@@ -46,7 +46,6 @@ def task(seed: List[Tuple[str, ...]],
         List[Tuple[str, ...]]: tuples similar to the tuples in the seed.
 
     """
-    # Get the task parameters
     logger.info(f"Starting the relation expansion of {seed}")
 
     # Import the algorithms for relation labeling and set expansion

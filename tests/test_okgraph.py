@@ -197,40 +197,11 @@ class OKGraphTest(unittest.TestCase):
         seed = [("rome", "italy"), ("berlin", "germany")]
         k = 15
         options = {"embeddings": okg.embeddings,
-                   "relation_labeling_algo": "intersection",
-                   "relation_labeling_options": {"dictionary": okg.dictionary, "index": okg.index},
-                   "relation_labeling_k": 15,
                    "set_expansion_algo": "centroid",
                    "set_expansion_options": {"embeddings": okg.embeddings},
                    "set_expansion_k": 15
                    }
         results = okg.relation_expansion(seed, k, "centroid", options)
-
-        self.assertIsInstance(results, list,
-                              msg=f"The return value of the task should be a list")
-        self.assertGreater(len(results), 0,
-                           msg=f"No results obtained from the algorithm")
-        self.assertLessEqual(len(results), k,
-                           msg=f"The limit of {k} results has been passed")
-        for r_tuple in results:
-            self.assertIsInstance(r_tuple, tuple,
-                                  msg=f"The return value of the task should be a list of tuples")
-            for r_elements in r_tuple:
-                self.assertIsInstance(r_elements, str,
-                                      msg=f"The return value of the task should be a list of tuples of strings")
-
-        logger.info(f"Expansion of {seed} is {results}")
-
-    def test_task_relation_expansion_atzori(self):
-        """
-        Tests the relation expansion task using the intersection algorithm.
-        Uses an OKgraph object with default values.
-        """
-        okg = OKgraph(corpus_file=test_corpus_file)
-        seed = [("rome", "italy"), ("berlin", "germany")]
-        k = 15
-        options = {"embeddings": okg.embeddings}
-        results = okg.relation_expansion(seed, k, "atzori", options)
 
         self.assertIsInstance(results, list,
                               msg=f"The return value of the task should be a list")

@@ -1,98 +1,100 @@
-from pymagnitude import Magnitude
 from okgraph.core import algorithms_package
+from okgraph.embeddings import WordEmbeddings
+from okgraph.utils import logger
+from typing import Dict, List, Tuple
 
 
-def task(seed: [(str, str)], k: int, options: dict):
+def task(seed: List[Tuple[str, ...]],
+         k: int,
+         embeddings: WordEmbeddings,
+         set_expansion_algo: str,
+         set_expansion_k: int,
+         set_expansion_options: Dict
+         ) -> List[Tuple[str, ...]]:
     """
-    Finds pairs similar to the pairs in the seed.
-    ......
-    ......
-    ......
-    :param seed: list of words pairs that has to be expanded
-    :param k: limit to the number of results
-    :param options: task options:
-                     "embeddings" is the words vector model (Magnitude)
-                     "relation_labeling_algo" is the name of the algorithm that has to be used for pair labeling
-                     "relation_labeling_options" is the dictionary of options for the chosen relation labeling algorithm
-                     "relation_labeling_k" is the limit to the number of results obtained from the relation labeling
-                     "set_expansion_algo" is the name of the algorithm that has to be used for set expansion
-                     "set_expansion_options" is the dictionary of options for the chosen set expansion algorithm
-                     "set_expansion_k" is the limit to the number of results obtained from the set expansion
-    :return: the new pairs of words
+    Finds tuples with the same implicit relation of the seed tuples.
+    Every seed tuple is composed by a generic number of words whose meaning is
+    strictly related to the position in the tuple.
+    All the words in the same position are collected in a new list.
+    Every new list is expanded through a set expansion algorithm and new words
+    are found as candidates for that position in tuples.
+    The relation between two tuple words in different positions can be
+    expressed by their vector difference. These vector differences are obtained
+    from the seed and used to validate the new tuples obtained combining the
+    new words from the set expansion into new tuples.
+
+    Args:
+        seed (List[Tuple[str, ...]]): list of word tuples that has to be
+            expanded.
+        k (int): limit to the number of result tuples.
+        embeddings (WordEmbeddings): the word embeddings.
+        set_expansion_algo (str): name of the chosen algorithm for the
+            set expansion. The algorithm should be found in
+            okgraph.task.set_expansion.
+        set_expansion_k (int): limit to the number of results of the
+            set expansion algorithm.
+        set_expansion_options (Dict): dictionary containing the keyword
+            arguments for the set expansion algorithm.
+
+    Returns:
+        List[Tuple[str, ...]]: tuples similar to the tuples in the seed.
+
     """
-    # Get the task parameters
-    embeddings: Magnitude = options.get("embeddings")
-    relation_labeling_algo: str = options.get("relation_labeling_algo")
-    relation_labeling_options: dict = options.get("relation_labeling_options")
-    relation_labeling_k: int = options.get("relation_labeling_k")
-    set_expansion_algo: str = options.get("set_expansion_algo")
-    set_expansion_options: dict = options.get("set_expansion_options")
-    set_expansion_k: int = options.get("set_expansion_k")
+    logger.info(f"Starting the relation expansion of {seed}")
 
-    # Import the algorithms for set expansion and relation labeling
-    relation_labeling_package = algorithms_package + ".relation_labeling." + relation_labeling_algo
-    relation_labeling_algorithm = getattr(__import__(relation_labeling_package, fromlist=[relation_labeling_algo]), relation_labeling_algo)
-    set_expansion_package = algorithms_package + ".set_expansion." + set_expansion_algo
-    set_expansion_algorithm = getattr(__import__(set_expansion_package, fromlist=[set_expansion_algo]), set_expansion_algo)
+    # Import the algorithm for set expansion
+    logger.debug(
+        f"Importing set expansion algorithm {set_expansion_algo}")
+    set_expansion_package = \
+        algorithms_package + ".set_expansion." + set_expansion_algo
+    set_expansion_algorithm = \
+        getattr(__import__(set_expansion_package,
+                           fromlist=[set_expansion_algo]),
+                set_expansion_algo)
 
-    # Get the seed labels
-    seed_labels = relation_labeling_algorithm.task(seed, relation_labeling_k, relation_labeling_options)
+    # Create the collection of words occupying the same position in the seed
+    # tuple
+    relation_size = len(seed[0])
+    seed_by_pos = [[] for _ in range(relation_size)]
+    print(seed_by_pos)
+    for t in seed:
+        for i, word in zip(range(relation_size), t):
+            seed_by_pos[i] += [word]
 
-    expansion = []
-    i = 0
-    while True:
-        i += 1
-        print('Iterazione', i)
-        # Ottieni i primi elementi
-        f_lista = [f for (f, ss) in seed+expansion]
-        print('Primi elementi:', f_lista)
+    # Expand the collection of words in the same position
+    seed_by_pos_expansion = [[] for _ in range(relation_size)]
+    for i, words in zip(range(relation_size), seed_by_pos):
+        seed_by_pos_expansion[i] = \
+            set_expansion_algorithm.task(words,
+                                         set_expansion_k,
+                                         **set_expansion_options)
 
-        # Ottieni i vettori differenza di rappresentazione delle due coppie
-        v_differenza = [[y-x for (x, y) in zip(embeddings.query(pair[0]), embeddings.query(pair[1]))] for pair in seed+expansion]
-        # Ottieni il centroide
-        centroid = mean(v_differenza)
+    # Define the vector differences referring to the first word in the tuples
+    all_diffs = [[] for _ in range(relation_size-1)]
+    for t in seed:
+        for i, j in zip(range(0, relation_size - 1), range(1, relation_size)):
+            all_diffs[i] += [embeddings.w2v(t[j]) - embeddings.w2v(t[0])]
 
-        # Ottieni una espansione del set di primi elementi
-        f_espansione = set_expansion_algorithm.task(f_lista, set_expansion_k-len(expansion), set_expansion_options)
-        print('Espansione primi elementi:', f_espansione)
-        print('Espansione:', f_espansione)
+    centroid_diffs = []
+    for diffs in all_diffs:
+        centroid_diffs += [embeddings.centroidv(diffs)]
 
-        # Per ogni primo elemento, trova il possibile secondo elemento e certifica la coppia
-        new_pair = None
-        for f in f_espansione:
-            print('f:', f)
-            v_f = embeddings.query(f)
-
-            # Ottieni il possibile secondo elemento
-            v_s = [x+d for(x,d) in zip(v_f,centroid)]
-            ss = [res[0] for res in embeddings.most_similar(v_s, topn=set_expansion_k)]
-            print('Possibili secondi elmenti di', f, 'sono:', ss)
-
-            for s in ss:
-                if f == s:
-                    continue
-                try_pair = (f, s)
-                print('Coppia prova:', try_pair)
-                pair_labels = relation_labeling_algorithm.task([try_pair], relation_labeling_k, relation_labeling_options)
-                if set(seed_labels) & set(pair_labels) == set(seed_labels):
-                    print(try_pair, 'è una coppia valida')
-                    new_pair = try_pair
-                    expansion.append(new_pair)
+    # Create new tuples
+    new_tuples = []
+    for j, word in enumerate(seed_by_pos_expansion[0]):
+        print(f"Count {j}: word {word}", end='')
+        tuple_list = [word]
+        for i, diff in zip(range(1, relation_size), centroid_diffs):
+            new_words = embeddings.v2w(embeddings.w2v(word) + diff, 5)
+            for new_word in new_words:
+                print(f", new word {i} {new_word}", end='')
+                if new_word in seed_by_pos_expansion[i]:
+                    tuple_list += [new_word]
                     break
-
-            if new_pair is not None:
+            if len(tuple_list) == i+1:
                 break
+        print()
+        if len(tuple_list) == relation_size:
+            new_tuples += [tuple(tuple_list)]
 
-        if new_pair is None or len(expansion) >= k:
-            break
-
-    return expansion
-
-
-def mean(vectors: [[float]]):
-    """
-    Calculates the average vector from an array of numerical vectors.
-    :param vectors: array of vectors
-    :return: the average vector
-    """
-    return [sum([v[i] for v in vectors])/len(vectors) for i in range(0, len(vectors[0]))]
+    return new_tuples[:k]

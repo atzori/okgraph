@@ -1,16 +1,22 @@
+******
 okgraph package
-===============
+******
+
 
 Subpackages
------------
+======
 
 .. toctree::
    :maxdepth: 4
 
+   okgraph.evaluation
+   okgraph.preprocessing
    okgraph.task
 
-Submodules
-----------
+
+Modules
+======
+
 
 okgraph.core module
 -------------------
@@ -48,15 +54,6 @@ okgraph.utils module
 --------------------
 
 .. automodule:: okgraph.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: okgraph
    :members:
    :undoc-members:
    :show-inheritance:

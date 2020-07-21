@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>okgraph.task.relation_expansion package &#8212; OKgraph  documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>okgraph.task.relation_expansion algorithms &#8212; OKgraph  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -14,7 +15,7 @@
     <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="okgraph.task.relation_labeling package" href="okgraph.task.relation_labeling.html" />
+    <link rel="next" title="okgraph.task.relation_labeling algorithms" href="okgraph.task.relation_labeling.html" />
     <link rel="prev" title="okgraph.task package" href="okgraph.task.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -32,10 +33,94 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="okgraph-task-relation-expansion-package">
-<h1>okgraph.task.relation_expansion package<a class="headerlink" href="#okgraph-task-relation-expansion-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-okgraph.task.relation_expansion">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-okgraph.task.relation_expansion" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="okgraph-task-relation-expansion-algorithms">
+<h1>okgraph.task.relation_expansion algorithms<a class="headerlink" href="#okgraph-task-relation-expansion-algorithms" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="centroid">
+<h2>Centroid<a class="headerlink" href="#centroid" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-okgraph.task.relation_expansion.centroid.centroid"></span><dl class="py function">
+<dt id="okgraph.task.relation_expansion.centroid.centroid.task">
+<code class="sig-prename descclassname">okgraph.task.relation_expansion.centroid.centroid.</code><code class="sig-name descname">task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">List[Tuple[str, …]]</span>,</em> <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span>,</em> <em class="sig-param"><span class="n">embeddings</span><span class="p">:</span> <span class="n"><a class="reference internal" href="okgraph.html#okgraph.embeddings.WordEmbeddings" title="okgraph.embeddings.WordEmbeddings">okgraph.embeddings.WordEmbeddings</a></span>,</em> <em class="sig-param"><span class="n">set_expansion_algo</span><span class="p">:</span> <span class="n">str</span>,</em> <em class="sig-param"><span class="n">set_expansion_k</span><span class="p">:</span> <span class="n">int</span>,</em> <em class="sig-param"><span class="n">set_expansion_options</span><span class="p">:</span> <span class="n">Dict</span></em><span class="sig-paren">)</span> &#x2192; List[Tuple[str, …]]<a class="headerlink" href="#okgraph.task.relation_expansion.centroid.centroid.task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds tuples with the same implicit relation of the seed tuples.
+Every seed tuple is composed by a generic number of words whose meaning is
+strictly related to the position in the tuple.
+All the words in the same position are collected in a new list.
+Every new list is expanded through a set expansion algorithm and new words
+are found as candidates for that position in tuples.
+The relation between two tuple words in different positions can be
+expressed by their vector difference. These vector differences are obtained
+from the seed and used to validate the new tuples obtained combining the
+new words from the set expansion into new tuples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><em>str</em><em>, </em><em>..</em><em>]</em><em>]</em>) – list of word tuples that has to be
+expanded.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – limit to the number of result tuples.</p></li>
+<li><p><strong>embeddings</strong> (<a class="reference internal" href="okgraph.html#okgraph.embeddings.WordEmbeddings" title="okgraph.embeddings.WordEmbeddings"><em>WordEmbeddings</em></a>) – the word embeddings.</p></li>
+<li><p><strong>set_expansion_algo</strong> (<em>str</em>) – name of the chosen algorithm for the
+set expansion. The algorithm should be found in
+okgraph.task.set_expansion.</p></li>
+<li><p><strong>set_expansion_k</strong> (<em>int</em>) – limit to the number of results of the
+set expansion algorithm.</p></li>
+<li><p><strong>set_expansion_options</strong> (<em>Dict</em>) – dictionary containing the keyword
+arguments for the set expansion algorithm.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>tuples similar to the tuples in the seed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Tuple[str, ..]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="intersection">
+<h2>Intersection<a class="headerlink" href="#intersection" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-okgraph.task.relation_expansion.intersection.intersection"></span><dl class="py function">
+<dt id="okgraph.task.relation_expansion.intersection.intersection.task">
+<code class="sig-prename descclassname">okgraph.task.relation_expansion.intersection.intersection.</code><code class="sig-name descname">task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">List[Tuple[str, …]]</span>,</em> <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span>,</em> <em class="sig-param"><span class="n">relation_labeling_algo</span><span class="p">:</span> <span class="n">str</span>,</em> <em class="sig-param"><span class="n">relation_labeling_k</span><span class="p">:</span> <span class="n">int</span>,</em> <em class="sig-param"><span class="n">relation_labeling_options</span><span class="p">:</span> <span class="n">Dict</span>,</em> <em class="sig-param"><span class="n">set_expansion_algo</span><span class="p">:</span> <span class="n">str</span>,</em> <em class="sig-param"><span class="n">set_expansion_k</span><span class="p">:</span> <span class="n">int</span>,</em> <em class="sig-param"><span class="n">set_expansion_options</span><span class="p">:</span> <span class="n">Dict</span></em><span class="sig-paren">)</span> &#x2192; List[Tuple[str, …]]<a class="headerlink" href="#okgraph.task.relation_expansion.intersection.intersection.task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds tuples with the same implicit relation of the seed tuples.
+This task is based on the use of the “relation labeling” and “set
+expansion” algorithms. Two lists are obtained from the first and second
+elements of the seed tuples. The two lists are expanded using the “set
+expansion” algorithm and the new elements from the two expansions are
+combined into new tuples. The “relation labeling” algorithm is used to
+obtain the labels of the seed and the labels of every new tuple. The new
+tuples described by a set of labels including the seed labels are
+considered an expansion of the seed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><em>str</em><em>, </em><em>..</em><em>]</em><em>]</em>) – list of word tuples that has to be
+expanded.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – limit to the number of result tuples.</p></li>
+<li><p><strong>relation_labeling_algo</strong> (<em>str</em>) – name of the chosen algorithm for the
+tuple labeling. The algorithm should be found in
+okgraph.task.relation_labeling.</p></li>
+<li><p><strong>relation_labeling_k</strong> (<em>int</em>) – limit to the number of results of the
+relation labeling algorithm.</p></li>
+<li><p><strong>relation_labeling_options</strong> (<em>Dict</em>) – dictionary containing the keyword
+arguments for the relation labeling algorithm.</p></li>
+<li><p><strong>set_expansion_algo</strong> (<em>str</em>) – name of the chosen algorithm for the
+set expansion. The algorithm should be found in
+okgraph.task.set_expansion.</p></li>
+<li><p><strong>set_expansion_k</strong> (<em>int</em>) – limit to the number of results of the
+set expansion algorithm.</p></li>
+<li><p><strong>set_expansion_options</strong> (<em>Dict</em>) – dictionary containing the keyword
+arguments for the set expansion algorithm.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>tuples similar to the tuples in the seed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Tuple[str, ..]]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 </div>
 
@@ -56,10 +141,16 @@
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Library contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">okgraph</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="okgraph.html">okgraph package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="okgraph.html">okgraph package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="okgraph.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="okgraph.evaluation.html">okgraph.evaluation package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="okgraph.preprocessing.html">okgraph.preprocessing package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="okgraph.task.html">okgraph.task package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="okgraph.html#modules">Modules</a></li>
 </ul>
 </li>
 </ul>
@@ -68,12 +159,10 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="modules.html">okgraph</a><ul>
   <li><a href="okgraph.html">okgraph package</a><ul>
   <li><a href="okgraph.task.html">okgraph.task package</a><ul>
       <li>Previous: <a href="okgraph.task.html" title="previous chapter">okgraph.task package</a></li>
-      <li>Next: <a href="okgraph.task.relation_labeling.html" title="next chapter">okgraph.task.relation_labeling package</a></li>
-  </ul></li>
+      <li>Next: <a href="okgraph.task.relation_labeling.html" title="next chapter">okgraph.task.relation_labeling algorithms</a></li>
   </ul></li>
   </ul></li>
   </ul></li>
@@ -105,7 +194,7 @@
       &copy;2020, Maurizio Atzori.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

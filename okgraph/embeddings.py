@@ -75,7 +75,7 @@ class WordEmbeddings(ABC):
         """
         return list(map(self.w2v, self.v2w(v, n)))
 
-    def exists(self, w):
+    def exists(self, w: str) -> bool:
         """Checks if a word exists in the embeddings model.
 
         Args:

@@ -1,14 +1,17 @@
-Welcome to OKgraph's documentation!
-===================================
+######
+Welcome to OKgraph!
+######
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 3
+   :caption: Library contents:
 
-   modules
+   okgraph
 
+
+######
 Indices and tables
-==================
+######
 
 * :ref:`genindex`
 * :ref:`modindex`

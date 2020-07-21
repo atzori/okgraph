@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>okgraph.task.set_expansion package &#8212; OKgraph  documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>okgraph.task.set_expansion algorithms &#8212; OKgraph  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -14,7 +15,8 @@
     <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="okgraph.task.relation_labeling package" href="okgraph.task.relation_labeling.html" />
+    <link rel="next" title="okgraph.task.set_labeling algorithms" href="okgraph.task.set_labeling.html" />
+    <link rel="prev" title="okgraph.task.relation_labeling algorithms" href="okgraph.task.relation_labeling.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -31,10 +33,111 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="okgraph-task-set-expansion-package">
-<h1>okgraph.task.set_expansion package<a class="headerlink" href="#okgraph-task-set-expansion-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-okgraph.task.set_expansion">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-okgraph.task.set_expansion" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="okgraph-task-set-expansion-algorithms">
+<h1>okgraph.task.set_expansion algorithms<a class="headerlink" href="#okgraph-task-set-expansion-algorithms" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="centroid">
+<h2>Centroid<a class="headerlink" href="#centroid" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-okgraph.task.set_expansion.centroid.centroid"></span><dl class="py function">
+<dt id="okgraph.task.set_expansion.centroid.centroid.task">
+<code class="sig-prename descclassname">okgraph.task.set_expansion.centroid.centroid.</code><code class="sig-name descname">task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span>,</em> <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span>,</em> <em class="sig-param"><span class="n">embeddings</span><span class="p">:</span> <span class="n"><a class="reference internal" href="okgraph.html#okgraph.embeddings.WordEmbeddings" title="okgraph.embeddings.WordEmbeddings">okgraph.embeddings.WordEmbeddings</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.task.set_expansion.centroid.centroid.task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds words with the same implicit relation of the seed words
+(co-hyponyms).
+This task uses a ‘centroid’ based method. The vector representation of
+the seed words is used to calculate their average vector (centroid).
+The embeddings are then used to find the words closest to the centroid:
+these words are the seed expansion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of words that has to be expanded.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – limit to the number of result words.</p></li>
+<li><p><strong>embeddings</strong> (<a class="reference internal" href="okgraph.html#okgraph.embeddings.WordEmbeddings" title="okgraph.embeddings.WordEmbeddings"><em>WordEmbeddings</em></a>) – the word embeddings.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>words similar to the words in the seed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="centroid-boost">
+<h2>Centroid boost<a class="headerlink" href="#centroid-boost" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-okgraph.task.set_expansion.centroid_boost.centroid_boost"></span><dl class="py function">
+<dt id="okgraph.task.set_expansion.centroid_boost.centroid_boost.task">
+<code class="sig-prename descclassname">okgraph.task.set_expansion.centroid_boost.centroid_boost.</code><code class="sig-name descname">task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span>,</em> <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span>,</em> <em class="sig-param"><span class="n">embeddings</span><span class="p">:</span> <span class="n"><a class="reference internal" href="okgraph.html#okgraph.embeddings.WordEmbeddings" title="okgraph.embeddings.WordEmbeddings">okgraph.embeddings.WordEmbeddings</a></span>,</em> <em class="sig-param"><span class="n">step</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span>,</em> <em class="sig-param"><span class="n">fast</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.task.set_expansion.centroid_boost.centroid_boost.task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds words with the same implicit relation of the seed words
+(co-hyponyms).
+This task uses a ‘centroid’ based method. The vector representation of
+the seed words is used to calculate their average vector (centroid).
+The embeddings are then used to find the words closest to the centroid:
+some of these words are added to the seed and the centroid is updated to
+find other similar words. The iteration proceed until the seed is expanded
+with the requested number of similar words.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of words that has to be expanded.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – limit to the number of result words.</p></li>
+<li><p><strong>embeddings</strong> (<a class="reference internal" href="okgraph.html#okgraph.embeddings.WordEmbeddings" title="okgraph.embeddings.WordEmbeddings"><em>WordEmbeddings</em></a>) – the word embeddings.</p></li>
+<li><p><strong>step</strong> (<em>int</em>) – specifies the number of words that are added to the seed at
+every iteration.</p></li>
+<li><p><strong>fast</strong> (<em>bool</em>) – if True, the number of words that are added to the seed at
+every iteration increases proportionally to the specified ‘step’ and
+the length of the expanded seed by the formula
+‘len(expanded seed) * step’. If false, only #’step’ words are added
+to the seed at every iteration.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>words similar to the words in the seed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-okgraph.task.set_expansion.depth.depth">
+<span id="depth"></span><h2>Depth<a class="headerlink" href="#module-okgraph.task.set_expansion.depth.depth" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="okgraph.task.set_expansion.depth.depth.task">
+<code class="sig-prename descclassname">okgraph.task.set_expansion.depth.depth.</code><code class="sig-name descname">task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span>,</em> <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span>,</em> <em class="sig-param"><span class="n">embeddings</span><span class="p">:</span> <span class="n"><a class="reference internal" href="okgraph.html#okgraph.embeddings.WordEmbeddings" title="okgraph.embeddings.WordEmbeddings">okgraph.embeddings.WordEmbeddings</a></span>,</em> <em class="sig-param"><span class="n">width</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">10</span>,</em> <em class="sig-param"><span class="n">depth</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">2</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.task.set_expansion.depth.depth.task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds words with the same implicit relation of the seed words
+(co-hyponyms).
+Conceptually, this task expands the seed in a way similar to a tree
+expansion.
+The root is connected to the seed words, so that every seed word defines a
+node in the first level of the tree.
+The tree can be expanded in depth: for every word in a level (node), its
+similar words can be found from the embeddings and used as its children,
+making the new level grow in width.
+A score is assigned to every word in the tree, according to how many nodes
+are being occupied by that word. The most scored words are the result of
+the expansion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of words that has to be expanded.</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – limit to the number of result words.</p></li>
+<li><p><strong>embeddings</strong> (<a class="reference internal" href="okgraph.html#okgraph.embeddings.WordEmbeddings" title="okgraph.embeddings.WordEmbeddings"><em>WordEmbeddings</em></a>) – the word embeddings.</p></li>
+<li><p><strong>width</strong> (<em>int</em>) – max number of children for every word (node).</p></li>
+<li><p><strong>depth</strong> (<em>int</em>) – max height of the tree.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>words similar to the words in the seed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 </div>
 
@@ -55,10 +158,16 @@
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Library contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">okgraph</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="okgraph.html">okgraph package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="okgraph.html">okgraph package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="okgraph.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="okgraph.evaluation.html">okgraph.evaluation package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="okgraph.preprocessing.html">okgraph.preprocessing package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="okgraph.task.html">okgraph.task package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="okgraph.html#modules">Modules</a></li>
 </ul>
 </li>
 </ul>
@@ -67,11 +176,10 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="modules.html">okgraph</a><ul>
   <li><a href="okgraph.html">okgraph package</a><ul>
   <li><a href="okgraph.task.html">okgraph.task package</a><ul>
-      <li>Previous: <a href="okgraph.task.relation_labeling.html" title="previous chapter">okgraph.task.relation_labeling package</a></li>
-  </ul></li>
+      <li>Previous: <a href="okgraph.task.relation_labeling.html" title="previous chapter">okgraph.task.relation_labeling algorithms</a></li>
+      <li>Next: <a href="okgraph.task.set_labeling.html" title="next chapter">okgraph.task.set_labeling algorithms</a></li>
   </ul></li>
   </ul></li>
   </ul></li>
@@ -103,7 +211,7 @@
       &copy;2020, Maurizio Atzori.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

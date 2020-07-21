@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>okgraph.task.relation_labeling algorithms &#8212; OKgraph  documentation</title>
+    <title>okgraph.task.set_labeling algorithms &#8212; OKgraph  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -15,8 +15,7 @@
     <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="okgraph.task.set_expansion algorithms" href="okgraph.task.set_expansion.html" />
-    <link rel="prev" title="okgraph.task.relation_expansion algorithms" href="okgraph.task.relation_expansion.html" />
+    <link rel="prev" title="okgraph.task.set_expansion algorithms" href="okgraph.task.set_expansion.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -33,23 +32,23 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="okgraph-task-relation-labeling-algorithms">
-<h1>okgraph.task.relation_labeling algorithms<a class="headerlink" href="#okgraph-task-relation-labeling-algorithms" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="okgraph-task-set-labeling-algorithms">
+<h1>okgraph.task.set_labeling algorithms<a class="headerlink" href="#okgraph-task-set-labeling-algorithms" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="intersection">
 <h2>Intersection<a class="headerlink" href="#intersection" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-okgraph.task.relation_labeling.intersection.intersection"></span><dl class="py function">
-<dt id="okgraph.task.relation_labeling.intersection.intersection.task">
-<code class="sig-prename descclassname">okgraph.task.relation_labeling.intersection.intersection.</code><code class="sig-name descname">task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">List[Tuple[str, …]]</span>,</em> <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span>,</em> <em class="sig-param"><span class="n">dictionary</span><span class="p">:</span> <span class="n">str</span>,</em> <em class="sig-param"><span class="n">index</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.task.relation_labeling.intersection.intersection.task" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds labels describing the implicit relation between the seed tuples.
+<span class="target" id="module-okgraph.task.set_labeling.intersection.intersection"></span><dl class="py function">
+<dt id="okgraph.task.set_labeling.intersection.intersection.task">
+<code class="sig-prename descclassname">okgraph.task.set_labeling.intersection.intersection.</code><code class="sig-name descname">task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span>,</em> <em class="sig-param"><span class="n">k</span><span class="p">:</span> <span class="n">int</span>,</em> <em class="sig-param"><span class="n">dictionary</span><span class="p">:</span> <span class="n">str</span>,</em> <em class="sig-param"><span class="n">index</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#okgraph.task.set_labeling.intersection.intersection.task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds labels describing the implicit relation between the seed words
+(hyperonym).
 This task is based on the distributional hypothesis. SlidingWindows objects
-are used to inspect the context of every seed tuple. A set of labels is
+are used to inspect the context of every seed word. A set of labels is
 obtained from every SlidingWindows object. The intersection of all the set
-of labels is the set of labels which describes the seed tuples.</p>
+of labels is the set of labels which describes the seed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>seed</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><em>str</em><em>, </em><em>..</em><em>]</em><em>]</em>) – list of word tuples that has to be
-labeled.</p></li>
+<li><p><strong>seed</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of words that has to be labeled.</p></li>
 <li><p><strong>k</strong> (<em>int</em>) – limit to the number of labels.</p></li>
 <li><p><strong>dictionary</strong> (<em>str</em>) – path of the corpus dictionary.</p></li>
 <li><p><strong>index</strong> (<em>str</em>) – path of the indexed corpus files.</p></li>
@@ -104,8 +103,7 @@ labeled.</p></li>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="okgraph.html">okgraph package</a><ul>
   <li><a href="okgraph.task.html">okgraph.task package</a><ul>
-      <li>Previous: <a href="okgraph.task.relation_expansion.html" title="previous chapter">okgraph.task.relation_expansion algorithms</a></li>
-      <li>Next: <a href="okgraph.task.set_expansion.html" title="next chapter">okgraph.task.set_expansion algorithms</a></li>
+      <li>Previous: <a href="okgraph.task.set_expansion.html" title="previous chapter">okgraph.task.set_expansion algorithms</a></li>
   </ul></li>
   </ul></li>
   </ul></li>
@@ -141,7 +139,7 @@ labeled.</p></li>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="_sources/okgraph.task.relation_labeling.rst.txt"
+      <a href="_sources/okgraph.task.set_labeling.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

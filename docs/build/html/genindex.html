@@ -1,10 +1,10 @@
 
-
 <!DOCTYPE html>
 
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index &#8212; OKgraph  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -40,7 +40,6 @@
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
- | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
@@ -78,13 +77,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="okgraph.html#okgraph.sliding_windows.DEFAULT_DICTIONARY_DIR">DEFAULT_DICTIONARY_DIR (in module okgraph.sliding_windows)</a>
 </li>
-      <li><a href="okgraph.html#okgraph.indexing.DEFAULT_INDEX_DIR">DEFAULT_INDEX_DIR (in module okgraph.indexing)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="okgraph.html#id1">dictionary (okgraph.core.OKgraph attribute)</a>, <a href="okgraph.html#okgraph.core.OKgraph.dictionary">[1]</a>
+      <li><a href="okgraph.html#okgraph.indexing.DEFAULT_INDEX_DIR">DEFAULT_INDEX_DIR (in module okgraph.indexing)</a>
 </li>
-      <li><a href="okgraph.html#okgraph.utils.download">download() (in module okgraph.utils)</a>
+      <li><a href="okgraph.html#id1">dictionary (okgraph.core.OKgraph attribute)</a>, <a href="okgraph.html#okgraph.core.OKgraph.dictionary">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -130,15 +127,9 @@
 </li>
       <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.get_results">get_results() (okgraph.sliding_windows.SlidingWindows method)</a>
 </li>
-      <li><a href="okgraph.html#okgraph.utils.get_words">get_words() (in module okgraph.utils)</a>
+      <li><a href="okgraph.html#okgraph.sliding_windows.SlidingWindows.get_target_words">get_target_words() (okgraph.sliding_windows.SlidingWindows method)</a>
 </li>
-  </ul></td>
-</tr></table>
-
-<h2 id="H">H</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="okgraph.html#okgraph.utils.head">head() (in module okgraph.utils)</a>
+      <li><a href="okgraph.html#okgraph.utils.get_words">get_words() (in module okgraph.utils)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -160,6 +151,10 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="okgraph.html#okgraph.utils.list_flatten">list_flatten() (in module okgraph.utils)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="okgraph.html#okgraph.utils.logger">logger (in module okgraph.utils)</a>
 </li>
   </ul></td>
@@ -176,8 +171,6 @@
     module
 
       <ul>
-        <li><a href="okgraph.html#module-okgraph">okgraph</a>
-</li>
         <li><a href="okgraph.html#module-okgraph.core">okgraph.core</a>
 </li>
         <li><a href="okgraph.html#module-okgraph.embeddings">okgraph.embeddings</a>
@@ -186,13 +179,19 @@
 </li>
         <li><a href="okgraph.html#module-okgraph.sliding_windows">okgraph.sliding_windows</a>
 </li>
-        <li><a href="okgraph.task.html#module-okgraph.task">okgraph.task</a>
+        <li><a href="okgraph.task.relation_expansion.html#module-okgraph.task.relation_expansion.centroid.centroid">okgraph.task.relation_expansion.centroid.centroid</a>
 </li>
-        <li><a href="okgraph.task.relation_expansion.html#module-okgraph.task.relation_expansion">okgraph.task.relation_expansion</a>
+        <li><a href="okgraph.task.relation_expansion.html#module-okgraph.task.relation_expansion.intersection.intersection">okgraph.task.relation_expansion.intersection.intersection</a>
 </li>
-        <li><a href="okgraph.task.relation_labeling.html#module-okgraph.task.relation_labeling">okgraph.task.relation_labeling</a>
+        <li><a href="okgraph.task.relation_labeling.html#module-okgraph.task.relation_labeling.intersection.intersection">okgraph.task.relation_labeling.intersection.intersection</a>
 </li>
-        <li><a href="okgraph.task.set_expansion.html#module-okgraph.task.set_expansion">okgraph.task.set_expansion</a>
+        <li><a href="okgraph.task.set_expansion.html#module-okgraph.task.set_expansion.centroid.centroid">okgraph.task.set_expansion.centroid.centroid</a>
+</li>
+        <li><a href="okgraph.task.set_expansion.html#module-okgraph.task.set_expansion.centroid_boost.centroid_boost">okgraph.task.set_expansion.centroid_boost.centroid_boost</a>
+</li>
+        <li><a href="okgraph.task.set_expansion.html#module-okgraph.task.set_expansion.depth.depth">okgraph.task.set_expansion.depth.depth</a>
+</li>
+        <li><a href="okgraph.task.set_labeling.html#module-okgraph.task.set_labeling.intersection.intersection">okgraph.task.set_labeling.intersection.intersection</a>
 </li>
         <li><a href="okgraph.html#module-okgraph.utils">okgraph.utils</a>
 </li>
@@ -211,13 +210,6 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    okgraph
-
-      <ul>
-        <li><a href="okgraph.html#module-okgraph">module</a>
-</li>
-      </ul></li>
       <li><a href="okgraph.html#okgraph.core.OKgraph">OKgraph (class in okgraph.core)</a>
 </li>
       <li>
@@ -248,34 +240,55 @@
         <li><a href="okgraph.html#module-okgraph.sliding_windows">module</a>
 </li>
       </ul></li>
+      <li>
+    okgraph.task.relation_expansion.centroid.centroid
+
+      <ul>
+        <li><a href="okgraph.task.relation_expansion.html#module-okgraph.task.relation_expansion.centroid.centroid">module</a>
+</li>
+      </ul></li>
+      <li>
+    okgraph.task.relation_expansion.intersection.intersection
+
+      <ul>
+        <li><a href="okgraph.task.relation_expansion.html#module-okgraph.task.relation_expansion.intersection.intersection">module</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    okgraph.task
+    okgraph.task.relation_labeling.intersection.intersection
 
       <ul>
-        <li><a href="okgraph.task.html#module-okgraph.task">module</a>
+        <li><a href="okgraph.task.relation_labeling.html#module-okgraph.task.relation_labeling.intersection.intersection">module</a>
 </li>
       </ul></li>
       <li>
-    okgraph.task.relation_expansion
+    okgraph.task.set_expansion.centroid.centroid
 
       <ul>
-        <li><a href="okgraph.task.relation_expansion.html#module-okgraph.task.relation_expansion">module</a>
+        <li><a href="okgraph.task.set_expansion.html#module-okgraph.task.set_expansion.centroid.centroid">module</a>
 </li>
       </ul></li>
       <li>
-    okgraph.task.relation_labeling
+    okgraph.task.set_expansion.centroid_boost.centroid_boost
 
       <ul>
-        <li><a href="okgraph.task.relation_labeling.html#module-okgraph.task.relation_labeling">module</a>
+        <li><a href="okgraph.task.set_expansion.html#module-okgraph.task.set_expansion.centroid_boost.centroid_boost">module</a>
 </li>
       </ul></li>
       <li>
-    okgraph.task.set_expansion
+    okgraph.task.set_expansion.depth.depth
 
       <ul>
-        <li><a href="okgraph.task.set_expansion.html#module-okgraph.task.set_expansion">module</a>
+        <li><a href="okgraph.task.set_expansion.html#module-okgraph.task.set_expansion.depth.depth">module</a>
+</li>
+      </ul></li>
+      <li>
+    okgraph.task.set_labeling.intersection.intersection
+
+      <ul>
+        <li><a href="okgraph.task.set_labeling.html#module-okgraph.task.set_labeling.intersection.intersection">module</a>
 </li>
       </ul></li>
       <li>
@@ -319,8 +332,22 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="okgraph.html#okgraph.utils.tail">tail() (in module okgraph.utils)</a>
+      <li><a href="okgraph.task.relation_expansion.html#okgraph.task.relation_expansion.centroid.centroid.task">task() (in module okgraph.task.relation_expansion.centroid.centroid)</a>
+
+      <ul>
+        <li><a href="okgraph.task.relation_expansion.html#okgraph.task.relation_expansion.intersection.intersection.task">(in module okgraph.task.relation_expansion.intersection.intersection)</a>
 </li>
+        <li><a href="okgraph.task.relation_labeling.html#okgraph.task.relation_labeling.intersection.intersection.task">(in module okgraph.task.relation_labeling.intersection.intersection)</a>
+</li>
+        <li><a href="okgraph.task.set_expansion.html#okgraph.task.set_expansion.centroid.centroid.task">(in module okgraph.task.set_expansion.centroid.centroid)</a>
+</li>
+        <li><a href="okgraph.task.set_expansion.html#okgraph.task.set_expansion.centroid_boost.centroid_boost.task">(in module okgraph.task.set_expansion.centroid_boost.centroid_boost)</a>
+</li>
+        <li><a href="okgraph.task.set_expansion.html#okgraph.task.set_expansion.depth.depth.task">(in module okgraph.task.set_expansion.depth.depth)</a>
+</li>
+        <li><a href="okgraph.task.set_labeling.html#okgraph.task.set_labeling.intersection.intersection.task">(in module okgraph.task.set_labeling.intersection.intersection)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -376,9 +403,9 @@
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Library contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">okgraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="okgraph.html">okgraph package</a></li>
 </ul>
 
 <div class="relations">
@@ -414,7 +441,7 @@
       &copy;2020, Maurizio Atzori.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

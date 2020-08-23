@@ -15,9 +15,9 @@ def task(seed: List[Tuple[str, ...]],
     Finds tuples with the same implicit relation of the seed tuples.
     Every seed tuple is composed by a generic number of words whose meaning is
     strictly related to the position in the tuple.
-    All the words in the same position are collected in a new list.
+    All the words in the same positions are collected in new lists.
     Every new list is expanded through a set expansion algorithm and new words
-    are found as candidates for that position in tuples.
+    are found as candidates for that position in new tuples.
     The relation between two tuple words in different positions can be
     expressed by their vector difference. These vector differences are obtained
     from the seed and used to validate the new tuples obtained combining the

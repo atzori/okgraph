@@ -1,5 +1,5 @@
-from okgraph.utils import list_flatten, logger
 from okgraph.embeddings import WordEmbeddings
+from okgraph.utils import list_flatten, logger
 from typing import List
 
 
@@ -11,6 +11,7 @@ def task(seed: List[str],
          ) -> List[str]:
     """Finds words with the same implicit relation of the seed words
     (co-hyponyms).
+
     Conceptually, this task expands the seed in a way similar to a tree
     expansion.
     The root is connected to the seed words, so that every seed word defines a
@@ -51,6 +52,7 @@ def task(seed: List[str],
         words_in_level = words_in_new_level
 
     co_hyponyms = \
-        [key for key in sorted(scores, key=scores.get, reverse=True)][:k]
+        [key for key in sorted(scores, key=scores.get, reverse=True)
+         if key not in seed][:k]
     logger.info(f"Expansion is {co_hyponyms}")
     return co_hyponyms

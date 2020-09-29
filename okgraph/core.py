@@ -115,7 +115,7 @@ class OKgraph:
                 index and dictionary from scratch, overwriting them if already
                 existing.
 
-        Examples:
+        Example:
             - Instantiating an OKgraph object specifing a corpus file:
                 >>> from okgraph.core import OKgraph
                 >>> corpus = "/OKgraph/Example/enwik9.txt"
@@ -125,7 +125,7 @@ class OKgraph:
               This code will create an OKgraph object using the *enwiki9.txt*
               corpus.
               No path have been specified for the embeddings, index directory
-              and dictionary, so the default paths
+              and dictionary, so the default paths (same of the corpus)
               '/OKgraph/Example/enwik9.magnitude',
               '/OKgraph/Example/indexdir/', '/OKgraph/Example/dictTotal.npy'
               are implicitly used.
@@ -140,7 +140,7 @@ class OKgraph:
                 >>> embeddings = "/OKgraph/Example/NewDir/enwiki9_embeddings"
                 >>> index = "/OKgraph/Example/NewDir/enwiki9_index"
                 >>> dictionary = "/OKgraph/Example/NewDir/enwiki9_dictionary"
-                >>> okg = OKgraph("/OKgraph/Example/enwik9.txt",
+                >>> okg = OKgraph(corpus_file=corpus,
                 >>>               embeddings_file=embeddings,
                 >>>               index_dir=index,
                 >>>               dictionary_file=dictionary)

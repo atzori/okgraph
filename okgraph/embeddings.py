@@ -12,7 +12,7 @@ from typing import List
 
 class WordEmbeddings(ABC):
     """An abstract class representing `word embeddings
-    <https://en.wikipedia.org/wiki/Word_embedding>`_ and their basic operations.
+    <https://en.wikipedia.org/wiki/Word_embedding>`_ and their usual operations.
     """
 
     @abstractmethod
@@ -58,6 +58,10 @@ class WordEmbeddings(ABC):
             List[str]: a list of word/words whose vector representation is close
                 to the vector representation of the given word.
 
+        Raises:
+            NotExistingWordException: if the word doesn't exist in the
+                embeddings and no vector can be related to it.
+
         """
         return self.v2w(self.w2v(w), n)
 
@@ -75,6 +79,7 @@ class WordEmbeddings(ABC):
         """
         return list(map(self.w2v, self.v2w(v, n)))
 
+    @abstractmethod
     def exists(self, w: str) -> bool:
         """Checks if a word exists in the embeddings model.
 
@@ -85,11 +90,7 @@ class WordEmbeddings(ABC):
             bool: True if a vector exists for the given word, False otherwise.
 
         """
-        try:
-            self.w2v(w)
-            return True
-        except NotExistingWordException:
-            return False
+        pass
 
     def get4thv(self, v1: ndarray, v2: ndarray,
                 v3: ndarray, n: int = 1) -> List[str]:
@@ -107,7 +108,7 @@ class WordEmbeddings(ABC):
             List[str]: a list of word/words whose vector representation is close
                 to the vector that completes the analogy.
 
-        Examples:
+        Example:
             An example of analogy that the method completes could be:
                 >>> e : WordEmbeddings
                 >>> ...
@@ -115,6 +116,7 @@ class WordEmbeddings(ABC):
                 >>> v2 = e.w2v("king")
                 >>> v3 = e.w2v("woman")
                 >>> w4 = e.get4thv(v1, v2, v3)
+                ['queen']
             expecting *w4* to be something such *['queen']* having *n=1*. With
             *n>1* other possible solutions would be added to the list of
             results.
@@ -138,7 +140,11 @@ class WordEmbeddings(ABC):
         Returns:
             List[str]: a list of word/words that complete the analogy.
 
-        Examples:
+        Raises:
+            NotExistingWordException: if the word doesn't exist in the
+                embeddings and no vector can be related to it.
+
+        Example:
             An example of analogy that the method completes could be:
                 >>> e : WordEmbeddings
                 >>> ...
@@ -146,6 +152,7 @@ class WordEmbeddings(ABC):
                 >>> w2 = "king"
                 >>> w3 = "woman"
                 >>> w4 = e.get4th(w1, w2, w3)
+                ['queen']
             expecting *w4* to be something such *['queen']* having *n=1*. With
             *n>1* other possible solutions would be added to the list of
             results.
@@ -153,7 +160,8 @@ class WordEmbeddings(ABC):
         """
         return self.get4thv(self.w2v(w1), self.w2v(w2), self.w2v(w3), n=n)
 
-    def centroidv(self, vs: List[ndarray]) -> ndarray:
+    @staticmethod
+    def centroidv(vs: List[ndarray]) -> ndarray:
         """Computes the average vector from the given vectors.
 
         Args:
@@ -174,6 +182,10 @@ class WordEmbeddings(ABC):
 
         Returns:
             ndarray: the average vector, or centroid.
+
+        Raises:
+            NotExistingWordException: if the word doesn't exist in the
+                embeddings and no vector can be related to it.
 
         """
         return self.centroidv(list(map(self.w2v, ws)))
@@ -228,6 +240,22 @@ class MagnitudeWordEmbeddings(WordEmbeddings):
 
         """
         return list(map(lambda r: r[0], self.model.most_similar(v, topn=n)))
+
+    def exists(self, w: str) -> bool:
+        """Checks if a word exists in the embeddings model.
+
+        Args:
+            w (str): a potential word in the embeddings model.
+
+        Returns:
+            bool: True if a vector exists for the given word, False otherwise.
+
+        """
+        try:
+            self.w2v(w)
+            return True
+        except NotExistingWordException:
+            return False
 
 
 class FileConverter:

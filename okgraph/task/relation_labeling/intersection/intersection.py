@@ -9,6 +9,7 @@ def task(seed: List[Tuple[str, ...]],
          index: str
          ) -> List[str]:
     """Finds labels describing the implicit relation between the seed tuples.
+
     This task is based on the distributional hypothesis. SlidingWindows objects
     are used to inspect the context of every seed tuple. A set of labels is
     obtained from every SlidingWindows object. The intersection of all the set
@@ -23,6 +24,7 @@ def task(seed: List[Tuple[str, ...]],
 
     Returns:
         List[str]: labels describing the seed.
+    
     """
     logger.info(f"Starting the relation labeling of {seed}")
 
@@ -33,6 +35,9 @@ def task(seed: List[Tuple[str, ...]],
                         corpus_dictionary_path=dictionary,
                         corpus_index_path=index)
          for tuple in seed]
+    # TODO: could be useful to add the 'sliding_windows' parameters such
+    #  'window_size' and 'noise_threshold' as a parameter of this task with
+    #  default values
 
     # Get the labels of every word tuple from the related SlidingWindows
     # objects

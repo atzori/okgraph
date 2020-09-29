@@ -8,9 +8,9 @@ def task(seed: List[str],
          dictionary: str,
          index: str
          ) -> List[str]:
-    """
-    Finds labels describing the implicit relation between the seed words
+    """Finds labels describing the implicit relation between the seed words
     (hyperonym).
+
     This task is based on the distributional hypothesis. SlidingWindows objects
     are used to inspect the context of every seed word. A set of labels is
     obtained from every SlidingWindows object. The intersection of all the set
@@ -24,8 +24,8 @@ def task(seed: List[str],
 
     Returns:
         List[str]: labels describing the seed.
+
     """
-    # Get the task parameters
     logger.info(f"Starting the set labeling of {seed}")
 
     # Get the SlidingWindows of every word
@@ -35,6 +35,9 @@ def task(seed: List[str],
                         corpus_dictionary_path=dictionary,
                         corpus_index_path=index)
          for word in seed]
+    # TODO: could be useful to add the 'sliding_windows' parameters such
+    #  'window_size' and 'noise_threshold' as a parameter of this task with
+    #  default values
 
     # Get the labels of every pair of words from the related SlidingWindows
     # objects

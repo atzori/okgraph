@@ -12,8 +12,8 @@ def task(seed: List[Tuple[str, ...]],
          set_expansion_k: int,
          set_expansion_options: Dict
          ) -> List[Tuple[str, ...]]:
-    """
-    Finds tuples with the same implicit relation of the seed tuples.
+    """Finds tuples with the same implicit relation of the seed tuples.
+
     This task is based on the use of the "relation labeling" and "set
     expansion" algorithms. All the words in the same positions are collected in
     new lists. Every new list is expanded through a set expansion algorithm and
@@ -73,8 +73,8 @@ def task(seed: List[Tuple[str, ...]],
                                          **relation_labeling_options)
     logger.debug(f"Seed labels: {seed_labels}")
 
-    # Create two separate lists: one with the first elements of every tuple in
-    # the seed, one with the second elements
+    # Create the collection of words occupying the same position in the seed
+    # tuple
     logger.debug(
         f"Creating lists of words in the same position from the tuples in {seed}")
     relation_size = len(seed[0])
@@ -119,4 +119,3 @@ def task(seed: List[Tuple[str, ...]],
     tuples_expansion = tuples_expansion[:k]
     logger.debug(f"Expansion is {tuples_expansion}")
     return tuples_expansion
-

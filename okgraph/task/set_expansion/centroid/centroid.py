@@ -1,5 +1,5 @@
-from okgraph.utils import logger
 from okgraph.embeddings import WordEmbeddings
+from okgraph.utils import logger
 from typing import List
 
 
@@ -9,6 +9,7 @@ def task(seed: List[str],
          ) -> List[str]:
     """Finds words with the same implicit relation of the seed words
     (co-hyponyms).
+
     This task uses a 'centroid' based method. The vector representation of
     the seed words is used to calculate their average vector (centroid).
     The embeddings are then used to find the words closest to the centroid:

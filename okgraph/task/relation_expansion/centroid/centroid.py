@@ -11,8 +11,8 @@ def task(seed: List[Tuple[str, ...]],
          set_expansion_k: int,
          set_expansion_options: Dict
          ) -> List[Tuple[str, ...]]:
-    """
-    Finds tuples with the same implicit relation of the seed tuples.
+    """Finds tuples with the same implicit relation of the seed tuples.
+
     Every seed tuple is composed by a generic number of words whose meaning is
     strictly related to the position in the tuple.
     All the words in the same positions are collected in new lists.
@@ -41,6 +41,7 @@ def task(seed: List[Tuple[str, ...]],
 
     """
     logger.info(f"Starting the relation expansion of {seed}")
+    n_closest_words = 3
 
     # Import the algorithm for set expansion
     logger.debug(
@@ -56,7 +57,6 @@ def task(seed: List[Tuple[str, ...]],
     # tuple
     relation_size = len(seed[0])
     seed_by_pos = [[] for _ in range(relation_size)]
-    print(seed_by_pos)
     for t in seed:
         for i, word in zip(range(relation_size), t):
             seed_by_pos[i] += [word]
@@ -82,18 +82,19 @@ def task(seed: List[Tuple[str, ...]],
     # Create new tuples
     new_tuples = []
     for j, word in enumerate(seed_by_pos_expansion[0]):
-        print(f"Count {j}: word {word}", end='')
+        str_debug = f"Count {j}: word {word}"
         tuple_list = [word]
         for i, diff in zip(range(1, relation_size), centroid_diffs):
-            new_words = embeddings.v2w(embeddings.w2v(word) + diff, 5)
+            new_words = embeddings.v2w(embeddings.w2v(word) + diff,
+                                       n_closest_words)
             for new_word in new_words:
-                print(f", new word {i} {new_word}", end='')
+                str_debug += f", new word {i} {new_word}"
                 if new_word in seed_by_pos_expansion[i]:
                     tuple_list += [new_word]
                     break
             if len(tuple_list) == i+1:
                 break
-        print()
+        logger.debug(str_debug)
         if len(tuple_list) == relation_size:
             new_tuples += [tuple(tuple_list)]
 

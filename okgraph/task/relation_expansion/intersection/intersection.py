@@ -1,5 +1,5 @@
 from okgraph.core import algorithms_package
-from okgraph.utils import logger
+from okgraph.utils import logger, tuple_combinations
 from typing import Dict, List, Tuple
 
 
@@ -93,23 +93,7 @@ def task(seed: List[Tuple[str, ...]],
 
     # Create a list of new possible tuples, by all the possible combinations of
     # elements from the seed expansions
-    new_tuples = []
-    indexes = [0 for _ in range(relation_size)]
-    max_indexes = [len(e) for e in seed_by_pos_expansion]
-    while indexes[0] < max_indexes[0]:
-        new_t = []
-        for j in range(relation_size):
-            new_t += [seed_by_pos_expansion[j][indexes[j]]]
-        new_tuples += [tuple(new_t)]
-        j = -1
-        while j >= -relation_size:
-            indexes[j] += 1
-            if indexes[j] < max_indexes[j]:
-                break
-            else:
-                if j > -relation_size:
-                    indexes[j] = 0
-                j -= 1
+    new_tuples = tuple_combinations(tuple(seed_by_pos_expansion))
 
     # Get the labels for every created tuple: if the labels of the new tuple
     # contains all the labels of the seed, save the tuple as an expansion of

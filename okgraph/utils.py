@@ -9,7 +9,7 @@ import operator
 from os import makedirs, path
 import re
 import string
-from typing import Dict, Iterator, List
+from typing import Dict, Iterator, List, Tuple
 
 LOG_CONFIG_FILE = path.join(
     path.dirname(path.realpath(__file__)),
@@ -147,3 +147,66 @@ def list_flatten(l: List) -> List:
 
     """
     return list(chain.from_iterable(l))
+
+
+def tuple_combinations(tuple_elements: Tuple[List, ...]) -> List[Tuple]:
+    """Given a tuple of lists containing some elements, evaluates all the
+    possible combinations of those elements.
+
+    Args:
+        tuple_elements (Tuple[List, ...]): the original tuple containing all
+            the possible elements that can occupy the respective position in
+            new tuples.
+
+    Returns:
+        List[Tuple]: the list of tuples obtained from the combination of the
+            given elements.
+
+    Example:
+        >>> elements = (["a", "b"], ["1"], ["$", "£"])
+        >>> tuple_combinations(elements)
+        [('a', '1', '$'), ('a', '1', '£'), ('b', '1', '$'), ('b', '1', '£')]
+
+    """
+    combinations: List[Tuple] = []
+    tuple_size = len(tuple_elements)
+
+    # List of indexes used to pick the elements in the different positions of
+    # the input tuple. Start from the first elements in every position.
+    actual_indexes = [0 for _ in range(tuple_size)]
+    # Max number of elements available for every position of the tuples
+    max_indexes = [len(l) for l in tuple_elements]
+
+    # Creates new tuples until the actual index for the first position of the
+    # tuple indicates all the elements has been selected
+    while actual_indexes[0] < max_indexes[0]:
+        # Create a new tuple picking the items from all the positions of the
+        # tuple indexed through the list of actual indexes
+        new_tuple = ()
+        for j in range(tuple_size):
+            new_tuple = \
+                new_tuple.__add__( (tuple_elements[j][actual_indexes[j]],) )
+
+        # Add the tuple as a new combination
+        combinations += [new_tuple]
+
+        # Scroll the actual indexes backwards
+        j = -1
+        while j >= -tuple_size:
+            # Pass to the next element in the actual position
+            actual_indexes[j] += 1
+
+            # If the last element for the actual position has not been passed
+            if actual_indexes[j] < max_indexes[j]:
+                # Proceed creating a new combination
+                break
+            # If the last element for the actual position has just been used
+            else:
+                # If the element was not from the first position of the tuple
+                if j > -tuple_size:
+                    # Start again from the first element for the same position
+                    actual_indexes[j] = 0
+                # Check the index in the previous position of the tuple
+                j -= 1
+
+    return combinations

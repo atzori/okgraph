@@ -377,25 +377,27 @@ class OKGraphTest(unittest.TestCase):
         e = okg.embeddings
         n = 15
 
-        w = 'town'
-        v = e.w2v(w)
+        w1 = 'town'
+        w2 = 'risk'
+        v1 = e.w2v(w1)
+        v2 = e.w2v(w2)
 
-        r_w2v = e.w2v(w)
+        r_w2v = e.w2v(w1)
         self.assertIsInstance(r_w2v, ndarray,
                               msg=f"The w2v function must return a vector (numpy.array)")
         self.assertIsInstance(r_w2v[0], floating,
                               msg=f"The w2v function must return a vector of floats")
-        r_v2w = e.v2w(v)
+        r_v2w = e.v2w(v1)
         self.assertIsInstance(r_v2w, list,
                               msg=f"The v2w function must return a list")
         self.assertIsInstance(r_v2w[0], str,
                               msg=f"The v2w function must return a list of words (strings)")
-        r_w2w = e.w2w(w)
+        r_w2w = e.w2w(w1)
         self.assertIsInstance(r_w2w, list,
                               msg=f"The w2w function must return a list")
         self.assertIsInstance(r_w2w[0], str,
                               msg=f"The w2w function must return a list of words (strings)")
-        r_v2v = e.v2v(v)
+        r_v2v = e.v2v(v1)
         self.assertIsInstance(r_v2v, list,
                               msg=f"The v2v function must return a list")
         self.assertIsInstance(r_v2v[0], ndarray,
@@ -403,13 +405,13 @@ class OKGraphTest(unittest.TestCase):
         self.assertIsInstance(r_v2v[0][0], floating,
                               msg=f"The v2v function must return a list of vectors of floats")
 
-        vs1 = e.v2v(v, n)
-        vs2 = list(map(lambda x: e.w2v(x), e.w2w(e.v2w(v, 1)[0], n)))
+        vs1 = e.v2v(v1, n)
+        vs2 = list(map(lambda x: e.w2v(x), e.w2w(e.v2w(v1, 1)[0], n)))
         self.assertEqual(vs1, vs2,
                          msg=f"The vector expansions of the same vector must be equal")
 
-        ws1 = e.w2w(w, n)
-        ws2 = list(map(lambda x: e.v2w(x, 1)[0], e.v2v(e.w2v(w), n)))
+        ws1 = e.w2w(w1, n)
+        ws2 = list(map(lambda x: e.v2w(x, 1)[0], e.v2v(e.w2v(w1), n)))
         self.assertEqual(ws1, ws2,
                          msg=f"The word expansions of the same word must be equal")
 
@@ -433,6 +435,16 @@ class OKGraphTest(unittest.TestCase):
         existence = e.exists(not_existing_word)
         self.assertFalse(existence,
                          msg=f"{not_existing_word} cannot be in the model")
+
+        cosine = e.cos(w1, w2)
+        print(type(cosine))
+        self.assertIsInstance(cosine, float,
+                              msg=f"The cosine must be a float value")
+        self.assertTrue(0 < cosine < 1,
+                        msg=f"Cosine between {w1} and {w2} must be between 0 and 1")
+        cosine = e.cos(w1, w1)
+        self.assertTrue(cosine == 1,
+                        msg=f"Cosine between {w1} and {w1} must 1")
 
 
 if __name__ == "__main__":

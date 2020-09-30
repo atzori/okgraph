@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from gensim.models.word2vec import LineSentence, Word2Vec
 from gensim.models.phrases import Phraser, Phrases
+import numpy as np
 from numpy import ndarray
 from okgraph.utils import logger
 from os import makedirs, path
@@ -26,7 +27,7 @@ class WordEmbeddings(ABC):
             ndarray: the vector representation of the word.
 
         Raises:
-            NotExistingWordException: if the word doesn't exist in the
+            NotExistingWordException: if a word doesn't exist in the
                 embeddings and no vector can be related to it.
 
         """
@@ -59,7 +60,7 @@ class WordEmbeddings(ABC):
                 to the vector representation of the given word.
 
         Raises:
-            NotExistingWordException: if the word doesn't exist in the
+            NotExistingWordException: if a word doesn't exist in the
                 embeddings and no vector can be related to it.
 
         """
@@ -141,7 +142,7 @@ class WordEmbeddings(ABC):
             List[str]: a list of word/words that complete the analogy.
 
         Raises:
-            NotExistingWordException: if the word doesn't exist in the
+            NotExistingWordException: if a word doesn't exist in the
                 embeddings and no vector can be related to it.
 
         Example:
@@ -184,11 +185,47 @@ class WordEmbeddings(ABC):
             ndarray: the average vector, or centroid.
 
         Raises:
-            NotExistingWordException: if the word doesn't exist in the
+            NotExistingWordException: if a word doesn't exist in the
                 embeddings and no vector can be related to it.
 
         """
         return self.centroidv(list(map(self.w2v, ws)))
+
+    @staticmethod
+    def cosv(v1: ndarray, v2: ndarray) -> float:
+        """Computes the cosine of the angle between two vectors.
+
+        Args:
+            v1 (ndarray): first vector.
+            v2 (ndarray): second vector.
+
+        Returns:
+            float: the cosine of the angle between the two input vectors.
+
+        """
+        norm1 = np.linalg.norm(v1)
+        norm2 = np.linalg.norm(v2)
+        dot_product = np.dot(v1, v2)
+        return float(dot_product / (norm1 * norm2))
+
+    def cos(self, w1: str, w2: str) -> float:
+        """Computes the cosine of the angle between the vector representations
+        of two words.
+
+        Args:
+            w1 (str): first word.
+            w2 (str): second word.
+
+        Returns:
+            float: the cosine of the angle between the vector representations
+                of the two input words.
+
+        Raises:
+            NotExistingWordException: if a word doesn't exist in the
+                embeddings and no vector can be related to it.
+
+        """
+        return self.cosv(self.w2v(w1), self.w2v(w2))
 
 
 class MagnitudeWordEmbeddings(WordEmbeddings):
@@ -218,7 +255,7 @@ class MagnitudeWordEmbeddings(WordEmbeddings):
             ndarray: the vector representation of the word.
 
         Raises:
-            NotExistingWordException: if the word doesn't exist in the
+            NotExistingWordException: if a word doesn't exist in the
                 embeddings and no vector can be related to it.
 
         """

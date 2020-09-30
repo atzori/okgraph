@@ -24,7 +24,9 @@ class SlidingWindows:
     labels appear in the same context of the target words. The context is
     represented by windows of text with specified size containing the target
     words. The size of a text window is measured in 'words'. The text windows
-    are extracted from the corpus and used to identify the labels.
+    are extracted from the corpus and used to identify the labels. The
+    congruence of the labels with the target words is evaluated through a
+    TF-IDF statistic.
     """
 
     def __init__(self,
@@ -541,9 +543,9 @@ class SlidingWindows:
             if windows_dictionary.get(key) > len(cleaned_dictionary):
                 count_removed_words += 1
                 logger.debug(
-                    f"{target_words}:"
-                    f" Removing '{key}':"
-                    f" {windows_dictionary.get(key)} < {len(cleaned_dictionary)}"
+                    f"{target_words}: "
+                    f"Removing '{key}': "
+                    f"{windows_dictionary.get(key)} < {len(cleaned_dictionary)}"
                 )
                 cleaned_dictionary.pop(key)
         logger.debug(f"{target_words}: Removed {count_removed_words} words")
@@ -595,9 +597,6 @@ class SlidingWindows:
             f" Cleaned dictionary counts {len(cleaned_dictionary)} words,"
             f" against the {len(tf_idf_dictionary)} words of the starting"
             f" dictionary")
-        logger.debug(
-            f"{target_words}:"
-            f" Final cleaned dictionary keys: {cleaned_dictionary}")
 
         return cleaned_dictionary
 
@@ -609,7 +608,18 @@ class SlidingWindows:
         """
         return self._target_words
 
-    def get_results(self, k: int = None) -> List[str]:
+    def get_results_dict(self) -> Dict[str, float]:
+        """Return the dictionary of labels and their TF-IDF value, related to
+        the target words.
+
+        Returns:
+            Dict[str, float]: the dictionary of labels and their TF-IDF value,
+                ordered for congruence through the TF-IDF statistic.
+
+        """
+        return self._results_dict
+
+    def get_results_list(self, k: int = None) -> List[str]:
         """Returns the list of labels related to the target words.
 
         Args:
@@ -617,7 +627,8 @@ class SlidingWindows:
                 no limit is set and all the labels are returned.
 
         Returns:
-            List[str]: the list of labels.
+            List[str]: the list of labels, ordered for congruence through the
+                TF-IDF statistic and limited to 'k' values.
 
         """
         if k is not None:

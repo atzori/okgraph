@@ -1,5 +1,0 @@
-******
-okgraph.evaluation package
-******
-
-TODO

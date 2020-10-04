@@ -224,13 +224,11 @@ class OKGraphTest(unittest.TestCase):
         Uses an OKgraph object with default values.
         """
         okg = OKgraph(corpus_file=test_corpus_file)
-        b_seed = [("rome", "italy"), ("berlin", "germany")]
-        t_seed = [("rome", "berlin", "tokyo")]
+        seed = [("rome", "italy"), ("berlin", "germany")]
         k = 15
         options = {"dictionary": okg.dictionary,
                    "index": okg.index}
-        b_results = okg.relation_labeling(b_seed, k, "intersection", options)
-        t_results = okg.relation_labeling(t_seed, k, "intersection", options)
+        b_results = okg.relation_labeling(seed, k, "intersection", options)
 
         self.assertIsInstance(b_results, list,
                               msg=f"The return value of the task should be a list")
@@ -242,8 +240,7 @@ class OKGraphTest(unittest.TestCase):
             self.assertIsInstance(r_label, str,
                                   msg=f"The return value of the task should be a list strings")
 
-        logger.info(f"Labels of {b_seed} are {b_results}")
-        logger.info(f"Labels of {t_seed} are {t_results}")
+        logger.info(f"Labels of {seed} are {b_results}")
 
     def test_task_set_expansion_centroid(self):
         """
@@ -354,7 +351,7 @@ class OKGraphTest(unittest.TestCase):
         Uses an OKgraph object with default values.
         """
         okg = OKgraph(corpus_file=test_corpus_file)
-        seed = ["milan", "rome", "venice"]
+        seed = ["berlin", "paris", "moscow"]
         k = 15
         options = {"dictionary": okg.dictionary,
                    "index": okg.index}

@@ -4,7 +4,7 @@
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-# -- Path setup --------------------------------------------------------------
+# -- Path setup ----------------------------------------------------------------
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -14,14 +14,17 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
 
-# -- Project information -----------------------------------------------------
+# -- Project information -------------------------------------------------------
 
 project = 'OKgraph'
 copyright = '2020, Maurizio Atzori'
 author = 'Maurizio Atzori'
 
 
-# -- General configuration ---------------------------------------------------
+# -- General configuration -----------------------------------------------------
+
+# The master toctree document.
+master_doc = 'index'
 
 # Add any external library names, as strings. The specified libraries will be
 # ignored during the building process. Use this if the external libraries are
@@ -33,7 +36,8 @@ autodoc_mock_imports = ['pymagnitude', 'gensim']
 # ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.coverage',
-              'sphinx.ext.napoleon']
+              'sphinx.ext.napoleon',
+              'recommonmark']
 
 # This value selects what content will be inserted into the main body of an 
 # autoclass directive. The possible values are 'class', 'both' and 'init'
@@ -48,14 +52,42 @@ templates_path = ['_templates']
 exclude_patterns = []
 
 
-# -- Options for HTML output -------------------------------------------------
+# -- Options for HTML output ---------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named 'default.css' will overwrite the builtin 'default.css'.
-html_static_path = ['_static']
+
+# -- Options for MarkDown inclusion --------------------------------------------
+from recommonmark.parser import CommonMarkParser
+from recommonmark.transform import AutoStructify
+from m2r import MdInclude
+
+
+source_parsers = {
+    '.md': CommonMarkParser,
+}
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.txt': 'markdown',
+    '.md': 'markdown',
+}
+
+def setup(app):
+    config = {
+        # 'url_resolver': lambda url: github_doc_root + url,
+        'auto_toc_tree_section': 'Contents',
+        'enable_eval_rst': True,
+    }
+    app.add_config_value('recommonmark_config', config, True)
+    app.add_transform(AutoStructify)
+
+    # from m2r to make `mdinclude` work
+    app.add_config_value('no_underscore_emphasis', False, 'env')
+    app.add_config_value('m2r_parse_relative_links', False, 'env')
+    app.add_config_value('m2r_anonymous_references', False, 'env')
+    app.add_config_value('m2r_disable_inline_math', False, 'env')
+    app.add_directive('mdinclude', MdInclude)

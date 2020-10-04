@@ -1,4 +1,7 @@
 -e .
+wheel
+cython
+six
 gensim
 annoy
 pymagnitude
@@ -9,3 +12,6 @@ scipy
 whoosh
 sklearn
 pytest
+sphinx
+recommonmark
+m2r

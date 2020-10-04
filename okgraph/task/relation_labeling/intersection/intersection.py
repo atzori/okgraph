@@ -61,7 +61,7 @@ def task(seed: List[Tuple[str, ...]],
             win_labels_intersection & win_labels_dict.keys()
 
     # Assign to the labels in the intersections the average value of the TF-IDF
-    # statistic obtained from the different windows.
+    # statistic obtained from the different windows
     labels_dict = {}
     for label in win_labels_intersection:
         avg_tf_idf = np.mean(

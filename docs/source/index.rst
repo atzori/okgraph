@@ -6,8 +6,8 @@ Welcome to OKgraph!
    :maxdepth: 3
    :caption: Library contents:
 
+   README_link.rst
    okgraph
-
 
 ######
 Indices and tables

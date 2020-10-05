@@ -1,11 +1,3 @@
-/*
- * After running the 'docs\make html' command:
- *  - Copy and paste this layout into the html\_static\custom.css file;
- *  - Substitute in all the generated HTML files the occurrences of "</em>,"
- *    with ",</em>";
- *  - Delete the @media queries from the "html\_static\alabaster.css" file.
- */
-
 /* -- page layout ----------------------------------------------------------- */
 
 div.document {
@@ -22,6 +14,7 @@ div.bodywrapper {
     padding: 20px 0 20px 0;
 }
 
+/* Leave the side bar in position and don't let it disappear when scrolling */
 div.sphinxsidebar {
     width: auto !important;
     position: fixed !important;
@@ -67,6 +60,7 @@ div.footer {
 
 /* -- documentation --------------------------------------------------------- */
 
+/* The input parameters are listed one per line */
 .sig-param {
     display: block;
     margin-left: 40px;

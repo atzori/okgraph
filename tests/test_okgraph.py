@@ -466,6 +466,35 @@ class OKGraphTest(unittest.TestCase):
 
         logger.info(f"Labels of {seed} are {results}")
 
+    def test_task_set_labeling_union(self):
+        """
+        Tests the set labeling task using the union algorithm.
+        Uses an OKgraph object with default values.
+        """
+        okg = OKgraph(corpus_file=test_corpus_file)
+        seed = ["berlin", "paris", "moscow"]
+        k = 15
+        options = {"embeddings": okg.embeddings,
+                   "dictionary": okg.dictionary,
+                   "index": okg.index}
+        results = okg.set_labeling(seed, k, "union", options)
+
+        self.assertIsInstance(
+            results, list,
+            msg=f"The return value of the task should be a list")
+        self.assertGreater(
+            len(results), 0,
+            msg=f"No results obtained from the algorithm")
+        self.assertLessEqual(
+            len(results), k,
+            msg=f"The limit of {k} results has been passed")
+        for r_label in results:
+            self.assertIsInstance(
+                r_label, str,
+                msg=f"The return value of the task should be a list strings")
+
+        logger.info(f"Labels of {seed} are {results}")
+
     def test_embeddings(self):
         okg = OKgraph(corpus_file=test_corpus_file)
         e = okg.embeddings

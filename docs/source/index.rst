@@ -1,17 +1,14 @@
-######
 Welcome to OKgraph!
-######
+======
 
 .. toctree::
    :maxdepth: 3
-   :caption: Library contents:
 
-   README_link.rst
+   README_link
    okgraph
 
-######
 Indices and tables
-######
+------
 
 * :ref:`genindex`
 * :ref:`modindex`

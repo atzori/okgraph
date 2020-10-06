@@ -6,6 +6,7 @@ Welcome to OKgraph!
 
    README_link
    okgraph
+   docs
    tests
 
 Indices and tables

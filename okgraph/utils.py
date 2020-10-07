@@ -12,12 +12,9 @@ import string
 from typing import Dict, Iterator, List, Tuple
 
 LOG_CONFIG_FILE = path.join(
-    path.dirname(path.realpath(__file__)),
+    path.dirname(path.normpath(__file__)),
     "logging.ini")
-if not path.isfile(LOG_CONFIG_FILE):
-    LOG_CONFIG_FILE = path.join(
-        path.dirname(path.dirname(LOG_CONFIG_FILE)),
-        "logging.ini")
+"""str: name of the file containing the logger configuration."""
 fileConfig(LOG_CONFIG_FILE)
 
 logger = logging.getLogger()
@@ -26,7 +23,6 @@ logger = logging.getLogger()
 Check the 'logging.ini' file for the logger configuration.
 """
 
-logger.info(f"Logger configuration file is: {LOG_CONFIG_FILE}")
 
 
 def check_extension(file: str,

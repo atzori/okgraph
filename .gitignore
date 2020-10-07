@@ -9,10 +9,10 @@ build/
 dist/
 docs/build/*
 docs/source/*
-!_templates/
-!conf.py
-!index.rst
-!README_link.rst
+!docs/source/_templates/
+!docs/source/conf.py
+!docs/source/index.rst
+!docs/source/README_link.rst
 indexdir/
 okgraph_algorithms/
 okgraph.egg-info/

@@ -1,3 +1,7 @@
+"""This module contains a script to generates the html documentation of the
+project using the Sphinx library. It uses the source files from the 'source'
+directory and generates the output in the 'build' directory.
+"""
 import os
 from os import path
 import shutil
@@ -53,4 +57,5 @@ if __name__ == "__main__":
             os.remove(tmp_file)
 
     # Go back to the previous working directory
+    # NOTE: possibly useless
     os.chdir(cwd_backup)

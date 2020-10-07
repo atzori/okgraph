@@ -436,12 +436,12 @@ class SlidingWindows:
 
         noise_dict = {}
         for word in windows_dictionary_keys:
-            # QSTN: all the words in the windows dictionary surely are in the
+            # NOTE: all the words in the windows dictionary surely are in the
             #  corpus dictionary, 'cause windows have been extracted from the
             #  corpus. We are scrolling through the windows, so the if
             #  statement will always be False, right?
             if word not in corpus_dictionary:
-                # QSTN: possibly unreachable
+                # NOTE: possibly unreachable
                 noise_dict[word] = 0
             else:
                 window_frequency = \
@@ -480,14 +480,14 @@ class SlidingWindows:
 
         tf_idf_dict = {}
         for word in windows_frequency_dictionary_keys:
-            # QSTN: all the words in the windows dictionary surely are in the
+            # NOTE: all the words in the windows dictionary surely are in the
             #  corpus dictionary, 'cause windows have been extracted from the
             #  corpus. We are scrolling through the windows, so none of the
             #  conditions in the if statement will always be True, right?
             if word not in windows_frequency_dictionary or \
                word not in windows_occurrence_dictionary or \
                word not in corpus_inverse_frequency_dictionary:
-                # QSTN: possibly unreachable
+                # NOTE: possibly unreachable
                 tf_idf_dict[word] = 0
             else:
                 tf = windows_occurrence_dictionary.get(word) / len(windows_list)

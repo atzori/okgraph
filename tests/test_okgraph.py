@@ -26,9 +26,8 @@ test_default_dictionary_file = path.join(data_path, "dictTotal.npy")
 class OKGraphTest(unittest.TestCase):
 
     def test_core_init_from_scratch_with_default(self):
-        """
-        Tests the initialization of an OKgraph object from a given corpus using
-        default parameters. Tests the corpus processing routines setting
+        """Tests the initialization of an OKgraph object from a given corpus
+        using default parameters. Tests the corpus processing routines setting
         force_init to True.
         """
         # Check the existence of the corpus
@@ -79,10 +78,9 @@ class OKGraphTest(unittest.TestCase):
                 f" dictionary file")
 
     def test_core_init_from_scratch_with_parameters(self):
-        """
-        Tests the initialization of an OKgraph object from a given corpus using
-        specific parameters for the embeddings, index and dictionary. Tests the
-        corpus processing routines setting force_init to True.
+        """Tests the initialization of an OKgraph object from a given corpus
+        using specific values for the embeddings, index and dictionary.
+        Tests the corpus processing routines setting force_init to True.
         """
         # Check the existence of the corpus
         self.assertTrue(path.exists(test_corpus_file),
@@ -132,11 +130,10 @@ class OKGraphTest(unittest.TestCase):
                 f" dictionary file")
 
     def test_core_init_with_existent_processed_data(self):
-        """
-        Tests the initialization of an OKgraph object from a given corpus using
-        specific parameters for the embeddings, index and dictionary indicating
-        existing processed data. Tests the possible errors with non existing
-        corpus.
+        """Tests the initialization of an OKgraph object from a given corpus
+        using default parameters for the embeddings, index and dictionary
+        indicating existing processed data. Tests the possible errors with non
+        existing corpus.
         """
         # Check the existence of the corpus
         self.assertTrue(
@@ -157,7 +154,7 @@ class OKGraphTest(unittest.TestCase):
         # Test non existing file/url
         with self.assertRaises(RuntimeError):
             OKgraph(corpus_file="none",
-                    embeddings_file="fake/path")
+                    embeddings_file="not/available/path")
         with self.assertRaises(RuntimeError):
             OKgraph(corpus_file="another_none",
                     embeddings_file="http://not.available.org/path")
@@ -205,7 +202,7 @@ class OKGraphTest(unittest.TestCase):
     def test_task_relation_expansion_intersection(self):
         """
         Tests the relation expansion task using the intersection algorithm.
-        Uses an OKgraph object with default values.
+        Uses an OKgraph object with default values, using pre-existent data.
         """
         okg = OKgraph(corpus_file=test_corpus_file)
         seed = [("rome", "italy"), ("berlin", "germany")]
@@ -246,7 +243,7 @@ class OKGraphTest(unittest.TestCase):
     def test_task_relation_expansion_centroid(self):
         """
         Tests the relation expansion task using the centroid algorithm.
-        Uses an OKgraph object with default values.
+        Uses an OKgraph object with default values, using pre-existent data.
         """
         okg = OKgraph(corpus_file=test_corpus_file)
         seed = [("rome", "italy"), ("berlin", "germany")]
@@ -283,7 +280,7 @@ class OKGraphTest(unittest.TestCase):
     def test_task_relation_labeling_intersection(self):
         """
         Tests the relation labeling task using the intersection algorithm.
-        Uses an OKgraph object with default values.
+        Uses an OKgraph object with default values, using pre-existent data.
         """
         okg = OKgraph(corpus_file=test_corpus_file)
         seed = [("rome", "italy"), ("berlin", "germany")]
@@ -311,7 +308,7 @@ class OKGraphTest(unittest.TestCase):
     def test_task_set_expansion_centroid(self):
         """
         Tests the set expansion task using the centroid algorithm.
-        Uses an OKgraph object with default values.
+        Uses an OKgraph object with default values, using pre-existent data.
         """
         okg = OKgraph(corpus_file=test_corpus_file)
         seed_1 = ["milan", "rome", "venice"]
@@ -353,7 +350,7 @@ class OKGraphTest(unittest.TestCase):
     def test_task_set_expansion_centroid_boost(self):
         """
         Tests the set expansion task using the centroid algorithm.
-        Uses an OKgraph object with default values.
+        Uses an OKgraph object with default values, using pre-existent data.
         """
         okg = OKgraph(corpus_file=test_corpus_file)
         seed_1 = ["milan", "rome", "venice"]
@@ -397,7 +394,7 @@ class OKGraphTest(unittest.TestCase):
     def test_task_set_expansion_depth(self):
         """
         Tests the set expansion task using the centroid algorithm.
-        Uses an OKgraph object with default values.
+        Uses an OKgraph object with default values, using pre-existent data.
         """
         okg = OKgraph(corpus_file=test_corpus_file)
         seed_1 = ["milan", "rome", "venice"]
@@ -441,7 +438,7 @@ class OKGraphTest(unittest.TestCase):
     def test_task_set_labeling_intersection(self):
         """
         Tests the set labeling task using the intersection algorithm.
-        Uses an OKgraph object with default values.
+        Uses an OKgraph object with default values, using pre-existent data.
         """
         okg = OKgraph(corpus_file=test_corpus_file)
         seed = ["berlin", "paris", "moscow"]
@@ -469,7 +466,7 @@ class OKGraphTest(unittest.TestCase):
     def test_task_set_labeling_union(self):
         """
         Tests the set labeling task using the union algorithm.
-        Uses an OKgraph object with default values.
+        Uses an OKgraph object with default values, using pre-existent data.
         """
         okg = OKgraph(corpus_file=test_corpus_file)
         seed = ["berlin", "paris", "moscow"]

@@ -8,6 +8,7 @@ import numpy as np
 import operator
 from os import makedirs, path
 import re
+import requests
 import string
 from typing import Dict, Iterator, List, Tuple
 
@@ -23,6 +24,41 @@ logger = logging.getLogger()
 Check the 'logging.ini' file for the logger configuration.
 """
 
+
+def download_file(url: str,
+                  save_file: str,
+                  bar_length: int = 50
+                  ) -> None:
+    """Download a file from a specified URL.
+
+    Args:
+        url (str): URL from which downlead the content.
+        save_file (str): name of the file in which save the downloaded content.
+        bar_length (int): length (in chars) of the shown progression bar.
+
+    """
+    bar_char = "\u2588"
+    with open(save_file, "wb") as file:
+        response = requests.get(url, stream=True)
+        total_bytes = response.headers.get('content-length')
+
+        print(f"Downloading file from {url}")
+        if total_bytes is None:
+            print(f"Can't show download progression, wait.")
+            file.write(response.content)
+        else:
+            downloaded_bytes = 0
+            total_bytes = int(total_bytes)
+            for data in response.iter_content(chunk_size=4096):
+                downloaded_bytes += len(data)
+                file.write(data)
+                done_percentage = downloaded_bytes / total_bytes
+                done_bar = int(bar_length * done_percentage)
+                print(f"\r{done_percentage * 100:02.1f}%"
+                      f" |{bar_char * done_bar}{' ' * (bar_length - done_bar)}|"
+                      f" = {downloaded_bytes / (2**20):.2f}MB",
+                      end='')
+            print()
 
 
 def check_extension(file: str,

@@ -19,7 +19,7 @@ LOG_CONFIG_FILE = path.join(
 fileConfig(LOG_CONFIG_FILE)
 
 logger = logging.getLogger()
-"""RootLogger: Logger for run time documentation.
+"""RootLogger: logger for run time documentation.
 
 Check the 'logging.ini' file for the logger configuration.
 """
@@ -31,6 +31,8 @@ def download_file(url: str,
                   ) -> None:
     """Download a file from a specified URL.
 
+    FIXME: may have problems with huge and long downloads.
+
     Args:
         url (str): URL from which downlead the content.
         save_file (str): name of the file in which save the downloaded content.
@@ -38,30 +40,30 @@ def download_file(url: str,
 
     """
     bar_char = "\u2588"
-    with open(save_file, "wb") as file:
+    with open(save_file, "wb") as f_wb:
         response = requests.get(url, stream=True)
         total_bytes = response.headers.get('content-length')
 
-        print(f"Downloading file from {url}")
         if total_bytes is None:
             print(f"Can't show download progression, wait.")
-            file.write(response.content)
+            f_wb.write(response.content)
         else:
             downloaded_bytes = 0
             total_bytes = int(total_bytes)
             for data in response.iter_content(chunk_size=4096):
                 downloaded_bytes += len(data)
-                file.write(data)
+                f_wb.write(data)
                 done_percentage = downloaded_bytes / total_bytes
                 done_bar = int(bar_length * done_percentage)
-                print(f"\r{done_percentage * 100:02.1f}%"
+                print(f"\r{done_percentage * 100:3.1f}%"
                       f" |{bar_char * done_bar}{' ' * (bar_length - done_bar)}|"
-                      f" = {downloaded_bytes / (2**20):.2f}MB",
+                      f" = {downloaded_bytes / (2**20):.2f}MB"
+                      f"/{total_bytes / (2**20):.2f}MB",
                       end='')
             print()
 
 
-def check_extension(file: str,
+def check_extension(file_name: str,
                     default_extension: str,
                     allowed_extensions: List[str]) -> str:
     """Checks the validity of a file name.
@@ -70,7 +72,7 @@ def check_extension(file: str,
     name is returned, otherwise a ValueError is raised.
 
     Args:
-        file (str): name of the file.
+        file_name (str): name of the file.
         default_extension (str): default extension for the file names with no
             specified extension. The starting '.' should be included in the
             extension name.
@@ -90,17 +92,17 @@ def check_extension(file: str,
                 f" with '.'"
             )
 
-    (file_basename, file_extension) = path.splitext(file)
+    (file_basename, file_extension) = path.splitext(file_name)
 
     if file_extension == "":
-        file = file_basename + default_extension
+        file_name = file_basename + default_extension
         file_extension = default_extension
 
     if file_extension in allowed_extensions:
-        return file
+        return file_name
     else:
         raise ValueError(
-            f"file {file} has not a valid extension. Valid extension are"
+            f"file {file_name} has not a valid extension. Valid extension are"
             f" {allowed_extensions}"
         )
 

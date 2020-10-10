@@ -66,3 +66,18 @@ div.footer {
     margin-left: 40px;
 }
 
+.section {
+    margin-top: 4em!important;
+}
+
+.class, .exception, .function {
+    margin-top: 2em!important;
+}
+
+.method {
+    margin-top: 1em!important;
+}
+
+.data {
+    margin-top: 1em!important;
+}

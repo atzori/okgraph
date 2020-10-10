@@ -1,10 +1,21 @@
 """This module contains a script to generates the html documentation of the
-project using the Sphinx library. It uses the source files from the 'source'
-directory and generates the output in the 'build' directory.
+project using the Sphinx library. It uses the basic source files from the
+'source' directory ('conf.py', 'index.rst', 'README_link.rst', '_templates/')
+and generates the output in the 'source' and 'build' directory.
+
+The basic source files are:
+ - *conf.py*: is the file containing the Sphinx configuration.
+ - *index.rst*: is the file containing the documentation main page structure.
+ - *README_link.rst*: is the file containing the link to the README.md file,
+   that allows his conversion and representation in the 'rst' format.
+ - *_templates/*: is a folder containing the templates used in the automatic
+   generation of the other 'rst' files of all the modules and packages, and the
+   custom 'css' for the 'html' documentation.
 """
 import os
 from os import path
 import shutil
+
 
 if __name__ == "__main__":
     # Save the current working directory

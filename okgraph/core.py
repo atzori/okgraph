@@ -157,6 +157,14 @@ class OKgraph:
 
 
         """
+        corpus_file = path.normpath(corpus_file)
+        if embeddings_file is not None:
+            embeddings_file = path.normpath(embeddings_file)
+        if index_dir is not None:
+            index_dir = path.normpath(index_dir)
+        if dictionary_file is not None:
+            dictionary_file = path.normpath(dictionary_file)
+
         embeddings_file = self._get_embeddings(
             corpus_file, embeddings_file, force_init)
         index_dir = self._get_index(
@@ -196,7 +204,7 @@ class OKgraph:
         # Otherwise, check if it is a valid name file
         else:
             embeddings_file = check_extension(
-                file=embeddings_file,
+                file_name=embeddings_file,
                 default_extension=".magnitude",
                 allowed_extensions=[".magnitude", ".txt",
                                     ".bin", ".vec", ".hdf5"]
@@ -329,7 +337,7 @@ class OKgraph:
         # Otherwise, check if it is a valid name file
         else:
             dictionary_file = check_extension(
-                file=dictionary_file,
+                file_name=dictionary_file,
                 default_extension=".npy",
                 allowed_extensions=[".npy"]
             )

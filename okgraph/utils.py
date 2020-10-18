@@ -8,7 +8,6 @@ import numpy as np
 import operator
 from os import makedirs, path
 import re
-import requests
 import string
 from typing import Dict, Iterator, List, Tuple
 
@@ -27,7 +26,7 @@ Check the 'logging.ini' file for the logger configuration.
 
 def download_file(url: str,
                   save_file: str,
-                  chunk_size: int = 1024 * 1024,
+                  chunk_size: int = 1024,
                   bar_length: int = 50
                   ) -> None:
     """Download a file from a specified URL.
@@ -35,15 +34,22 @@ def download_file(url: str,
     Uses the 'requests' library: check its documentation for more info.
     https://requests.readthedocs.io/en/master/
 
-    FIXME: may have problems with huge and long downloads.
+    FIXME: may be very slow downloading.
 
     Args:
         url (str): URL from which download the content.
         save_file (str): name of the file in which save the downloaded content.
-        chunk_size (int):
+        chunk_size (int): download the streamed file by chunks of the specified
+         size.
         bar_length (int): length (in chars) of the shown progression bar.
 
+    Raises:
+        ConnectionError: if the size of the download file is not known and it
+         is not possible to retrieve it correctly.
+
     """
+    import requests
+
     bar_char = "\u2588"
 
     session = requests.session()
@@ -54,30 +60,33 @@ def download_file(url: str,
     # Try to get the size of the downloadable file
     header = session.head(url)
     total_bytes = header.headers.get("content-length")
-    if total_bytes is not None:
-        total_bytes = int(total_bytes)
+    if total_bytes is None or int(total_bytes) <= 0:
+        print("Impossible to correctly retrieve the file without knowing its"
+              " size.")
+        raise ConnectionError
+    total_bytes = int(total_bytes)
 
     # Create a file in which store the downloaded bytes
     with open(save_file, "wb") as wb_file:
         downloaded_bytes = 0
 
-        request = session.get(url,
-                              stream=True,
-                              verify=False,
-                              allow_redirects=True)
+        # Until the file is not totally downloaded
+        while downloaded_bytes < total_bytes:
+            # Request to download the file, resuming the download from where it
+            # has been previously left
+            resume_header = {"Range": f"bytes={downloaded_bytes}-"}
+            request = requests.get(url,
+                                   headers=resume_header,
+                                   stream=True,
+                                   verify=False,
+                                   allow_redirects=True)
 
-        iterable_data = request.iter_content(chunk_size=chunk_size)
-        try:
-            data = next(iterable_data)
-            more = len(data) > 0
-        except StopIteration:
-            more = False
-        while more:
-            # Write the data and count the written bytes
-            wb_file.write(data)
-            downloaded_bytes += len(data)
-            # Print the download progression
-            if total_bytes is not None:
+            # Start downloading chunk by chunk
+            for data_chunk in request.iter_content(chunk_size=chunk_size):
+                # Write the data and count the written bytes
+                wb_file.write(data_chunk)
+                downloaded_bytes += len(data_chunk)
+                # Print the download progression
                 done_percentage = downloaded_bytes / total_bytes
                 done_bar = int(bar_length * done_percentage)
                 print(f"\r{done_percentage * 100:4.1f}% "
@@ -85,35 +94,7 @@ def download_file(url: str,
                       f" = {downloaded_bytes / (2**20):.2f}MB"
                       f"/{total_bytes / (2**20):.2f}MB",
                       end='')
-            else:
-                print(f"{downloaded_bytes / (2**20):.2f}MB",
-                      end='')
-
-            # Move to the next chunck
-            try:
-                data = next(iterable_data)
-                more = len(data) > 0
-            except StopIteration:
-                more = False
-
-            # If there are no more chunks try to reconnect and check again
-            if more is False:
-                resume_header = {"Range": f"bytes={downloaded_bytes}-"}
-                request = requests.get(url,
-                                       headers=resume_header,
-                                       stream=True,
-                                       verify=False,
-                                       allow_redirects=True)
-
-                iterable_data = request.iter_content(chunk_size=chunk_size)
-                try:
-                    data = next(iterable_data)
-                    more = len(data) > 0
-                except StopIteration:
-                    more = False
-
-        if total_bytes is not None:
-            print()
+        print()
 
     session.close()
 

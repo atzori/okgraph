@@ -4,15 +4,13 @@ similarities between the words in a corpus.
 import itertools
 import math
 import numpy
-from okgraph.indexing import DEFAULT_INDEX_DIR, FIELD_ID, FIELD_CONTENT
+from okgraph.core import DEFAULT_DICTIONARY_NAME
+from okgraph.indexing import DEFAULT_INDEX_FOLDER, FIELD_ID, FIELD_CONTENT
 from okgraph.utils import logger
 import operator
 from typing import Dict, List, Tuple
 from whoosh import index
 from whoosh.qparser import QueryParser
-
-DEFAULT_DICTIONARY_DIR: str = "dictTotal.npy"
-"""str: Default path for the corpus dictionary file."""
 
 
 class SlidingWindows:
@@ -31,8 +29,8 @@ class SlidingWindows:
 
     def __init__(self,
                  target_words: Tuple[str, ...],
-                 corpus_index_path: str = DEFAULT_INDEX_DIR,
-                 corpus_dictionary_path: str = DEFAULT_DICTIONARY_DIR,
+                 corpus_index_path: str = DEFAULT_INDEX_FOLDER,
+                 corpus_dictionary_path: str = DEFAULT_DICTIONARY_NAME,
                  window_size: int = 14,
                  noise_threshold: float = 0.10,
                  ):

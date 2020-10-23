@@ -1,7 +1,6 @@
 """The 'utils' module contains generic utilities supporting the other modules of
 the library.
 """
-from itertools import chain
 import logging
 from logging.config import fileConfig
 import numpy as np
@@ -49,7 +48,6 @@ def download_file(url: str,
 
     """
     import requests
-
     bar_char = "\u2588"
 
     session = requests.session()
@@ -197,7 +195,7 @@ def generate_dictionary(corpus: str, dictionary: str = "dictTotal.npy",
 
     if save_dictionary is True:
         parent_dir = path.dirname(dictionary)
-        if not path.exists(parent_dir):
+        if parent_dir and not path.exists(parent_dir):
             makedirs(parent_dir)
         np.save(dictionary, sorted_occurrence_dict)
 
@@ -221,6 +219,8 @@ def list_flatten(l: List) -> List:
         [1, 2, [3, 4], [5, 6, 7]]
 
     """
+    from itertools import chain
+
     return list(chain.from_iterable(l))
 
 
@@ -259,8 +259,7 @@ def tuple_combinations(tuple_elements: Tuple[List, ...]) -> List[Tuple]:
         # tuple indexed through the list of actual indexes
         new_tuple = ()
         for j in range(tuple_size):
-            new_tuple = \
-                new_tuple.__add__( (tuple_elements[j][actual_indexes[j]],) )
+            new_tuple = new_tuple + (tuple_elements[j][actual_indexes[j]],)
 
         # Add the tuple as a new combination
         combinations += [new_tuple]

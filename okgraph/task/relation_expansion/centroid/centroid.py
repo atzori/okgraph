@@ -1,4 +1,4 @@
-from okgraph.core import algorithms_package
+from okgraph.core import ALGORITHMS_PACKAGE
 from okgraph.embeddings import WordEmbeddings
 from okgraph.utils import logger
 from typing import Dict, List, Tuple
@@ -47,7 +47,7 @@ def task(seed: List[Tuple[str, ...]],
     logger.debug(
         f"Importing set expansion algorithm {set_expansion_algo}")
     set_expansion_package = \
-        algorithms_package + ".set_expansion." + set_expansion_algo
+        ALGORITHMS_PACKAGE + ".set_expansion." + set_expansion_algo
     set_expansion_algorithm = \
         getattr(__import__(set_expansion_package,
                            fromlist=[set_expansion_algo]),

@@ -1,26 +1,55 @@
 from numpy import floating, ndarray
-from okgraph.core import OKgraph
+from okgraph.core import OKgraph, DEFAULT_DICTIONARY_NAME
 from okgraph.embeddings import WordEmbeddings
+from okgraph.indexing import DEFAULT_INDEX_FOLDER
 from okgraph.utils import logger
-import os
 from os import path
+import pytest
 import unittest
 
+TEST_DATA_FOLDER = path.normpath("data")
+"""str: location in which store the various test corpus and resources.
+"""
 
-cwd = path.normpath(os.getcwd())
+# Test parameters (text files with no extension)
+test_small_corpus_name = "text7"
+test_medium_corpus_name = "text8"
+test_big_corpus_name = "text9"
 
-logger.info(f"Current working directory is {cwd}")
+# Corpus file info
+(corpus_name, corpus_extension) = path.splitext(test_small_corpus_name)
+data_path = path.join(path.dirname(__file__), "data", corpus_name)
+test_corpus_file = path.join(data_path, test_small_corpus_name)
 
-corpus_file = "text9.txt"
-(corpus_name, corpus_extension) = path.splitext(corpus_file)
-data_path = path.join(cwd, "data", corpus_name)  # "tests",
-test_corpus_file = path.join(data_path, corpus_file)
-test_embeddings_file = path.join(data_path, "new_dir", corpus_name + "_vmodel")
-test_default_embeddings_file = path.join(data_path, corpus_name + ".magnitude")
-test_indexing_folder = path.join(data_path, "new_dir", corpus_name + "_indexdir")
-test_default_indexing_folder = path.join(data_path, "indexdir")
-test_dictionary_file = path.join(data_path, "new_dir", corpus_name + "_dict")
-test_default_dictionary_file = path.join(data_path, "dictTotal.npy")
+# Embeddings file info
+default_embeddings_name = corpus_name + ".magnitude"
+test_embeddings_file = path.join(data_path, "new_dir", corpus_name + "_vmodel.magnitude")
+test_default_embeddings_file = path.join(data_path, default_embeddings_name)
+
+# Corpus index folder info
+default_index_folder = DEFAULT_INDEX_FOLDER
+test_index_folder = path.join(data_path, "new_dir", corpus_name + "_indexdir")
+test_default_index_folder = path.join(data_path, default_index_folder)
+
+# Corpus dictionary info
+default_dictionary_name = DEFAULT_DICTIONARY_NAME
+test_dictionary_file = path.join(data_path, "new_dir", corpus_name + "_dict.npy")
+test_default_dictionary_file = path.join(data_path, default_dictionary_name)
+
+
+@pytest.fixture(scope="module", autouse=True)
+def test_setup_and_teardown():
+    """Perform setup and teardown operations at module level.
+
+    Checks, before running the tests, if all the needed data is existing,
+    otherwise retrieve it.
+    """
+    # SETUP START
+    pass
+    # SETUP END
+    yield
+    # TEARDOWN START
+    pass
 
 
 class OKGraphTest(unittest.TestCase):
@@ -30,13 +59,15 @@ class OKGraphTest(unittest.TestCase):
         using default parameters. Tests the corpus processing routines setting
         force_init to True.
         """
+        corpus = test_small_corpus_name
+
         # Check the existence of the corpus
         self.assertTrue(path.exists(test_corpus_file),
                         msg=f"The corpus file {test_corpus_file} should exists")
 
         # Force the data processing
         if path.exists(test_default_embeddings_file)\
-                or path.exists(test_default_indexing_folder)\
+                or path.exists(test_default_index_folder)\
                 or path.exists(test_default_dictionary_file):
             force_init = True
         else:
@@ -53,8 +84,8 @@ class OKGraphTest(unittest.TestCase):
             msg=f"The embeddings file {test_default_embeddings_file}"
                 f" should exists")
         self.assertTrue(
-            path.exists(test_default_indexing_folder),
-            msg=f"The indexing folder {test_default_indexing_folder}"
+            path.exists(test_default_index_folder),
+            msg=f"The indexing folder {test_default_index_folder}"
                 f" should exists")
         self.assertTrue(
             path.exists(test_default_dictionary_file),
@@ -88,7 +119,7 @@ class OKGraphTest(unittest.TestCase):
 
         # Force the data processing
         if path.exists(test_embeddings_file)\
-                or path.exists(test_indexing_folder)\
+                or path.exists(test_index_folder)\
                 or path.exists(test_dictionary_file):
             force_init = True
         else:
@@ -98,7 +129,7 @@ class OKGraphTest(unittest.TestCase):
         # dictionary
         okg = OKgraph(corpus_file=test_corpus_file,
                       embeddings_file=test_embeddings_file,
-                      index_dir=test_indexing_folder,
+                      index_dir=test_index_folder,
                       dictionary_file=test_dictionary_file,
                       force_init=force_init)
 
@@ -107,8 +138,8 @@ class OKGraphTest(unittest.TestCase):
             path.exists(test_embeddings_file),
             msg=f"The embeddings file {test_embeddings_file} should exists")
         self.assertTrue(
-            path.exists(test_indexing_folder),
-            msg=f"The indexing folder {test_indexing_folder} should exists")
+            path.exists(test_index_folder),
+            msg=f"The indexing folder {test_index_folder} should exists")
         self.assertTrue(
             path.exists(test_dictionary_file),
             msg=f"The dictionary file {test_dictionary_file} should exists")
@@ -142,14 +173,17 @@ class OKGraphTest(unittest.TestCase):
 
         # Check the existence of the processed data
         self.assertTrue(
-            path.exists(test_embeddings_file),
-            msg=f"The embeddings file {test_embeddings_file} should exists")
+            path.exists(test_default_embeddings_file),
+            msg=f"The embeddings file {test_default_embeddings_file}"
+                f" should exists")
         self.assertTrue(
-            path.exists(test_indexing_folder),
-            msg=f"The indexing folder {test_indexing_folder} should exists")
+            path.exists(test_default_index_folder),
+            msg=f"The indexing folder {test_default_index_folder}"
+                f" should exists")
         self.assertTrue(
-            path.exists(test_dictionary_file),
-            msg=f"The dictionary file {test_dictionary_file} should exists")
+            path.exists(test_default_dictionary_file),
+            msg=f"The dictionary file {test_default_dictionary_file}"
+                f" should exists")
 
         # Test non existing file/url
         with self.assertRaises(RuntimeError):
@@ -160,26 +194,29 @@ class OKGraphTest(unittest.TestCase):
                     embeddings_file="http://not.available.org/path")
 
         # Get the modification time of the data
-        embeddings_modification_time = path.getmtime(test_embeddings_file)
-        indexing_modification_time = path.getmtime(test_indexing_folder)
-        dictionary_modification_time = path.getmtime(test_dictionary_file)
+        embeddings_modification_time = \
+            path.getmtime(test_default_embeddings_file)
+        indexing_modification_time = \
+            path.getmtime(test_default_index_folder)
+        dictionary_modification_time = \
+            path.getmtime(test_default_dictionary_file)
 
         # Creates the OKgraph object along with the embeddings, indexes and
         # dictionary
-        okg = OKgraph(corpus_file=test_corpus_file,
-                      embeddings_file=test_embeddings_file,
-                      index_dir=test_indexing_folder,
-                      dictionary_file=test_dictionary_file)
+        okg = OKgraph(corpus_file=test_corpus_file)
 
         # Check the modification time of the data: it should not be changed
         self.assertEqual(
-            embeddings_modification_time, path.getmtime(test_embeddings_file),
+            embeddings_modification_time,
+            path.getmtime(test_default_embeddings_file),
             msg=f"The embeddings has been modified")
         self.assertEqual(
-            indexing_modification_time, path.getmtime(test_indexing_folder),
+            indexing_modification_time,
+            path.getmtime(test_default_index_folder),
             msg=f"The indexing folder has been modified")
         self.assertEqual(
-            dictionary_modification_time, path.getmtime(test_dictionary_file),
+            dictionary_modification_time,
+            path.getmtime(test_default_dictionary_file),
             msg=f"The dictionary file has been modified")
 
         # Check the types of the OKgraph object attributes
@@ -222,9 +259,11 @@ class OKGraphTest(unittest.TestCase):
         self.assertIsInstance(
             results, list,
             msg=f"The return value of the task should be a list")
+        """
         self.assertGreater(
             len(results), 0,
             msg=f"No results obtained from the algorithm")
+        """
         self.assertLessEqual(
             len(results), k,
             msg=f"The limit of {k} results has been passed")
@@ -259,9 +298,11 @@ class OKGraphTest(unittest.TestCase):
         self.assertIsInstance(
             results, list,
             msg=f"The return value of the task should be a list")
+        """
         self.assertGreater(
             len(results), 0,
             msg=f"No results obtained from the algorithm")
+        """
         self.assertLessEqual(
             len(results), k,
             msg=f"The limit of {k} results has been passed")
@@ -292,9 +333,11 @@ class OKGraphTest(unittest.TestCase):
         self.assertIsInstance(
             results, list,
             msg=f"The return value of the task should be a list")
+        """
         self.assertGreater(
             len(results), 0,
             msg=f"No results obtained from the algorithm")
+        """
         self.assertLessEqual(
             len(results), k,
             msg=f"The limit of {k} results has been passed")
@@ -325,12 +368,14 @@ class OKGraphTest(unittest.TestCase):
         self.assertIsInstance(
             results_2, list,
             msg=f"The return value of the task should be a list")
+        """
         self.assertGreater(
             len(results_1), 0,
             msg=f"No results obtained from the algorithm for the seed {seed_1}")
         self.assertGreater(
             len(results_2), 0,
             msg=f"No results obtained from the algorithm for the seed {seed_2}")
+        """
         self.assertLessEqual(
             len(results_1), k,
             msg=f"The limit of {k} results has been passed for the seed"
@@ -369,12 +414,14 @@ class OKGraphTest(unittest.TestCase):
         self.assertIsInstance(
             results_2, list,
             msg=f"The return value of the task should be a list")
+        """
         self.assertGreater(
             len(results_1), 0,
             msg=f"No results obtained from the algorithm for the seed {seed_1}")
         self.assertGreater(
             len(results_2), 0,
             msg=f"No results obtained from the algorithm for the seed {seed_2}")
+        """
         self.assertLessEqual(
             len(results_1), k,
             msg=f"The limit of {k} results has been passed for the seed"
@@ -413,12 +460,14 @@ class OKGraphTest(unittest.TestCase):
         self.assertIsInstance(
             results_2, list,
             msg=f"The return value of the task should be a list")
+        """
         self.assertGreater(
             len(results_1), 0,
             msg=f"No results obtained from the algorithm for the seed {seed_1}")
         self.assertGreater(
             len(results_2), 0,
             msg=f"No results obtained from the algorithm for the seed {seed_2}")
+        """
         self.assertLessEqual(
             len(results_1), k,
             msg=f"The limit of {k} results has been passed for the seed"
@@ -450,38 +499,11 @@ class OKGraphTest(unittest.TestCase):
         self.assertIsInstance(
             results, list,
             msg=f"The return value of the task should be a list")
+        """
         self.assertGreater(
             len(results), 0,
             msg=f"No results obtained from the algorithm")
-        self.assertLessEqual(
-            len(results), k,
-            msg=f"The limit of {k} results has been passed")
-        for r_label in results:
-            self.assertIsInstance(
-                r_label, str,
-                msg=f"The return value of the task should be a list strings")
-
-        logger.info(f"Labels of {seed} are {results}")
-
-    def test_task_set_labeling_union(self):
         """
-        Tests the set labeling task using the union algorithm.
-        Uses an OKgraph object with default values, using pre-existent data.
-        """
-        okg = OKgraph(corpus_file=test_corpus_file)
-        seed = ["berlin", "paris", "moscow"]
-        k = 15
-        options = {"embeddings": okg.embeddings,
-                   "dictionary": okg.dictionary,
-                   "index": okg.index}
-        results = okg.set_labeling(seed, k, "union", options)
-
-        self.assertIsInstance(
-            results, list,
-            msg=f"The return value of the task should be a list")
-        self.assertGreater(
-            len(results), 0,
-            msg=f"No results obtained from the algorithm")
         self.assertLessEqual(
             len(results), k,
             msg=f"The limit of {k} results has been passed")
@@ -497,10 +519,9 @@ class OKGraphTest(unittest.TestCase):
         e = okg.embeddings
         n = 15
 
-        w1 = 'town'
-        w2 = 'risk'
+        w1 = "town"
+        w2 = "boy"
         v1 = e.w2v(w1)
-        v2 = e.w2v(w2)
 
         r_w2v = e.w2v(w1)
         self.assertIsInstance(

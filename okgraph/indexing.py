@@ -6,12 +6,12 @@ from os import makedirs, path
 from whoosh import index
 from whoosh.fields import Schema, TEXT
 
-DEFAULT_INDEX_DIR: str = "indexdir"
-"""str: Default path for the index directory."""
+DEFAULT_INDEX_FOLDER: str = "indexdir"
+"""str: default name for the index folder."""
 FIELD_ID: str = "id"
-"""str: Field that stores the ID of a document in the Schema"""
+"""str: field that stores the ID of a document in the Schema"""
 FIELD_CONTENT: str = "content"
-"""str: Field that stores the content of a document in the Schema"""
+"""str: field that stores the content of a document in the Schema"""
 
 
 class Indexing:
@@ -51,7 +51,7 @@ class Indexing:
         return self.corpus_path.__str__()
 
     def indexing(self,
-                 index_path: str = DEFAULT_INDEX_DIR,
+                 index_path: str = DEFAULT_INDEX_FOLDER,
                  document_overlay: int = 20,
                  document_center: int = 40,
                  num_processes: int = 1,
@@ -112,7 +112,7 @@ class Indexing:
 
         # Index the corpus if there is no trace of an index in the specified
         # path
-        if not path.exists(index_path):
+        if index_path and not path.exists(index_path):
             # Creates the path and the index for the specified schema
             makedirs(index_path, exist_ok=True)
             ix = index.create_in(index_path, schema)

@@ -2,14 +2,17 @@
 unsupervised natural-language understanding.
 """
 from okgraph.embeddings import FileConverter, MagnitudeWordEmbeddings
-from okgraph.indexing import DEFAULT_INDEX_DIR, Indexing
-from okgraph.sliding_windows import DEFAULT_DICTIONARY_DIR
+from okgraph.indexing import DEFAULT_INDEX_FOLDER, Indexing
 from okgraph.utils import check_extension, generate_dictionary, logger
 from os import path, remove
 from shutil import rmtree as remove_dir
 from typing import Dict, List, Tuple
 
-algorithms_package = "okgraph.task"
+ALGORITHMS_PACKAGE = "okgraph.task"
+"""str: package containing the task implementations."""
+
+DEFAULT_DICTIONARY_NAME: str = "dictTotal.npy"
+"""str: default name for the corpus dictionary file."""
 
 
 class OKgraph:
@@ -282,7 +285,7 @@ class OKgraph:
         # If no name has been given, assign a default name
         if index_dir is None:
             index_dir = path.join(path.dirname(corpus_file),
-                                  DEFAULT_INDEX_DIR)
+                                  DEFAULT_INDEX_FOLDER)
             logger.info(
                 f"Indexing directoy for corpus {corpus_file} not specified."
                 f" Referencing to default value {index_dir}")
@@ -330,7 +333,7 @@ class OKgraph:
         # If no name has been given, assign a default name
         if dictionary_file is None:
             dictionary_file = path.join(path.dirname(corpus_file),
-                                        DEFAULT_DICTIONARY_DIR)
+                                        DEFAULT_DICTIONARY_NAME)
             logger.info(
                 f"Dictionary file for corpus {corpus_file} not specified."
                 f" Referencing to default value {dictionary_file}")
@@ -401,7 +404,7 @@ class OKgraph:
             }
 
         # Import the algorithm
-        package = algorithms_package + ".relation_expansion." + algo
+        package = ALGORITHMS_PACKAGE + ".relation_expansion." + algo
         algo = getattr(__import__(package, fromlist=[algo]), algo)
 
         # Launch the algorithm and return the result
@@ -437,7 +440,7 @@ class OKgraph:
             }
 
         # Import the algorithm
-        package = algorithms_package + ".relation_labeling." + algo
+        package = ALGORITHMS_PACKAGE + ".relation_labeling." + algo
         algorithm = getattr(__import__(package, fromlist=[algo]), algo)
 
         # Launch the algorithm and return the result
@@ -472,7 +475,7 @@ class OKgraph:
             }
 
         # Import the algorithm
-        package = algorithms_package + ".set_expansion." + algo
+        package = ALGORITHMS_PACKAGE + ".set_expansion." + algo
         algorithm = getattr(__import__(package, fromlist=[algo]), algo)
 
         # Launch the algorithm and return the result
@@ -508,7 +511,7 @@ class OKgraph:
             }
 
         # Import the algorithm
-        package = algorithms_package + ".set_labeling." + algo
+        package = ALGORITHMS_PACKAGE + ".set_labeling." + algo
         algorithm = getattr(__import__(package, fromlist=[algo]), algo)
 
         # Launch the algorithm and return the result

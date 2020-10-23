@@ -1,4 +1,4 @@
-from okgraph.core import algorithms_package
+from okgraph.core import ALGORITHMS_PACKAGE
 from okgraph.utils import logger, tuple_combinations
 from typing import Dict, List, Tuple
 
@@ -51,7 +51,7 @@ def task(seed: List[Tuple[str, ...]],
     logger.debug(
         f"Importing relation labeling algorithm {relation_labeling_algo}")
     relation_labeling_package = \
-        algorithms_package + ".relation_labeling." + relation_labeling_algo
+        ALGORITHMS_PACKAGE + ".relation_labeling." + relation_labeling_algo
     relation_labeling_algorithm = \
         getattr(__import__(relation_labeling_package,
                            fromlist=[relation_labeling_algo]),
@@ -60,7 +60,7 @@ def task(seed: List[Tuple[str, ...]],
     logger.debug(
         f"Importing set expansion algorithm {set_expansion_algo}")
     set_expansion_package = \
-        algorithms_package + ".set_expansion." + set_expansion_algo
+        ALGORITHMS_PACKAGE + ".set_expansion." + set_expansion_algo
     set_expansion_algorithm = \
         getattr(__import__(set_expansion_package,
                            fromlist=[set_expansion_algo]),

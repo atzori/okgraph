@@ -361,7 +361,7 @@ class FileConverter:
         gensim_model_file = model_basename + ".bin"
 
         parent_dir = path.dirname(model_file)
-        if not path.exists(parent_dir):
+        if parent_dir and not path.exists(parent_dir):
             makedirs(parent_dir)
         
         FileConverter._corpus_to_gensim_model(corpus_file, gensim_model_file)

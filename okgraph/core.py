@@ -66,7 +66,7 @@ class OKgraph:
             corpus_file (str): path of the corpus file. The corpus file should
                 be a cleaned free text file (untagged).
             embeddings_file (MagnitudeWordEmbeddings): path or URL of the
-                embeddings file.
+                embeddings file. FIXME: do not correctly handle URLs.
                 The supported embeddings are *.magnitude*, *.bin*, *.txt*,
                 *.vec* and *.hdf5*. The *.bin*, *.txt*, *.vec* and *.hdf5*
                 embeddings are supported by automatically converting them to a
@@ -158,9 +158,11 @@ class OKgraph:
               are missing and they will be created in the new directory
               *NewDir*. *NewDir* will be automatically created.
 
-
         """
         corpus_file = path.normpath(corpus_file)
+        if not path.exists(corpus_file):
+            raise NotExistingCorpusException(corpus_file)
+
         if embeddings_file is not None:
             embeddings_file = path.normpath(embeddings_file)
         if index_dir is not None:
@@ -187,6 +189,8 @@ class OKgraph:
                         force_init: bool) -> str:
         """Loads or generates the embeddings whether or not it is already
         existing.
+
+        FIXME: do not work with URLs, just with files.
 
         Args:
             corpus_file (str): path of the corpus file.
@@ -281,11 +285,12 @@ class OKgraph:
 
         Returns:
             str: the path of the loaded/generated index directory.
+
         """
         # If no name has been given, assign a default name
         if index_dir is None:
-            index_dir = path.join(path.dirname(corpus_file),
-                                  DEFAULT_INDEX_FOLDER)
+            index_dir = path.normpath(path.join(
+                path.dirname(corpus_file), DEFAULT_INDEX_FOLDER))
             logger.info(
                 f"Indexing directoy for corpus {corpus_file} not specified."
                 f" Referencing to default value {index_dir}")
@@ -332,8 +337,8 @@ class OKgraph:
         """
         # If no name has been given, assign a default name
         if dictionary_file is None:
-            dictionary_file = path.join(path.dirname(corpus_file),
-                                        DEFAULT_DICTIONARY_NAME)
+            dictionary_file = path.normpath(path.join(
+                path.dirname(corpus_file), DEFAULT_DICTIONARY_NAME))
             logger.info(
                 f"Dictionary file for corpus {corpus_file} not specified."
                 f" Referencing to default value {dictionary_file}")
@@ -516,3 +521,16 @@ class OKgraph:
 
         # Launch the algorithm and return the result
         return algorithm.task(seed, k, **options)
+
+
+class NotExistingCorpusException(Exception):
+    """An exception used to represent the error that occur when the specified
+    corpus is not existing.
+
+    """
+
+    def __init__(self, corpus: str):
+        self.corpus = corpus
+
+    def __str__(self) -> str:
+        return f"Corpus {self.corpus} does not exist."

@@ -10,9 +10,9 @@ import re
 import string
 from typing import Dict, Iterator, List, Tuple
 
-LOG_CONFIG_FILE = path.join(
+LOG_CONFIG_FILE = path.normpath(path.join(
     path.dirname(path.normpath(__file__)),
-    "logging.ini")
+    "logging.ini"))
 """str: name of the file containing the logger configuration."""
 fileConfig(LOG_CONFIG_FILE)
 
@@ -195,8 +195,8 @@ def generate_dictionary(corpus: str, dictionary: str = "dictTotal.npy",
 
     if save_dictionary is True:
         parent_dir = path.dirname(dictionary)
-        if parent_dir and not path.exists(parent_dir):
-            makedirs(parent_dir)
+        if parent_dir:
+            makedirs(parent_dir, exist_ok=True)
         np.save(dictionary, sorted_occurrence_dict)
 
     logger.info(f"Dictionary generated")

@@ -313,7 +313,8 @@ class FileConverter:
         Returns:
             str: the save path of the Gensim model.
         """
-        logger.info(f"Gensim: generating model from {corpus_file}")
+        logger.info(f"Gensim: generating model {model_file}"
+                    f" from {corpus_file}")
 
         model = Word2Vec()
 
@@ -355,18 +356,20 @@ class FileConverter:
 
         """
 
-        logger.info(f"Magnitude: generating model from {corpus_file}")
+        logger.info(f"Magnitude: generating model {model_file}"
+                    f" from {corpus_file}")
 
         (model_basename, _) = path.splitext(model_file)
         gensim_model_file = model_basename + ".bin"
 
         parent_dir = path.dirname(model_file)
-        if parent_dir and not path.exists(parent_dir):
-            makedirs(parent_dir)
+        if parent_dir:
+            makedirs(parent_dir, exist_ok=True)
         
         FileConverter._corpus_to_gensim_model(corpus_file, gensim_model_file)
         
-        logger.info(f"Magnitude: converting Gensim model to Magnitude model")
+        logger.info(f"Magnitude: converting Gensim model {gensim_model_file}"
+                    f" to Magnitude model {model_file}")
         FileConverter.generic_model_to_magnitude_model(gensim_model_file,
                                                        model_file)
 
@@ -387,23 +390,14 @@ class FileConverter:
             None
 
         """
-        default_precision = 7
-        default_ngram_beg = 3
-        default_ngram_end = 6
         converter.convert(input_model,
-                          output_file_path=output_model,
-                          precision=default_precision,
-                          subword=False,
-                          subword_start=default_ngram_beg,
-                          subword_end=default_ngram_end,
-                          approx=False,
-                          approx_trees=None,
-                          vocab_path=None)
+                          output_file_path=output_model)
 
 
 class NotExistingWordException(Exception):
     """An exception used to represent the error that occur when a word is
-    searched in the embeddings but it is not present.
+    searched in the embeddings but it's not existing.
+
     """
 
     def __init__(self, w: str):

@@ -12,51 +12,61 @@ The basic source files are:
    generation of the other 'rst' files of all the modules and packages, and the
    custom 'css' for the 'html' documentation.
 """
-import os
-from os import path
+from os import listdir, path, remove, system
 import shutil
+import sphinx.ext.apidoc
 
 
-if __name__ == "__main__":
-    # Save the current working directory
-    cwd_backup = path.normpath(os.getcwd())
-    # Set the current working directory to be the one containing this script
-    cwd = path.dirname(path.normpath(__file__))
-    os.chdir(cwd)
+def main():
+    print(f"Running script {path.normpath(__file__)}")
+    base_dir = path.normpath(path.dirname(__file__))
+    project_dir = path.normpath(path.join(base_dir, ".."))
+    source_dir = path.normpath(path.join(base_dir, "source"))
+    build_dir = path.normpath(path.join(base_dir, "build"))
 
     # Remove the old source files
-    print("Removing previous source files from '/source'.")
-    keep_source_files = ['conf.py', 'index.rst', 'README_link.rst', '_templates']
-    for file in os.listdir("source"):
-        if file not in keep_source_files:
-            rel_name = f"source/{file}"
-            print(f"Removing file {rel_name}.")
-            os.remove(rel_name)
+    print(f"Removing previous source files from '{source_dir}'.")
+    keep_source = \
+        [f"{path.normpath(path.join(source_dir, name))}" for name in
+         ['conf.py', 'index.rst', 'README_link.rst', '_templates']]
+    for name in listdir(source_dir):
+        abs_name = f"{path.normpath(path.join(source_dir, name))}"
+        if abs_name not in keep_source:
+            print(f"Removing file {abs_name}.")
+            remove(abs_name)
 
-    # Create the new source files calling the "sphinx-apidoc" console command
-    print("\nCreating new source files in '/source'.")
-    os.system("sphinx-apidoc .. -o source --templatedir source/_templates/apidoc")
+    # Create the new source files calling the "sphinx-apidoc"
+    print(f"\nCreating new source files in '{source_dir}'.")
+
+    sphinx.ext.apidoc.main([
+        f"{project_dir}",
+        f"-o",  f"{source_dir}",
+        f"--templatedir", f"{path.join(source_dir, '_templates', 'apidoc')}"
+    ])
 
     # Remove the old build files and replace them with the new ones using "make"
     print("\nCleaning previous build with 'make'.")
-    os.system("make clean")
+    system("make clean")
     print("\nCreating new build with 'make'.")
-    os.system("make html")
+    system("make html")
 
     # Copy the custom 'css' into the new 'html' build
     print("\nCopying the custom 'css' into the 'html' build.")
-    shutil.copyfile(src="source/_templates/html/custom.css",
-                    dst="build/html/_static/custom.css")
+    shutil.copyfile(
+        src=f"{path.join(source_dir, '_templates', 'html', 'custom.css')}",
+        dst=f"{path.join(build_dir, 'html', '_static', 'custom.css')}"
+    )
 
     # Customize the 'html' code with some changes
     print("\nCustomizing the 'html' output.")
-    tmp_file = "build/html/tmp"
-    for file in os.listdir("build/html"):
+    tmp_file = f"{path.join(build_dir, 'html', 'tmp')}"
+    build_html_dir = f"{path.join(build_dir, 'html')}"
+    for name in listdir(build_html_dir):
+        abs_name = path.join(build_html_dir, name)
         # Search for the 'html' files in the new build
-        if path.splitext(file)[1] == ".html":
-            rel_name = f"build/html/{file}"
-            print(f"Customizing {rel_name}.")
-            with open(rel_name, "r", encoding='utf-8') as f_in:
+        if path.splitext(abs_name)[1] == ".html":
+            print(f"Customizing {abs_name}.")
+            with open(abs_name, "r", encoding='utf-8') as f_in:
                 with open(tmp_file, "w", encoding='utf-8') as f_out:
                     # Apply to the text the needed modifications
                     for line in f_in:
@@ -64,9 +74,9 @@ if __name__ == "__main__":
                         # parameters (for functions, methods, constructors...)
                         # listed one per line
                         f_out.write(line.replace("</em>,", ",</em>"))
-            shutil.copyfile(tmp_file, rel_name)
-            os.remove(tmp_file)
+            shutil.copyfile(tmp_file, abs_name)
+            remove(tmp_file)
 
-    # Go back to the previous working directory
-    # NOTE: possibly useless
-    os.chdir(cwd_backup)
+
+if __name__ == "__main__":
+    main()

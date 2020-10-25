@@ -1,12 +1,12 @@
-"""This module contains a script to provide the corpus, embeddings, index and
-dictionary that are used in testing.
+"""This module contains a script to provide the corpus, embeddings, indexes and
+dictionaries that are used in testing.
 
 The data are provided by the 'gensim' library data. Specifically, the
 'wiki-english-20171001' corpus is downloaded and used to create 3 other corpus:
 'text9', 'text8' and 'text7', obtained extracting respectively the first 10^9,
 10^8 and 10^7 bytes from 'wiki-english-20171001'. The corpus are available in
-the specified folder inside the 'test' package. Automatically generate the
-needed embeddings, index and dictionary, with default values (as used in the
+the specified folder inside the 'test' package. It generates automatically the
+needed embeddings, indexes and dictionaries, with default values (as used in the
 testing tasks).
 
 Note: Other corpus and models can be found through the 'gensim' library, that
@@ -16,12 +16,9 @@ provides other useful data, as shown `here
 import gensim.downloader as gensimapi
 from gensim.downloader import BASE_DIR
 from okgraph.core import OKgraph
-import os
-from os import path
+from os import makedirs, path, pardir
 import re
 import shutil
-from tests.test_okgraph import TEST_DATA_FOLDER
-import time
 
 GENSIM_CORPUS: str = "wiki-english-20171001"
 """str: name of the 'gensim' data to download.
@@ -29,36 +26,42 @@ GENSIM_CORPUS: str = "wiki-english-20171001"
 
 KEEP_GENSIM_CORPUS: bool = False
 """bool: if True, store the 'gensim' data as a corpus, otherwise use it just
-to generate the other smaller corpus.
+to generate the other smaller corpus. When set to True a ~17GB corpus will be
+created, requiring the processing of ~5 million articles and a lot of time.
 """
 
 GENSIM_PATH: str = path.normpath(BASE_DIR)
 """str: path in which the 'gensim' data downloader stores the data.
 """
 
-if __name__ == "__main__":
+TEST_DATA_FOLDER = path.normpath("data")
+"""str: location in which store the various test corpus and resources.
+"""
+
+TEST_SMALL_CORPUS = "text7"
+TEST_MEDIUM_CORPUS = "text8"
+TEST_BIG_CORPUS = "text9"
+
+
+def main():
     bar_char = "\u2588"
     bar_length = 50
 
-    # Save the current working directory
-    cwd_backup = path.normpath(os.getcwd())
-    # Set the current working directory to be the one containing this script
-    cwd = path.dirname(path.normpath(__file__))
-    os.chdir(cwd)
+    print(f"\nChecking the existence of the test data.")
 
-    # If the directory that will contain the test corpus doesn't exist, 
+    # If the directory that will contain the test corpus doesn't exist,
     # create it
-    base = TEST_DATA_FOLDER
+    base = path.normpath(path.join(path.dirname(__file__), TEST_DATA_FOLDER))
     if not path.exists(base):
         print(f"'{base}' folder not existing. Creating '{base}' folder.")
-        os.mkdir(base)
+        makedirs(base)
     else:
         print(f"'{base}' folder already existing.")
 
     # Corpus data
-    corpus_data = {"text7": {"size": 10 ** 7},
-                   "text8": {"size": 10 ** 8},
-                   "text9": {"size": 10 ** 9}}
+    corpus_data = {TEST_SMALL_CORPUS:  {"size": 10 ** 7},
+                   TEST_MEDIUM_CORPUS: {"size": 10 ** 8},
+                   TEST_BIG_CORPUS:    {"size": 10 ** 9}}
     biggest_corpus = \
         max(map(lambda x: (corpus_data[x]["size"], x),
                 list(corpus_data.keys()))
@@ -67,15 +70,14 @@ if __name__ == "__main__":
     # Check which corpus are already existing and which ones have to be
     # generated
     for corpus_name in corpus_data.keys():
-        corpus_folder = path.join(base, corpus_name)
-        corpus_file = path.join(corpus_folder, corpus_name)
+        corpus_folder = path.normpath(path.join(base, corpus_name))
+        corpus_file = path.normpath(path.join(corpus_folder, corpus_name))
         corpus_data[corpus_name]["file"] = corpus_file
         if not path.exists(corpus_file):
             corpus_data[corpus_name]["to_gen"] = True
             # Create the folder to contain corpus and resources if not
             # existing
-            if not path.exists(corpus_folder):
-                os.mkdir(corpus_folder)
+            makedirs(corpus_folder, exist_ok=True)
         else:
             print(f"'{corpus_name}' file already existing.")
             corpus_data[corpus_name]["to_gen"] = False
@@ -90,16 +92,14 @@ if __name__ == "__main__":
     # Download the 'wiki-english-20171001' if it's not existing and it's
     # needed
     wiki_corpus_name = GENSIM_CORPUS
-    wiki_corpus_folder = path.join(base, wiki_corpus_name)
-    wiki_corpus_file = path.join(wiki_corpus_folder, wiki_corpus_name)
+    wiki_corpus_folder = path.normpath(path.join(base, wiki_corpus_name))
+    wiki_corpus_file = path.normpath(path.join(wiki_corpus_folder, wiki_corpus_name))
     if not path.exists(wiki_corpus_file) and need_gensim_data:
         print(f"'{wiki_corpus_name}' file not existing.")
         # Create the folder, if not existing, to contain the wiki_corpus
-        if not path.exists(wiki_corpus_folder):
-            os.mkdir(wiki_corpus_folder)
+        makedirs(wiki_corpus_folder, exist_ok=True)
 
-        print(f"Downloading {wiki_corpus_name} from 'gensim' source"
-                    f" data.")
+        print(f"Downloading {wiki_corpus_name} from 'gensim' source data.")
         wiki_corpus = gensimapi.load(wiki_corpus_name)
         print(f"Download completed.")
 
@@ -120,10 +120,11 @@ if __name__ == "__main__":
 
                 # Make the string plain
                 cleaned_text = sections_text + " "
-                cleaned_text = re.sub("[\n\t']", " ", cleaned_text)
-                cleaned_text = re.sub("[^0-9a-zA-Z ]", "", cleaned_text)
-                cleaned_text = re.sub("[ ]+", " ", cleaned_text)
-                cleaned_text = re.sub("^ ", "", cleaned_text)
+                cleaned_text = re.sub(r"[\n\t']", " ", cleaned_text)
+                cleaned_text = re.sub(r"[^\w\s]", "", cleaned_text)
+                cleaned_text = re.sub(r"[\s]+", " ", cleaned_text)
+                cleaned_text = re.sub(r"^\s", "", cleaned_text)
+                cleaned_text = cleaned_text.lower()
 
                 # Convert to bytes
                 text_bytes = str.encode(cleaned_text, encoding="utf-8")
@@ -149,7 +150,7 @@ if __name__ == "__main__":
                     if limit_reached:
                         break
             print()
-        print(f"Removing the 'gensim' source data ({GENSIM_PATH}).")
+        print(f"Removing the 'gensim' source data folder {GENSIM_PATH}.")
         #shutil.rmtree(f"{GENSIM_PATH}")
     elif need_gensim_data:
         print(f"'{wiki_corpus_name}' file already existing.")
@@ -158,51 +159,44 @@ if __name__ == "__main__":
     if corpus_data[biggest_corpus]["to_gen"]:
         print(f"'{corpus_data[biggest_corpus]['file']}' corpus not existing.")
         # Open the 'wiki-english-20171001' corpus
-        with open(wiki_corpus_file, "rb") as f_wiki:
+        with open(wiki_corpus_file, "rb") as fb_wiki:
             # Open the corpus and write the needed bytes
             corpus = biggest_corpus
-            with open(corpus_data[corpus]["file"], "wb") as f_corpus:
+            with open(corpus_data[corpus]["file"], "wb") as fb_corpus:
                 print(f"Writing the {corpus_data[corpus]['file']} corpus"
                       f" from {wiki_corpus_file}.")
-                f_corpus.write(f_wiki.read(corpus_data[corpus]["size"]))
+                fb_corpus.write(fb_wiki.read(corpus_data[corpus]["size"]))
     else:
         print(f"'{corpus_data[biggest_corpus]['file']}' corpus already existing.")
 
     # Delete the wiki corpus if not needed
-    if not KEEP_GENSIM_CORPUS:
-        pass
-        #shutil.rmtree(f"{wiki_corpus_folder}")
+    if not KEEP_GENSIM_CORPUS and path.exists(wiki_corpus_folder):
+        print(f"Removing the 'gensim' corpus folder {wiki_corpus_folder}.")
+        shutil.rmtree(f"{wiki_corpus_folder}")
 
-    # Check which other corpus have to be generated
-    gen_corpus = [corpus
-                  for corpus in corpus_data.keys()
-                  if corpus_data[corpus]["to_gen"] and corpus != biggest_corpus]
-    # If at least one corpus has to be generated
-    if len(gen_corpus) > 0:
-        # Open the biggest corpus
-        with open(corpus_data[biggest_corpus]["file"], "rb") as fb_big_corpus:
-            # Open the corpus files and write the needed bytes
-            for corpus in corpus_data:
-                if corpus_data[corpus]["to_gen"]:
-                    print( f"'{corpus_data[corpus]['file']}' corpus not existing.")
-                    with open(corpus_data[corpus]["file"], "wb") as fb_corpus:
-                        print(f"Writing the {corpus_data[corpus]['file']} corpus"
-                              f" from {corpus_data[biggest_corpus]['file']}.")
-                        fb_corpus.write(fb_big_corpus.read(corpus_data[corpus]["size"]))
-                        fb_big_corpus.seek(0)
-                else:
-                    print(f"'{corpus_data[corpus]['file']}' corpus already existing.")
+    # Open the corpus files and write the needed bytes
+    for corpus in corpus_data:
+        if corpus_data[corpus]["to_gen"] and corpus != biggest_corpus:
+            print(f"'{corpus_data[corpus]['file']}' corpus not existing.")
+            with open(corpus_data[corpus]["file"], "wb") as fb_corpus, \
+                 open(corpus_data[biggest_corpus]["file"], "rb") as fb_big_corpus:
+                print(f"Writing the {corpus_data[corpus]['file']} corpus"
+                      f" from {corpus_data[biggest_corpus]['file']}.")
+                fb_corpus.write(fb_big_corpus.read(corpus_data[corpus]["size"]))
+        elif corpus != biggest_corpus:
+            print(f"'{corpus_data[corpus]['file']}' corpus already existing.")
 
     # Process every corpus to obtain the related resources:
     # embeddings, corpus index and dictionary
     for corpus in corpus_data:
-        print(f"Creating the '{corpus}' resources.")
+        print(f"Checking for the '{corpus}' resources.")
         corpus_file = corpus_data[corpus]["file"]
-        time.sleep(0.001)
         OKgraph._get_embeddings(corpus_file, None, False)
         OKgraph._get_index(corpus_file, None, False)
         OKgraph._get_dictionary(corpus_file, None, False)
 
-    # Go back to the previous working directory
-    # NOTE: possibly useless
-    os.chdir(cwd_backup)
+    print(f"Test data check completed.\n")
+
+
+if __name__ == "__main__":
+    main()

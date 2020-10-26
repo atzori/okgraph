@@ -16,7 +16,8 @@ provides other useful data, as shown `here
 import gensim.downloader as gensimapi
 from gensim.downloader import BASE_DIR
 from okgraph.core import OKgraph
-from os import makedirs, path, pardir
+import os
+from os import makedirs, path
 import re
 import shutil
 
@@ -44,14 +45,22 @@ TEST_BIG_CORPUS = "text9"
 
 
 def main():
+    # Save the current working directory
+    _cwd_backup = path.normpath(os.getcwd())
+    # Set the current working directory to be the one containing this script
+    cwd = path.dirname(path.normpath(__file__))
+    os.chdir(cwd)
+
+    print(f"\nRunning script '{path.normpath(__file__)}' from '{cwd}'.")
+
     bar_char = "\u2588"
     bar_length = 50
 
-    print(f"\nChecking the existence of the test data.")
+    print(f"Checking the existence of the test data.")
 
     # If the directory that will contain the test corpus doesn't exist,
     # create it
-    base = path.normpath(path.join(path.dirname(__file__), TEST_DATA_FOLDER))
+    base = path.normpath(TEST_DATA_FOLDER)
     if not path.exists(base):
         print(f"'{base}' folder not existing. Creating '{base}' folder.")
         makedirs(base)
@@ -151,7 +160,7 @@ def main():
                         break
             print()
         print(f"Removing the 'gensim' source data folder {GENSIM_PATH}.")
-        #shutil.rmtree(f"{GENSIM_PATH}")
+        shutil.rmtree(f"{GENSIM_PATH}")
     elif need_gensim_data:
         print(f"'{wiki_corpus_name}' file already existing.")
 
@@ -195,7 +204,9 @@ def main():
         OKgraph._get_index(corpus_file, None, False)
         OKgraph._get_dictionary(corpus_file, None, False)
 
-    print(f"Test data check completed.\n")
+    print(f"Test data check completed.")
+
+    print(f"Ended script '{path.normpath(__file__)}'.\n")
 
 
 if __name__ == "__main__":

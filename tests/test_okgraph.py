@@ -4,6 +4,7 @@ from okgraph.core import OKgraph, NotExistingCorpusException, \
 from okgraph.embeddings import WordEmbeddings
 from okgraph.indexing import DEFAULT_INDEX_FOLDER
 from okgraph.utils import logger
+import os
 from os import path
 import shutil
 import tests.get_test_corpus_and_resources
@@ -11,19 +12,21 @@ from tests.get_test_corpus_and_resources import TEST_DATA_FOLDER, \
     TEST_SMALL_CORPUS, TEST_MEDIUM_CORPUS, TEST_BIG_CORPUS
 import unittest
 
-_corpus_default_data = \
-    {TEST_SMALL_CORPUS: {"file": "", "embeddings": "",
-                         "index": "", "dictionary": ""},
-     TEST_MEDIUM_CORPUS: {"file": "", "embeddings": "",
-                          "index": "", "dictionary": ""},
-     TEST_BIG_CORPUS: {"file": "", "embeddings": "",
-                       "index": "", "dictionary": ""}}
-"""Dict[str, Dict[str, str]]: dictionary containing the default values for
-the corpus file, embeddings, index and dictionary paths.
-"""
-
 
 class OKGraphTest(unittest.TestCase):
+    
+    _corpus_default_data = \
+        {TEST_SMALL_CORPUS: {"file": "", "embeddings": "",
+                             "index": "", "dictionary": ""},
+         TEST_MEDIUM_CORPUS: {"file": "", "embeddings": "",
+                              "index": "", "dictionary": ""},
+         TEST_BIG_CORPUS: {"file": "", "embeddings": "",
+                           "index": "", "dictionary": ""}}
+    """Dict[str, Dict[str, str]]: dictionary containing the default values for
+    the corpus file, embeddings, index and dictionary paths.
+    """
+
+    _cwd_backup = ""
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -34,21 +37,30 @@ class OKGraphTest(unittest.TestCase):
         otherwise retrieve it.
 
         """
-        print(f"Setting up test session")
+        print(f"\nSetting up test session.")
+
+        # Save the current working directory
+        cls._cwd_backup = path.normpath(os.getcwd())
+        # Set the current working directory to be the one containing this script
+        cwd = path.dirname(path.normpath(__file__))
+        os.chdir(cwd)
+
+        print(f"Running tests from '{cwd}'.")
+
         # Check the existence of the test data
         tests.get_test_corpus_and_resources.main()
         # Initialize the corpus default data
-        for corpus in _corpus_default_data:
+        for corpus in cls._corpus_default_data:
             corpus_name, _ = path.splitext(corpus)
             corpus_path = path.normpath(path.join(
-                path.dirname(__file__), TEST_DATA_FOLDER, corpus_name))
-            _corpus_default_data[corpus]["file"] = \
+                TEST_DATA_FOLDER, corpus_name))
+            cls._corpus_default_data[corpus]["file"] = \
                 path.normpath(path.join(corpus_path, corpus))
-            _corpus_default_data[corpus]["embeddings"] = \
+            cls._corpus_default_data[corpus]["embeddings"] = \
                 path.normpath(path.join(corpus_path, corpus_name + ".magnitude"))
-            _corpus_default_data[corpus]["index"] = \
+            cls._corpus_default_data[corpus]["index"] = \
                 path.normpath(path.join(corpus_path, DEFAULT_INDEX_FOLDER))
-            _corpus_default_data[corpus]["dictionary"] = \
+            cls._corpus_default_data[corpus]["dictionary"] = \
                 path.normpath(path.join(corpus_path, DEFAULT_DICTIONARY_NAME))
 
     @classmethod
@@ -57,19 +69,24 @@ class OKGraphTest(unittest.TestCase):
         one time before closing a test session from this class.
 
         """
-        print(f"Tearing down test session")
-        pass
+        print(f"Tearing down test session.")
+        print(f"Testing ended.\n")
+
+        # Go back to the previous working directory
+        # NOTE: possibly useless
+        os.chdir(cls._cwd_backup)
 
     def test_core_init_from_scratch_with_default(self):
         """Tests the initialization of an OKgraph object from a given corpus
         using default parameters. Tests the corpus processing routines setting
         force_init to True.
+
         """
         test_corpus = TEST_SMALL_CORPUS
-        corpus_file = _corpus_default_data[test_corpus]["file"]
-        embeddings = _corpus_default_data[test_corpus]["embeddings"]
-        index = _corpus_default_data[test_corpus]["index"]
-        dictionary = _corpus_default_data[test_corpus]["dictionary"]
+        corpus_file = self._corpus_default_data[test_corpus]["file"]
+        embeddings = self._corpus_default_data[test_corpus]["embeddings"]
+        index = self._corpus_default_data[test_corpus]["index"]
+        dictionary = self._corpus_default_data[test_corpus]["dictionary"]
 
         # Check the existence of the corpus
         self.assertTrue(path.exists(corpus_file),
@@ -121,10 +138,9 @@ class OKGraphTest(unittest.TestCase):
 
         """
         test_corpus = TEST_SMALL_CORPUS
-        corpus_file = _corpus_default_data[test_corpus]["file"]
+        corpus_file = self._corpus_default_data[test_corpus]["file"]
         (corpus_name, _) = path.splitext(test_corpus)
-        folder = path.normpath(path.join(
-            path.dirname(__file__), TEST_DATA_FOLDER, corpus_name, "new_dir"))
+        folder = path.normpath(path.join(TEST_DATA_FOLDER, corpus_name, "new_dir"))
         embeddings = path.normpath(path.join(folder, corpus_name + "_vmodel.magnitude"))
         index = path.normpath(path.join(folder, corpus_name + "_indexdir"))
         dictionary = path.normpath(path.join(folder, corpus_name + "_dict.npy"))
@@ -179,7 +195,8 @@ class OKGraphTest(unittest.TestCase):
         del okg
         # shutil.rmtree(folder)
         # FIXME: cannot remove the folder because the embeddings in the deleted
-        #  okgraph instance are still locking the vector model file
+        #  okgraph instance are still locking the vector model file. Needing
+        #  some cleanup operations on delete
 
     def test_core_init_with_existent_processed_data(self):
         """Tests the initialization of an OKgraph object from a given corpus
@@ -188,10 +205,10 @@ class OKGraphTest(unittest.TestCase):
 
         """
         test_corpus = TEST_SMALL_CORPUS
-        corpus_file = _corpus_default_data[test_corpus]["file"]
-        embeddings = _corpus_default_data[test_corpus]["embeddings"]
-        index = _corpus_default_data[test_corpus]["index"]
-        dictionary = _corpus_default_data[test_corpus]["dictionary"]
+        corpus_file = self._corpus_default_data[test_corpus]["file"]
+        embeddings = self._corpus_default_data[test_corpus]["embeddings"]
+        index = self._corpus_default_data[test_corpus]["index"]
+        dictionary = self._corpus_default_data[test_corpus]["dictionary"]
 
         # Check the existence of the corpus
         self.assertTrue(
@@ -261,7 +278,7 @@ class OKGraphTest(unittest.TestCase):
 
         """
         test_corpus = TEST_BIG_CORPUS
-        corpus_file = _corpus_default_data[test_corpus]["file"]
+        corpus_file = self._corpus_default_data[test_corpus]["file"]
 
         okg = OKgraph(corpus_file=corpus_file)
         seed = [("rome", "italy"), ("berlin", "germany")]
@@ -305,7 +322,7 @@ class OKGraphTest(unittest.TestCase):
 
         """
         test_corpus = TEST_BIG_CORPUS
-        corpus_file = _corpus_default_data[test_corpus]["file"]
+        corpus_file = self._corpus_default_data[test_corpus]["file"]
 
         okg = OKgraph(corpus_file=corpus_file)
         seed = [("rome", "italy"), ("berlin", "germany")]
@@ -345,7 +362,7 @@ class OKGraphTest(unittest.TestCase):
 
         """
         test_corpus = TEST_BIG_CORPUS
-        corpus_file = _corpus_default_data[test_corpus]["file"]
+        corpus_file = self._corpus_default_data[test_corpus]["file"]
 
         okg = OKgraph(corpus_file=corpus_file)
         seed = [("rome", "italy"), ("berlin", "germany")]
@@ -376,7 +393,7 @@ class OKGraphTest(unittest.TestCase):
 
         """
         test_corpus = TEST_BIG_CORPUS
-        corpus_file = _corpus_default_data[test_corpus]["file"]
+        corpus_file = self._corpus_default_data[test_corpus]["file"]
 
         okg = OKgraph(corpus_file=corpus_file)
         seed_1 = ["milan", "rome", "venice"]
@@ -421,7 +438,7 @@ class OKGraphTest(unittest.TestCase):
 
         """
         test_corpus = TEST_BIG_CORPUS
-        corpus_file = _corpus_default_data[test_corpus]["file"]
+        corpus_file = self._corpus_default_data[test_corpus]["file"]
 
         okg = OKgraph(corpus_file=corpus_file)
         seed_1 = ["milan", "rome", "venice"]
@@ -468,7 +485,7 @@ class OKGraphTest(unittest.TestCase):
 
         """
         test_corpus = TEST_BIG_CORPUS
-        corpus_file = _corpus_default_data[test_corpus]["file"]
+        corpus_file = self._corpus_default_data[test_corpus]["file"]
 
         okg = OKgraph(corpus_file=corpus_file)
         seed_1 = ["milan", "rome", "venice"]
@@ -515,7 +532,7 @@ class OKGraphTest(unittest.TestCase):
 
         """
         test_corpus = TEST_BIG_CORPUS
-        corpus_file = _corpus_default_data[test_corpus]["file"]
+        corpus_file = self._corpus_default_data[test_corpus]["file"]
 
         okg = OKgraph(corpus_file=corpus_file)
         seed = ["milan", "rome", "venice"]
@@ -541,11 +558,11 @@ class OKGraphTest(unittest.TestCase):
         logger.info(f"Labels of {seed} are {results}")
 
     def test_embeddings(self):
-        """
+        """Tests the operations available through a 'WordEmbeddings' class.
 
         """
         test_corpus = TEST_BIG_CORPUS
-        corpus_file = _corpus_default_data[test_corpus]["file"]
+        corpus_file = self._corpus_default_data[test_corpus]["file"]
 
         okg = OKgraph(corpus_file=corpus_file)
         e = okg.embeddings

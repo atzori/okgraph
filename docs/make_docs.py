@@ -12,17 +12,24 @@ The basic source files are:
    generation of the other 'rst' files of all the modules and packages, and the
    custom 'css' for the 'html' documentation.
 """
+import os
 from os import listdir, path, remove, system
 import shutil
 import sphinx.ext.apidoc
 
 
 def main():
-    print(f"Running script {path.normpath(__file__)}")
-    base_dir = path.normpath(path.dirname(__file__))
-    project_dir = path.normpath(path.join(base_dir, ".."))
-    source_dir = path.normpath(path.join(base_dir, "source"))
-    build_dir = path.normpath(path.join(base_dir, "build"))
+    # Save the current working directory
+    _cwd_backup = path.normpath(os.getcwd())
+    # Set the current working directory to be the one containing this script
+    cwd = path.dirname(path.normpath(__file__))
+    os.chdir(cwd)
+
+    print(f"\nRunning script '{path.normpath(__file__)}' from '{cwd}'.")
+
+    project_dir = path.normpath("..")
+    source_dir = path.normpath("source")
+    build_dir = path.normpath("build")
 
     # Remove the old source files
     print(f"Removing previous source files from '{source_dir}'.")
@@ -76,6 +83,12 @@ def main():
                         f_out.write(line.replace("</em>,", ",</em>"))
             shutil.copyfile(tmp_file, abs_name)
             remove(tmp_file)
+
+    # Go back to the previous working directory
+    # NOTE: possibly useless
+    os.chdir(_cwd_backup)
+
+    print(f"Ended script '{path.normpath(__file__)}'.\n")
 
 
 if __name__ == "__main__":

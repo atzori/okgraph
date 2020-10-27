@@ -5,6 +5,12 @@ six
 gensim
 annoy
 pymagnitude
+lz4
+xxhash
+fasteners
+torch===1.6.0 --install-option='-f https://download.pytorch.org/whl/torch_stable.html'
+torchvision===0.7.0 --install-option='-f https://download.pytorch.org/whl/torch_stable.html'
+h5py
 tqdm
 numpy
 nltk

@@ -35,7 +35,7 @@ class WordEmbeddings(ABC):
 
     @abstractmethod
     def v2w(self, v: ndarray, n: int = 1) -> List[str]:
-        """Given a vector, finds the most closest word/words.
+        """Given a vector, finds the closest word/words.
 
         Args:
             v (ndarray): a potential vector representation of a word.
@@ -49,7 +49,7 @@ class WordEmbeddings(ABC):
         pass
 
     def w2w(self, w: str, n: int = 1) -> List[str]:
-        """Given a word, finds the most closest word/words.
+        """Given a word, finds the closest word/words.
 
         Args:
             w (str): word in the embeddings model.
@@ -67,7 +67,7 @@ class WordEmbeddings(ABC):
         return self.v2w(self.w2v(w), n)
 
     def v2v(self, v: ndarray, n: int = 1) -> List[ndarray]:
-        """Given a vector, finds the most closest vector/vectors.
+        """Given a vector, finds the closest vector/vectors.
 
         Args:
             v (ndarray): a potential vector representation of a word.
@@ -265,7 +265,7 @@ class MagnitudeWordEmbeddings(WordEmbeddings):
             raise NotExistingWordException(w)
 
     def v2w(self, v: ndarray, n: int = 1) -> List[str]:
-        """Given a vector, finds the most closest word/words.
+        """Given a vector, finds the closest word/words.
 
         Args:
             v (ndarray): a potential vector representation of a word.

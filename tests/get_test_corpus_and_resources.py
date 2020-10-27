@@ -39,9 +39,9 @@ TEST_DATA_FOLDER = path.normpath("data")
 """str: location in which store the various test corpus and resources.
 """
 
-TEST_SMALL_CORPUS = "text7"
-TEST_MEDIUM_CORPUS = "text8"
-TEST_BIG_CORPUS = "text9"
+TEST_SMALL_CORPUS = "text7.txt"
+TEST_MEDIUM_CORPUS = "text8.txt"
+TEST_BIG_CORPUS = "text8.txt"
 
 
 def main():
@@ -78,18 +78,19 @@ def main():
 
     # Check which corpus are already existing and which ones have to be
     # generated
-    for corpus_name in corpus_data.keys():
+    for corpus in corpus_data.keys():
+        corpus_name, _ = path.splitext(corpus)
         corpus_folder = path.normpath(path.join(base, corpus_name))
         corpus_file = path.normpath(path.join(corpus_folder, corpus_name))
-        corpus_data[corpus_name]["file"] = corpus_file
+        corpus_data[corpus]["file"] = corpus_file
         if not path.exists(corpus_file):
-            corpus_data[corpus_name]["to_gen"] = True
+            corpus_data[corpus]["to_gen"] = True
             # Create the folder to contain corpus and resources if not
             # existing
             makedirs(corpus_folder, exist_ok=True)
         else:
-            print(f"'{corpus_name}' file already existing.")
-            corpus_data[corpus_name]["to_gen"] = False
+            print(f"'{corpus}' file already existing.")
+            corpus_data[corpus]["to_gen"] = False
 
     # Check if the 'gensim' data it's needed, because explicitly expressed or
     # the biggest corpus is missing
@@ -100,22 +101,23 @@ def main():
 
     # Download the 'wiki-english-20171001' if it's not existing and it's
     # needed
-    wiki_corpus_name = GENSIM_CORPUS
+    wiki_corpus = f"{GENSIM_CORPUS}.txt"
+    wiki_corpus_name, _ = path.splitext(wiki_corpus)
     wiki_corpus_folder = path.normpath(path.join(base, wiki_corpus_name))
     wiki_corpus_file = path.normpath(path.join(wiki_corpus_folder, wiki_corpus_name))
     if not path.exists(wiki_corpus_file) and need_gensim_data:
-        print(f"'{wiki_corpus_name}' file not existing.")
+        print(f"'{wiki_corpus}' file not existing.")
         # Create the folder, if not existing, to contain the wiki_corpus
         makedirs(wiki_corpus_folder, exist_ok=True)
 
         print(f"Downloading {wiki_corpus_name} from 'gensim' source data.")
-        wiki_corpus = gensimapi.load(wiki_corpus_name)
+        wiki_corpus_f = gensimapi.load(wiki_corpus_name)
         print(f"Download completed.")
 
         with open(wiki_corpus_file, "wb") as fb_wiki:
             written_bytes = 0
             N_ARTICLES = 4924893  # Obtained iterating through the dataset
-            for i, wiki_article in enumerate(wiki_corpus):
+            for i, wiki_article in enumerate(wiki_corpus_f):
                 # Join the article sections in a unified string
                 k_txt = "section_texts"
                 k_ttl = "section_titles"
@@ -162,7 +164,7 @@ def main():
         print(f"Removing the 'gensim' source data folder {GENSIM_PATH}.")
         shutil.rmtree(f"{GENSIM_PATH}")
     elif need_gensim_data:
-        print(f"'{wiki_corpus_name}' file already existing.")
+        print(f"'{wiki_corpus}' file already existing.")
 
     # Check if the biggest corpus has to be generated
     if corpus_data[biggest_corpus]["to_gen"]:

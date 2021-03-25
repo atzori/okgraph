@@ -41,7 +41,7 @@ TEST_DATA_FOLDER = path.normpath("data")
 
 TEST_SMALL_CORPUS = "text7.txt"
 TEST_MEDIUM_CORPUS = "text8.txt"
-TEST_BIG_CORPUS = "text8.txt"
+TEST_BIG_CORPUS = "text9.txt"
 
 
 def main():
@@ -81,7 +81,7 @@ def main():
     for corpus in corpus_data.keys():
         corpus_name, _ = path.splitext(corpus)
         corpus_folder = path.normpath(path.join(base, corpus_name))
-        corpus_file = path.normpath(path.join(corpus_folder, corpus_name))
+        corpus_file = path.normpath(path.join(corpus_folder, corpus))
         corpus_data[corpus]["file"] = corpus_file
         if not path.exists(corpus_file):
             corpus_data[corpus]["to_gen"] = True

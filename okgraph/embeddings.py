@@ -206,7 +206,7 @@ class WordEmbeddings(ABC):
         norm1 = np.linalg.norm(v1)
         norm2 = np.linalg.norm(v2)
         dot_product = np.dot(v1, v2)
-        return round(float(dot_product / (norm1 * norm2)), 4)
+        return float(dot_product / (norm1 * norm2))
 
     def cos(self, w1: str, w2: str) -> float:
         """Computes the cosine of the angle between the vector representations

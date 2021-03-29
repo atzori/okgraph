@@ -1,15 +1,15 @@
-"""This module contains a script to provide the corpus, embeddings, indexes and
+"""This module contains a script to provide the corpora, embeddings, indexes and
 dictionaries that are used in testing.
 
 The data are provided by the 'gensim' library data. Specifically, the
-'wiki-english-20171001' corpus is downloaded and used to create 3 other corpus:
+'wiki-english-20171001' corpus is downloaded and used to create 3 other corpora:
 'text9', 'text8' and 'text7', obtained extracting respectively the first 10^9,
-10^8 and 10^7 bytes from 'wiki-english-20171001'. The corpus are available in
+10^8 and 10^7 bytes from 'wiki-english-20171001'. The corpora are available in
 the specified folder inside the 'test' package. It generates automatically the
 needed embeddings, indexes and dictionaries, with default values (as used in the
 testing tasks).
 
-Note: Other corpus and models can be found through the 'gensim' library, that
+Note: Other corpora and models can be found through the 'gensim' library, that
 provides other useful data, as shown `here
 <https://github.com/RaRe-Technologies/gensim-data>`_.
 """
@@ -27,7 +27,7 @@ GENSIM_CORPUS: str = "wiki-english-20171001"
 
 KEEP_GENSIM_CORPUS: bool = False
 """bool: if True, store the 'gensim' data as a corpus, otherwise use it just
-to generate the other smaller corpus. When set to True a ~17GB corpus will be
+to generate the other smaller corpora. When set to True a ~17GB corpus will be
 created, requiring the processing of ~5 million articles and a lot of time.
 """
 
@@ -36,7 +36,7 @@ GENSIM_PATH: str = path.normpath(BASE_DIR)
 """
 
 TEST_DATA_FOLDER = path.normpath("data")
-"""str: location in which store the various test corpus and resources.
+"""str: location in which store the various data, test corpora and resources.
 """
 
 TEST_SMALL_CORPUS = "text7.txt"
@@ -58,7 +58,7 @@ def main():
 
     print(f"Checking the existence of the test data.")
 
-    # If the directory that will contain the test corpus doesn't exist,
+    # If the directory that will contain the test corpora doesn't exist,
     # create it
     base = path.normpath(TEST_DATA_FOLDER)
     if not path.exists(base):
@@ -85,7 +85,7 @@ def main():
         corpus_data[corpus]["file"] = corpus_file
         if not path.exists(corpus_file):
             corpus_data[corpus]["to_gen"] = True
-            # Create the folder to contain corpus and resources if not
+            # Create the folder to contain corpora and resources if not
             # existing
             makedirs(corpus_folder, exist_ok=True)
         else:

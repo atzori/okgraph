@@ -51,16 +51,16 @@ directory of the project**.
     ```
 
 ### Acquiring the test data ###
-To run the tests some _text corpus_ are required. The following script will provide the required _text corpus_, along
+To run the tests some _text corpora_ are required. The following script will provide the required _text corpora_, along
 with their _word-embeddings_, _corpus indexes_ and _corpus dictionaries_:
 ```bash
 $ python tests/get_test_corpus_and_resources.py
 ```
 This procedure may take a while: it will download the _wiki-english-20171001_ corpus from the
-[Gensim-data](https://github.com/RaRe-Technologies/gensim-data) and use it to generate three corpus: `text7.txt`,
+[Gensim-data](https://github.com/RaRe-Technologies/gensim-data) and use it to generate three corpora: `text7.txt`,
 `text8.txt` and `text9.txt` (obtained respectively from the first 10<sup>7</sup>, 10<sup>8</sup> and 10<sup>9</sup>
 bytes of the _wiki-english-20171001_ corpus). Then, all the related resources (embeddings, index and dictionary) are
-created. The brandly new corpus and their related resources can be found in `tests/data` from the project directory.
+created. The brandly new corpora and their related resources can be found in `tests/data` from the project directory.
 
 ### Generating the docs ###
 This library uses [Sphinx](https://www.sphinx-doc.org/en/master/) to automatically integrate the in-code comments

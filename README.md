@@ -29,7 +29,7 @@ How to install
 
 ### Creating the virtual environment ###
 Please ensure **python 3.7** or newer is being used (previous versions are not supported). After cloning the repository 
-(`git clone https://bitbucket.org/semanticweb/okgraph.git && cd okgraph`), run the followings commands **from the root
+(`https://github.com/atzori/okgraph.git && cd okgraph`), run the followings commands **from the root
 directory of the project**.
 
 - Linux _Bash_

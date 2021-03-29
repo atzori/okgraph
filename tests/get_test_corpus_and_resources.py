@@ -14,7 +14,6 @@ provides other useful data, as shown `here
 <https://github.com/RaRe-Technologies/gensim-data>`_.
 """
 import gensim.downloader as gensimapi
-from gensim.downloader import BASE_DIR
 from okgraph.core import OKgraph
 import os
 from os import makedirs, path
@@ -29,10 +28,6 @@ KEEP_GENSIM_CORPUS: bool = False
 """bool: if True, store the 'gensim' data as a corpus, otherwise use it just
 to generate the other smaller corpora. When set to True a ~17GB corpus will be
 created, requiring the processing of ~5 million articles and a lot of time.
-"""
-
-GENSIM_PATH: str = path.normpath(BASE_DIR)
-"""str: path in which the 'gensim' data downloader stores the data.
 """
 
 TEST_DATA_FOLDER = path.normpath("data")
@@ -60,7 +55,7 @@ def main():
 
     # If the directory that will contain the test corpora doesn't exist,
     # create it
-    base = path.normpath(TEST_DATA_FOLDER)
+    base = path.normpath(path.join(cwd, TEST_DATA_FOLDER))
     if not path.exists(base):
         print(f"'{base}' folder not existing. Creating '{base}' folder.")
         makedirs(base)
@@ -110,13 +105,18 @@ def main():
         # Create the folder, if not existing, to contain the wiki_corpus
         makedirs(wiki_corpus_folder, exist_ok=True)
 
-        print(f"Downloading {wiki_corpus_name} from 'gensim' source data.")
+        # Set the Gensim download path to be in the data folder
+        gensim_download_folder = path.normpath(path.join(base, "gensim_download"))
+        gensimapi.BASE_DIR = gensim_download_folder
+        gensimapi.base_dir = gensim_download_folder
+
+        print(f"Downloading {wiki_corpus_name} from 'gensim' source data in {gensim_download_folder}.")
         wiki_corpus_f = gensimapi.load(wiki_corpus_name)
         print(f"Download completed.")
 
         with open(wiki_corpus_file, "wb") as fb_wiki:
             written_bytes = 0
-            N_ARTICLES = 4924893  # Obtained iterating through the dataset
+            N_ARTICLES = 4924893  # Obtained iterating through the dataset manually
             for i, wiki_article in enumerate(wiki_corpus_f):
                 # Join the article sections in a unified string
                 k_txt = "section_texts"
@@ -161,8 +161,9 @@ def main():
                     if limit_reached:
                         break
             print()
-        print(f"Removing the 'gensim' source data folder {GENSIM_PATH}.")
-        shutil.rmtree(f"{GENSIM_PATH}")
+        print(f"Removing the 'gensim' source data folder {gensim_download_folder}.")
+        shutil.rmtree(f"{gensim_download_folder}")
+
     elif need_gensim_data:
         print(f"'{wiki_corpus}' file already existing.")
 

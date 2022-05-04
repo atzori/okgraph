@@ -89,8 +89,8 @@ processing.
 ### Specifing a corpus ###
 This example creates an `OKgraph` instance based on the `text8.txt` corpus:
 ```python
-import okgraph
-okg = okgraph.OKgraph("text8.txt")
+from okgraph.core import OKgraph
+okg = OKgraph("text8.txt")
 ```
 The file `text8.txt` will be set as _corpus file_ and the _word-embeddings_, _corpus index_ and _corpus dictionary_ will
 be searched using their default values starting from the same directory of the _corpus_ (`text8.magnitude`, `indexdir/`
@@ -100,8 +100,8 @@ the _corpus_.
 ### Specifying a corpus and model ###
 This example creates an `OKgraph` instance based on the `text8.txt` _corpus_ with a specified _word-embedding_ model:
 ```python
-import okgraph
-okg = okgraph.OKgraph("text8.txt", "model_file")
+from okgraph.core import OKgraph
+okg = OKgraph("text8.txt", "model_file")
 ```
 or equivalently:
 ```python
@@ -117,20 +117,20 @@ If instead of a file name, the _word-embeddings_ argument is a URL (starts with 
 [remote version of the file](https://github.com/plasticityai/magnitude#remote-streaming-over-http) will be used
 (**to be fixed**).
 ```python
-import okgraph
-okg = okgraph.OKgraph(corpus="text8.txt", embeddings="https://model_file")
+from okgraph.core import OKgraph
+okg = OKgraph(corpus="text8.txt", embeddings="https://model_file")
 ```
 The _stream_ argument allows to stream the _model_, instead of downloading it:
 ```python
-import okgraph
-okg = okgraph.OKgraph(corpus="text8.txt", embeddings="https://model_file", stream=True)
+from okgraph.core import OKgraph
+okg = OKgraph(corpus="text8.txt", embeddings="https://model_file", stream=True)
 ```
 ### Specifying all the resources ###
 This example creates an `OKgraph` instance based on the `text8.txt` _corpus_ with a specified value for the
 _word-embeddings_, the _corpus index_ and _corpus dictionary_:
 ```python
-import okgraph
-okg = okgraph.OKgraph(corpus="text8.txt", embeddings="model_file",
+from okgraph.core import OKgraph
+okg = OKgraph(corpus="text8.txt", embeddings="model_file",
                       index_dir="corpus_index/", dictionary_file="corpus_dictionary.npy")
 ```
 The file `text8.txt` will be set as _corpus file_ and the _word-embeddings_, _corpus index_ and _corpus dictionary_ will
@@ -143,8 +143,8 @@ are searched starting from the corpus directory to be loaded as they are, if the
 loaded as they are and force their re-generation from the _corpus_ processing, the _force_init_ argument can be set
 to `True`:
 ```python
-import okgraph
-okg = okgraph.OKgraph(corpus="text8.txt", force_init=True)
+from okgraph.core import OKgraph
+okg = OKgraph(corpus="text8.txt", force_init=True)
 ```
 This code will force the `OKgraph` constructor to generate again the resources and overwrite them, if they exist.
 
@@ -189,19 +189,19 @@ arguments for the respective `task()` method.
 ### Executing a set expansion algorithm ###
 All the _set expansion_ algorithms can be found in the `okgraph.task.set_expansion` package.
 
-This is an example of usage with default values:
+This is an example of usage with default values(using embeddings):
 ```python
-import okgraph
-okg = okgraph.OKgraph(corpus="text9.txt")
+from okgraph.core import OKgraph
+okg = OKgraph(corpus="text9.txt")
 
 okg.set_expansion(["Italy", "France", "Germany"])
 
 > e.g.: ["Spain", "Portugal", "Belgium", ...]
 ```
-And another example using a specific algorithm:
+And another example using a specific algorithm (using embeddings):
 ```python
-import okgraph
-okg = okgraph.OKgraph(corpus="text9.txt")
+from okgraph.core import OKgraph
+okg = OKgraph(corpus="text9.txt")
 
 okg.set_expansion(
     seed=["Italy", "France", "Germany"],
@@ -215,13 +215,26 @@ okg.set_expansion(
 > e.g.: ["Spain", "Portugal", "Belgium", ...]
 ```
 
+If you want to use a pretrained masked model you can use `fill-mask` algorithm
+
+Example:
+
+```python
+okg.set_expansion(
+                seed = ('italy', 'france', 'germany'),
+                algo = "fill_mask",
+                k = 20,
+                options = {}
+            )
+```
+
 ### Executing a relation expansion algorithm ###
 All the _relation expansion_ algorithms can be found in the `okgraph.task.relation_expansion` package.
 
 This is an example of usage with default values:
 ```python
-import okgraph
-okg = okgraph.OKgraph(corpus="text9.txt")
+from okgraph.core import OKgraph
+okg = OKgraph(corpus="text9.txt")
 
 okg.relation_expansion([("Italy", "Rome"), ("Germany", "Berlin")])
 
@@ -229,8 +242,8 @@ okg.relation_expansion([("Italy", "Rome"), ("Germany", "Berlin")])
 ```
 And another example using a specific algorithm:
 ```python
-import okgraph
-okg = okgraph.OKgraph(corpus="text9.txt")
+from okgraph.core import OKgraph
+okg = OKgraph(corpus="text9.txt")
 
 okg.relation_expansion(
     seed=[("Italy", "Rome"), ("Germany", "Berlin")],
@@ -250,8 +263,8 @@ All the _set labeling_ algorithms can be found in the `okgraph.task.set_labeling
 
 This is an example of usage with default values:
 ```python
-import okgraph
-okg = okgraph.OKgraph(corpus="text9.txt")
+from okgraph.core import OKgraph
+okg = OKgraph(corpus="text9.txt")
 
 okg.set_labeling(["Italy", "France", "Germany"])
 
@@ -259,8 +272,8 @@ okg.set_labeling(["Italy", "France", "Germany"])
 ```
 And another example using a specific algorithm:
 ```python
-import okgraph
-okg = okgraph.OKgraph(corpus="text9.txt")
+from okgraph.core import OKgraph
+okg = OKgraph(corpus="text9.txt")
 
 okg.set_labeling(
     seed=["Italy", "France", "Germany"],
@@ -278,8 +291,8 @@ All the _relation labeling_ algorithms can be found in the `okgraph.task.relatio
 
 This is an example of usage with default values:
 ```python
-import okgraph
-okg = okgraph.OKgraph(corpus="text9.txt")
+from okgraph.core import OKgraph
+okg = OKgraph(corpus="text9.txt")
 
 okg.relation_labeling([("Italy", "Rome"), ("Germany", "Berlin")])
 
@@ -287,8 +300,8 @@ okg.relation_labeling([("Italy", "Rome"), ("Germany", "Berlin")])
 ```
 And another example using a specific algorithm:
 ```python
-import okgraph
-okg = okgraph.OKgraph(corpus="text9.txt")
+from okgraph.core import OKgraph
+okg = OKgraph(corpus="text9.txt")
 
 okg.relation_labeling(
     seed=[("Italy", "Rome"), ("Germany", "Berlin")],
@@ -312,8 +325,8 @@ Embeddings operations
 --------------------
 The followings are examples of use of the embeddings in _okgraph_:
 ```python
-import okgraph
-okg = okgraph.OKgraph(corpus="text9.txt")
+from okgraph.core import OKgraph
+okg = OKgraph(corpus="text9.txt")
 
 # This is a WordEmbeddings class, specifically a MagnitudeWordEmbeddings
 # instance

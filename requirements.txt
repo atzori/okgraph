@@ -24,3 +24,4 @@ pytest
 sphinx
 recommonmark
 m2r
+transformers

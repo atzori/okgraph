@@ -28,8 +28,7 @@ def task(seed: List[str],
         Then you have to import okgraph in this way: 
             from okgraph.core import OKgraph
             okg = OKgraph("tests/data/text9/text9.txt", dictionary_file="corpus_dictionary.npy")
-        Even if it's not necessary for this model to work, you have to insert a courpus .txt and a dictionary file, they can be empty in this case
-
+        Even if it's not necessary for this model to work, you have to insert a courpus .txt and a dictionary file, they can be empty in this case (bug)
 
         Example of use:
         okg.set_expansion(

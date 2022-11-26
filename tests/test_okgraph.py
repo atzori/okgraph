@@ -6,7 +6,6 @@ from okgraph.indexing import DEFAULT_INDEX_FOLDER
 from okgraph.utils import logger
 import os
 from os import path
-import shutil
 import tests.get_test_corpus_and_resources
 from tests.get_test_corpus_and_resources import TEST_DATA_FOLDER, \
     TEST_SMALL_CORPUS, TEST_MEDIUM_CORPUS, TEST_BIG_CORPUS
@@ -294,25 +293,7 @@ class OKGraphTest(unittest.TestCase):
                    "set_expansion_k": 15
                    }
         results = okg.relation_expansion(seed, k, "intersection", options)
-
-        self.assertIsInstance(
-            results, list,
-            msg=f"The return value of the task should be a list")
-        self.assertGreater(
-            len(results), 0,
-            msg=f"No results obtained from the algorithm")
-        self.assertLessEqual(
-            len(results), k,
-            msg=f"The limit of {k} results has been passed")
-        for r_tuple in results:
-            self.assertIsInstance(
-                r_tuple, tuple,
-                msg=f"The return value of the task should be a list of tuples")
-            for r_elements in r_tuple:
-                self.assertIsInstance(
-                    r_elements, str,
-                    msg=f"The return value of the task should be a list of"
-                        f" tuples of strings")
+        self._check_relation_expansion_results(results, k)
 
         logger.info(f"Expansion of {seed} is {results}")
 
@@ -334,25 +315,7 @@ class OKGraphTest(unittest.TestCase):
                    "set_expansion_k": 15
                    }
         results = okg.relation_expansion(seed, k, "centroid", options)
-
-        self.assertIsInstance(
-            results, list,
-            msg=f"The return value of the task should be a list")
-        self.assertGreater(
-            len(results), 0,
-            msg=f"No results obtained from the algorithm")
-        self.assertLessEqual(
-            len(results), k,
-            msg=f"The limit of {k} results has been passed")
-        for r_tuple in results:
-            self.assertIsInstance(
-                r_tuple, tuple,
-                msg=f"The return value of the task should be a list of tuples")
-            for r_elements in r_tuple:
-                self.assertIsInstance(
-                    r_elements, str,
-                    msg=f"The return value of the task should be a list of"
-                        f" tuples of strings")
+        self._check_relation_expansion_results(results, k)
 
         logger.info(f"Expansion of {seed} is {results}")
 
@@ -370,20 +333,7 @@ class OKGraphTest(unittest.TestCase):
         options = {"dictionary": okg.dictionary,
                    "index": okg.index}
         results = okg.relation_labeling(seed, k, "intersection", options)
-
-        self.assertIsInstance(
-            results, list,
-            msg=f"The return value of the task should be a list")
-        self.assertGreater(
-            len(results), 0,
-            msg=f"No results obtained from the algorithm")
-        self.assertLessEqual(
-            len(results), k,
-            msg=f"The limit of {k} results has been passed")
-        for r_label in results:
-            self.assertIsInstance(
-                r_label, str,
-                msg=f"The return value of the task should be a list strings")
+        self._check_relation_labeling_results(results, k)
 
         logger.info(f"Labels of {seed} are {results}")
 
@@ -402,38 +352,15 @@ class OKGraphTest(unittest.TestCase):
         options = {"embeddings": okg.embeddings}
 
         results_1 = okg.set_expansion(seed_1, k, "centroid", options)
+        self._check_set_expansion_results(results_1, k, seed_1)
         results_2 = okg.set_expansion(seed_2, k, "centroid", options)
-
-        self.assertIsInstance(
-            results_1, list,
-            msg=f"The return value of the task should be a list")
-        self.assertIsInstance(
-            results_2, list,
-            msg=f"The return value of the task should be a list")
-        self.assertGreater(
-            len(results_1), 0,
-            msg=f"No results obtained from the algorithm for the seed {seed_1}")
-        self.assertGreater(
-            len(results_2), 0,
-            msg=f"No results obtained from the algorithm for the seed {seed_2}")
-        self.assertLessEqual(
-            len(results_1), k,
-            msg=f"The limit of {k} results has been passed for the seed"
-                f" {seed_1}")
-        self.assertLessEqual(
-            len(results_2), k,
-            msg=f"The limit of {k} results has been passed for the seed"
-                f" {seed_2}")
-        for r_word in results_1+results_2:
-            self.assertIsInstance(
-                r_word, str,
-                msg=f"The return value of the task should be a list of strings")
+        self._check_set_expansion_results(results_2, k, seed_2)
 
         logger.info(f"Expansion of {seed_1} is {results_1}")
         logger.info(f"Expansion of {seed_2} is {results_2}")
 
     def test_task_set_expansion_centroid_boost(self):
-        """Tests the set expansion task using the centroid algorithm.
+        """Tests the set expansion task using the centroid boost algorithm.
         Uses an OKgraph object with default values, using pre-existent data.
 
         """
@@ -449,38 +376,15 @@ class OKGraphTest(unittest.TestCase):
                    "fast": False}
 
         results_1 = okg.set_expansion(seed_1, k, "centroid_boost", options)
+        self._check_set_expansion_results(results_1, k, seed_1)
         results_2 = okg.set_expansion(seed_2, k, "centroid_boost", options)
-
-        self.assertIsInstance(
-            results_1, list,
-            msg=f"The return value of the task should be a list")
-        self.assertIsInstance(
-            results_2, list,
-            msg=f"The return value of the task should be a list")
-        self.assertGreater(
-            len(results_1), 0,
-            msg=f"No results obtained from the algorithm for the seed {seed_1}")
-        self.assertGreater(
-            len(results_2), 0,
-            msg=f"No results obtained from the algorithm for the seed {seed_2}")
-        self.assertLessEqual(
-            len(results_1), k,
-            msg=f"The limit of {k} results has been passed for the seed"
-                f" {seed_1}")
-        self.assertLessEqual(
-            len(results_2), k,
-            msg=f"The limit of {k} results has been passed for the seed"
-                f" {seed_2}")
-        for r_word in results_1+results_2:
-            self.assertIsInstance(
-                r_word, str,
-                msg=f"The return value of the task should be a list of strings")
+        self._check_set_expansion_results(results_2, k, seed_2)
 
         logger.info(f"Expansion of {seed_1} is {results_1}")
         logger.info(f"Expansion of {seed_2} is {results_2}")
 
     def test_task_set_expansion_depth(self):
-        """Tests the set expansion task using the centroid algorithm.
+        """Tests the set expansion task using the depth algorithm.
         Uses an OKgraph object with default values, using pre-existent data.
 
         """
@@ -496,32 +400,31 @@ class OKGraphTest(unittest.TestCase):
                    "depth": 2}
 
         results_1 = okg.set_expansion(seed_1, k, "depth", options)
+        self._check_set_expansion_results(results_1, k, seed_1)
         results_2 = okg.set_expansion(seed_2, k, "depth", options)
+        self._check_set_expansion_results(results_2, k, seed_2)
 
-        self.assertIsInstance(
-            results_1, list,
-            msg=f"The return value of the task should be a list")
-        self.assertIsInstance(
-            results_2, list,
-            msg=f"The return value of the task should be a list")
-        self.assertGreater(
-            len(results_1), 0,
-            msg=f"No results obtained from the algorithm for the seed {seed_1}")
-        self.assertGreater(
-            len(results_2), 0,
-            msg=f"No results obtained from the algorithm for the seed {seed_2}")
-        self.assertLessEqual(
-            len(results_1), k,
-            msg=f"The limit of {k} results has been passed for the seed"
-                f" {seed_1}")
-        self.assertLessEqual(
-            len(results_2), k,
-            msg=f"The limit of {k} results has been passed for the seed"
-                f" {seed_2}")
-        for r_word in results_1+results_2:
-            self.assertIsInstance(
-                r_word, str,
-                msg=f"The return value of the task should be a list of strings")
+        logger.info(f"Expansion of {seed_1} is {results_1}")
+        logger.info(f"Expansion of {seed_2} is {results_2}")
+
+    def test_task_set_expansion_fill_mask(self):
+        """Tests the set expansion task using the fill mask algorithm.
+        Uses an OKgraph object with default values, using pre-existent data.
+
+        """
+        test_corpus = TEST_BIG_CORPUS
+        corpus_file = self._corpus_default_data[test_corpus]["file"]
+
+        okg = OKgraph(corpus_file=corpus_file)
+        seed_1 = ["milan", "rome", "venice"]
+        seed_2 = ["home", "house", "apartment"]
+        k = 15
+        options = {}
+
+        results_1 = okg.set_expansion(seed_1, k, "fill_mask", options)
+        self._check_set_expansion_results(results_1, k, seed_1)
+        results_2 = okg.set_expansion(seed_2, k, "fill_mask", options)
+        self._check_set_expansion_results(results_2, k, seed_2)
 
         logger.info(f"Expansion of {seed_1} is {results_1}")
         logger.info(f"Expansion of {seed_2} is {results_2}")
@@ -540,20 +443,7 @@ class OKGraphTest(unittest.TestCase):
         options = {"dictionary": okg.dictionary,
                    "index": okg.index}
         results = okg.set_labeling(seed, k, "intersection", options)
-
-        self.assertIsInstance(
-            results, list,
-            msg=f"The return value of the task should be a list")
-        self.assertGreater(
-            len(results), 0,
-            msg=f"No results obtained from the algorithm")
-        self.assertLessEqual(
-            len(results), k,
-            msg=f"The limit of {k} results has been passed")
-        for r_label in results:
-            self.assertIsInstance(
-                r_label, str,
-                msg=f"The return value of the task should be a list strings")
+        self._check_set_labeling_results(results, k)
 
         logger.info(f"Labels of {seed} are {results}")
 
@@ -652,8 +542,77 @@ class OKGraphTest(unittest.TestCase):
             msg=f"Cosine between {w1} and {w2} must be between 0 and 1")
         cosine = e.cos(w1, w1)
         self.assertTrue(
-            cosine == 1,
-            msg=f"Cosine between {w1} and {w1} must 1")
+            cosine > 0.99,
+            msg=f"Cosine between {w1} and {w1} must be almost 1")
+
+    def _check_relation_expansion_results(self, results, k):
+        """Checks the results of a 'relation expansion' algorithm."""
+        self.assertIsInstance(
+            results, list,
+            msg=f"The return value of the task should be a list")
+        self.assertGreater(
+            len(results), 0,
+            msg=f"No results obtained from the algorithm")
+        self.assertLessEqual(
+            len(results), k,
+            msg=f"The limit of {k} results has been passed")
+        for r_tuple in results:
+            self.assertIsInstance(
+                r_tuple, tuple,
+                msg=f"The return value of the task should be a list of tuples")
+            for r_elements in r_tuple:
+                self.assertIsInstance(
+                    r_elements, str,
+                    msg=f"The return value of the task should be a list of"
+                        f" tuples of strings")
+
+    def _check_relation_labeling_results(self, results, k):
+        """Checks the results of a 'relation labeling' algorithm."""
+        self.assertIsInstance(
+            results, list,
+            msg=f"The return value of the task should be a list")
+        self.assertGreater(
+            len(results), 0,
+            msg=f"No results obtained from the algorithm")
+        self.assertLessEqual(
+            len(results), k,
+            msg=f"The limit of {k} results has been passed")
+        for r_label in results:
+            self.assertIsInstance(
+                r_label, str,
+                msg=f"The return value of the task should be a list strings")
+
+    def _check_set_expansion_results(self, results, k, seed):
+        """Checks the results of a 'set expansion' algorithm."""
+        self.assertIsInstance(
+            results, list,
+            msg=f"The return value of the task should be a list")
+        self.assertGreater(
+            len(results), 0,
+            msg=f"No results obtained from the algorithm for the seed {seed}")
+        self.assertLessEqual(
+            len(results), k,
+            msg=f"The limit of {k} results has been passed for the seed {seed}")
+        for r_word in results:
+            self.assertIsInstance(
+                r_word, str,
+                msg=f"The return value of the task should be a list of strings")
+
+    def _check_set_labeling_results(self, results, k):
+        """Checks the results of a 'set labeling' algorithm."""
+        self.assertIsInstance(
+            results, list,
+            msg=f"The return value of the task should be a list")
+        self.assertGreater(
+            len(results), 0,
+            msg=f"No results obtained from the algorithm")
+        self.assertLessEqual(
+            len(results), k,
+            msg=f"The limit of {k} results has been passed")
+        for r_label in results:
+            self.assertIsInstance(
+                r_label, str,
+                msg=f"The return value of the task should be a list strings")
 
 
 if __name__ == "__main__":

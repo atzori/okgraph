@@ -52,7 +52,7 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
-    python_requires='<=3.9',
+    python_requires='>=3.7,<3.10',
     install_requires=INSTALL_REQUIRES,
     tests_require=['coverage', 'pytest'],
     packages=find_packages(),

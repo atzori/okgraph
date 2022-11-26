@@ -13,12 +13,21 @@ with open('okgraph/__init__.py', 'r') as f:
 with open('README.md', 'r', encoding='utf-8') as f:
     readme = f.read()
 
-REQUIRES = []
+INSTALL_REQUIRES = []
+with open('requirements.txt', 'r', encoding='utf-8') as f:
+    # TODO fix this accordingly to what stated at:
+    #  <https://packaging.python.org/en/latest/discussions/install-requires-vs-requirements/>
+    #  `install_requires` and `requirements.txt` are different and have
+    #  different purpose
+    for line in f.readlines():
+        if not line.startswith('#') and not line.startswith('-'):
+            INSTALL_REQUIRES.append(line)
 
 setup(
     name='okgraph',
     version=version,
-    description='OKgraph is a python library for unstructured natural language understanding',
+    description='OKgraph is a python library for unstructured natural language'
+                ' understanding',
     long_description=readme,
     author='Maurizio Atzori',
     author_email='atzori@unica.it',
@@ -37,16 +46,15 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
-
-    install_requires=REQUIRES,
+    python_requires='<=3.9',
+    install_requires=INSTALL_REQUIRES,
     tests_require=['coverage', 'pytest'],
-
     packages=find_packages(),
     include_package_data=True,
 )

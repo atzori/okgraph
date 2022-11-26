@@ -28,27 +28,23 @@ How to install
 ------
 
 ### Creating the virtual environment ###
-Please ensure **python 3.7** or newer is being used (previous versions are not supported). After cloning the repository 
-(`https://github.com/atzori/okgraph.git && cd okgraph`), run the followings commands **from the root
-directory of the project**.
+Please ensure a **python version between 3.7 and 3.9** is being used. If you're using *Windows*, ensure the
+*Windows 10 SDK* have been installed by the *Visual Studio Installer*.
 
-- Linux _Bash_
-    ```bash
-    $ python3.7 -m venv venv
-    $ source venv/bin/activate
-    (venv) $ python -m pip install --upgrade pip setuptools devtools
-    (venv) $ pip install -r requirements.txt  # this may take several minutes
-    (venv) $ python setup.py install
-    ```
+After cloning the repository (`https://github.com/atzori/okgraph.git && cd okgraph`), run the followings commands **from
+the root directory of the downloaded project** to install *okgraph* **for development**:
 
-- Windows 10 _cmd_ (ensure the _Windows 10 SDK_ have been installed by the _Visual Studio Installer_)
-    ```bat
-    > py -3.7 -m venv venv
-    > .\venv\Scripts\activate
-    (venv) > python -m pip install --upgrade pip setuptools devtools
-    (venv) > pip install -r requirements.txt  & this may take several minutes
-    (venv) > python setup.py install
-    ```
+```bash
+> python -m venv venv  # be sure you are referring to an acceptable python version using
+> source venv/bin/activate
+(venv) > python -m pip install --upgrade pip setuptools devtools
+(venv) > pip install -r requirements.txt  # this may take several minutes
+```
+
+If you want to use it **as a library** inside one of your projects, just install it from your environment with:
+```
+(venv) > pip install ../path/to/downloaded/okgraph
+```
 
 ### Acquiring the test data ###
 To run the tests some _text corpora_ are required. The following script will provide the required _text corpora_, along

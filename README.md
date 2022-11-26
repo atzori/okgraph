@@ -215,15 +215,13 @@ okg.set_expansion(
 > e.g.: ["Spain", "Portugal", "Belgium", ...]
 ```
 
-If you want to use a pretrained masked model you can use `fill-mask` algorithm
-
-Example:
+If you want to use a pretrained masked model you can use the `fill-mask` algorithm, for example:
 
 ```python
 okg.set_expansion(
                 seed = ('italy', 'france', 'germany'),
-                algo = "fill_mask",
                 k = 20,
+                algo = "fill_mask",
                 options = {}
             )
 ```
